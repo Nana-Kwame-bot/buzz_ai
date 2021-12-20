@@ -9,7 +9,7 @@ abstract class AppPages {
   static final pages = [
     GetPage(
       name: Routes.INITIAL,
-      page: () => SplashScreen(),
+      page: () => const SplashScreen(),
     ),
 
     // GetPage(name: Routes.APRESENTACAO, page:()=> ApresentacaoPage()),
