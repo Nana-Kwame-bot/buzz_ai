@@ -1,4 +1,4 @@
-import 'package:buzz_ai/screens/slpashscreen/splashscrenn.dart';
+import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
 import 'package:get/get.dart';
 
 abstract class Routes {
