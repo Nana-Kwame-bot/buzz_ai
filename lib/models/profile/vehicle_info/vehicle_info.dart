@@ -1,14 +1,14 @@
 class VehicleInfo {
-  final String ownerName;
-  final String model;
-  final String year;
-  final String plateNumber;
+  final String? ownerName;
+  final String? model;
+  final String? year;
+  final String? plateNumber;
 
   VehicleInfo({
-    required this.ownerName,
-    required this.model,
-    required this.year,
-    required this.plateNumber,
+    this.ownerName,
+    this.model,
+    this.year,
+    this.plateNumber,
   });
 
   @override
@@ -33,5 +33,19 @@ class VehicleInfo {
         model.hashCode ^
         year.hashCode ^
         plateNumber.hashCode;
+  }
+
+  VehicleInfo copyWith({
+    String? ownerName,
+    String? model,
+    String? year,
+    String? plateNumber,
+  }) {
+    return VehicleInfo(
+      ownerName: ownerName ?? this.ownerName,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      plateNumber: plateNumber ?? this.plateNumber,
+    );
   }
 }

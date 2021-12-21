@@ -1,10 +1,10 @@
 class ContactDetail {
-  final String address;
-  final String phoneNumber;
+  final String? address;
+  final String? phoneNumber;
 
   ContactDetail({
-    required this.address,
-    required this.phoneNumber,
+    this.address,
+    this.phoneNumber,
   });
 
   @override
@@ -22,4 +22,14 @@ class ContactDetail {
 
   @override
   int get hashCode => address.hashCode ^ phoneNumber.hashCode;
+
+  ContactDetail copyWith({
+    String? address,
+    String? phoneNumber,
+  }) {
+    return ContactDetail(
+      address: address ?? this.address,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+    );
+  }
 }
