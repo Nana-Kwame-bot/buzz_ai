@@ -1,16 +1,25 @@
 import 'package:buzz_ai/models/profile/contact_detail/contact_detail.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ContactDetailController extends GetxController {
   ContactDetail contactDetail = ContactDetail();
 
-  void setAddress({required String address}) {
-    contactDetail = contactDetail.copyWith(address: address);
+  final contactDetailsFormKey = GlobalKey<FormState>();
+
+  void validateBasicDetailForms() {
+    if (contactDetailsFormKey.currentState!.validate()) {
+      Get.snackbar("", "Saving Data");
+    }
+  }
+
+  void setAddress(String? newValue) {
+    contactDetail = contactDetail.copyWith(address: newValue);
     update();
   }
 
-  void setPhoneNumber({required String phoneNumber}) {
-    contactDetail = contactDetail.copyWith(phoneNumber: phoneNumber);
+  void setPhoneNumber(String? newValue) {
+    contactDetail = contactDetail.copyWith(phoneNumber: newValue);
     update();
   }
 }

@@ -1,42 +1,45 @@
 import 'package:buzz_ai/models/profile/basic_detail/basic_detail.dart';
-import 'package:buzz_ai/models/profile/gender/gender.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BasicDetailController extends GetxController {
   BasicDetail basicDetail = BasicDetail();
 
-  void setFullName({required String fullname}) {
-    basicDetail = basicDetail.copyWith(fullname: fullname);
+  final basicDetailsFormKey = GlobalKey<FormState>();
+
+  void validateBasicDetailForms() {
+    if (basicDetailsFormKey.currentState!.validate()) {
+      Get.snackbar("", "Saving Data");
+    }
+  }
+
+  void setFullName(String? newValue) {
+    basicDetail = basicDetail.copyWith(fullname: newValue);
     update();
   }
 
-  void setDOB({required String dateOfBirth}) {
-    basicDetail = basicDetail.copyWith(dateOfBirth: dateOfBirth);
+  void setDOB(String? newValue) {
+    basicDetail = basicDetail.copyWith(dateOfBirth: newValue);
     update();
   }
 
-  void setWeight({required int weight}) {
-    basicDetail = basicDetail.copyWith(weight: weight);
+  void setWeight(String? newValue) {
+    basicDetail = basicDetail.copyWith(weight: int.tryParse(newValue!));
     update();
   }
 
-  void setGender({required Gender gender}) {
-    basicDetail = basicDetail.copyWith(gender: gender);
+  void setAge(String? newValue) {
+    basicDetail = basicDetail.copyWith(age: int.tryParse(newValue!));
     update();
   }
 
-  void setAge({required int age}) {
-    basicDetail = basicDetail.copyWith(age: age);
+  void setBloodGroup(String? newValue) {
+    basicDetail = basicDetail.copyWith(bloodGroup: newValue);
     update();
   }
 
-  void setBloodGroup({required String bloodGroup}) {
-    basicDetail = basicDetail.copyWith(bloodGroup: bloodGroup);
-    update();
-  }
-
-  void setLicenseNumber({required int licenseNumber}) {
-    basicDetail = basicDetail.copyWith(licenseNumber: licenseNumber);
+  void setLicenseNumber(String? newValue) {
+    basicDetail = basicDetail.copyWith(licenseNumber: int.tryParse(newValue!));
     update();
   }
 }

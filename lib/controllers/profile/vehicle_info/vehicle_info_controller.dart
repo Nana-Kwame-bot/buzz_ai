@@ -1,26 +1,35 @@
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class VehicleInfoController extends GetxController {
   VehicleInfo vehicleInfo = VehicleInfo();
 
-  void setOwnerName({required String ownerName}) {
-    vehicleInfo = vehicleInfo.copyWith(ownerName: ownerName);
+  final vehicleInfoFormKey = GlobalKey<FormState>();
+
+  void validateBasicDetailForms() {
+    if (vehicleInfoFormKey.currentState!.validate()) {
+      Get.snackbar("", "Saving Data");
+    }
+  }
+
+  void setOwnerName(String? newValue) {
+    vehicleInfo = vehicleInfo.copyWith(ownerName: newValue);
     update();
   }
 
-  void setModel({required String model}) {
-    vehicleInfo = vehicleInfo.copyWith(model: model);
+  void setModel(String? newValue) {
+    vehicleInfo = vehicleInfo.copyWith(model: newValue);
     update();
   }
 
-  void setYear({required String year}) {
-    vehicleInfo = vehicleInfo.copyWith(year: year);
+  void setYear(String? newValue) {
+    vehicleInfo = vehicleInfo.copyWith(year: newValue);
     update();
   }
 
-  void setPlateNumber({required String plateNumber}) {
-    vehicleInfo = vehicleInfo.copyWith(plateNumber: plateNumber);
+  void setPlateNumber(String? newValue) {
+    vehicleInfo = vehicleInfo.copyWith(plateNumber: newValue);
     update();
   }
 }
