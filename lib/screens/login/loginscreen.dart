@@ -1,5 +1,6 @@
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -70,7 +71,9 @@ class LoginScreen extends StatelessWidget {
                     iconColor: Colors.transparent,
                     width: 280,
                     height: 60,
-                    onConfirmation: () {},
+                    onConfirmation: () {
+                      Get.toNamed('/profile');
+                    },
                   )
                 ],
               ),
