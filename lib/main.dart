@@ -1,6 +1,5 @@
 import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
-
 import 'package:buzz_ai/services/locale/bindings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       initialRoute: Routes.INITIAL,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
