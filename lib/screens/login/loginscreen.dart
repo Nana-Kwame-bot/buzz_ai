@@ -1,4 +1,5 @@
 import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/widgets/locale/textformwidget.dart';
 import 'package:flutter/material.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
@@ -8,6 +9,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextWidgetStyle style = TextWidgetStyle();
+    TextEditingController _mobileController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(82, 71, 197, 1),
@@ -55,6 +57,33 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white,
                       size: 14,
                       fontwight: FontWeight.w400),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                      height: 42,
+                      width: 350,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child:
+                                style.Barlow(color: Colors.grey, text: "+91"),
+                          ),
+                          VerticalDivider(
+                            color: Colors.grey.shade400,
+                          ),
+                          TextFormWidget(
+                            heading: "Enter Your Phone number",
+                            type: TextInputType.number,
+                            controller: _mobileController,
+                            textalign: TextAlign.center,
+                          ),
+                        ],
+                      )),
                   SizedBox(
                     height: 30,
                   ),
