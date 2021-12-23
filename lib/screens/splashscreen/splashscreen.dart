@@ -9,7 +9,6 @@ import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {

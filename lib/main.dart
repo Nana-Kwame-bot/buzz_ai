@@ -1,12 +1,11 @@
 import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
-
 import 'package:buzz_ai/services/locale/bindings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
