@@ -1,4 +1,6 @@
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
+import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car.dart';
+import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,10 +8,19 @@ class VehicleInfoController extends GetxController {
   VehicleInfo vehicleInfo = VehicleInfo();
 
   final vehicleInfoFormKey = GlobalKey<FormState>();
+  final mutipleCarFormKey = GlobalKey<FormState>();
 
-  void validateBasicDetailForms() {
-    if (vehicleInfoFormKey.currentState!.validate()) {
-      Get.snackbar("", "Saving Data");
+  List<Widget> multipleCars = [];
+
+  void addMoreCars() {
+    multipleCars.add(const VehicleInformation());
+    Get.back();
+    update();
+  }
+
+  void validateMultipleCarForms() {
+    if (mutipleCarFormKey.currentState!.validate()) {
+      addMoreCars();
     }
   }
 

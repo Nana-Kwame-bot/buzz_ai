@@ -4,8 +4,11 @@ import 'package:get/get.dart';
 class EmergencyContactBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() {
-      return EmergencyContactController();
-    });
+    Get.lazyPut(
+      () {
+        return EmergencyContactController();
+      },
+      fenix: true,
+    );
   }
 }
