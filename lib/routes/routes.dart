@@ -1,6 +1,7 @@
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
+import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -17,6 +18,10 @@ class AppRouter {
       case ProfileScreen.iD:
         return MaterialPageRoute(builder: (context) {
           return const ProfileScreen();
+        });
+      case VerificationScreen.iD:
+        return MaterialPageRoute(builder: (context) {
+          return const VerificationScreen();
         });
       default:
         return MaterialPageRoute(builder: (context) {
