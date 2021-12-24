@@ -1,7 +1,5 @@
-import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class MultipleCar extends StatelessWidget {
   const MultipleCar({Key? key}) : super(key: key);
@@ -32,7 +30,11 @@ class MultipleCar extends StatelessWidget {
               style: TextStyle(fontSize: 14.0),
             ),
             onTap: () {
-              Get.dialog(const MultipleCarDialog());
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const MultipleCarDialog();
+                  });
             },
           ),
         ],

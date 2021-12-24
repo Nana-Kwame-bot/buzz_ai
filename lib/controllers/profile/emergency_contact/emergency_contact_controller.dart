@@ -1,34 +1,29 @@
 import 'package:buzz_ai/models/profile/emergency_contact/emergency_contact.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class EmergencyContactController extends GetxController {
-  var emergencyContact = EmergencyContact().obs;
+class EmergencyContactController extends ChangeNotifier {
+  var emergencyContact = EmergencyContact();
 
   final emergencyContactFormKey = GlobalKey<FormState>();
 
   void validateBasicDetailForms() {
     if (emergencyContactFormKey.currentState!.validate()) {
       emergencyContactFormKey.currentState!.save();
-      Get.back();
     }
   }
 
   void setEmergencyContact(String? newValue) {
-    emergencyContact.update((EmergencyContact? val) {
-      val!.contactNumber = newValue;
-    });
+    emergencyContact = emergencyContact.copyWith(contactNumber: newValue);
+    notifyListeners();
   }
 
   void setRelation(String? newValue) {
-    emergencyContact.update((EmergencyContact? val) {
-      val!.relation = newValue;
-    });
+    emergencyContact = emergencyContact.copyWith(relation: newValue);
+    notifyListeners();
   }
 
   void setName(String? newValue) {
-    emergencyContact.update((EmergencyContact? val) {
-      val!.name = newValue;
-    });
+    emergencyContact = emergencyContact.copyWith(name: newValue);
+    notifyListeners();
   }
 }

@@ -1,19 +1,14 @@
-// ignore: file_names
-// ignore: file_names
-// ignore: file_names
-// ignore: file_names
-
-// ignore_for_file: use_key_in_widget_constructors
-
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
+  static const String iD = '/';
 //repository injection
 //final MyRepository repository = MyRepository(apiClient: MyApiClient(httpClient: http.Client()));
+
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -21,27 +16,35 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  static const double _iconSize = 50;
+  // static const double _iconSize = 50;
 
-  AnimationController? _animationController;
-  Animation? _animation;
+  late AnimationController _animationController;
+  late Animation _animation;
 
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 3300),
-    );
-    _animation = CurvedAnimation(
-        parent: _animationController!.view, curve: Curves.easeInCubic);
+      duration: const Duration(milliseconds: 3300),
+    )
+      ..forward()
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Navigator.pushNamed(context, LoginScreen.iD);
+        }
+      });
 
-    _animationController!.forward().whenComplete(() => Get.to(LoginScreen()));
+    _animation = CurvedAnimation(
+      parent: _animationController.view,
+      curve: Curves.easeInCubic,
+    );
   }
 
   @override
   void dispose() {
-    _animationController!.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -51,27 +54,29 @@ class _SplashScreenState extends State<SplashScreen>
 
     return Scaffold(
         body: AnimatedBuilder(
-      animation: _animation!,
+      animation: _animation,
       builder: (context, index) {
         return Container(
-          color: Color.fromRGBO(82, 71, 197, 1),
+          color: const Color.fromRGBO(82, 71, 197, 1),
           child: Column(children: [
             Padding(
-              padding: EdgeInsets.only(top: 120, left: 40, right: 40),
+              padding: const EdgeInsets.only(top: 120, left: 40, right: 40),
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: 100,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/img/splash2.png"),
-                        fit: BoxFit.fitWidth)),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/img/splash2.png"),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 230,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.blue,
                   image: DecorationImage(
                       image: AssetImage("assets/img/splash1.png"),
@@ -83,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: style.Barlow(
                       text: "A Safer way to ride",
                       size: 19,
-                      color: Color.fromRGBO(0, 60, 255, 1),
+                      color: const Color.fromRGBO(0, 60, 255, 1),
                       fontwight: FontWeight.w800),
                 ),
               ),

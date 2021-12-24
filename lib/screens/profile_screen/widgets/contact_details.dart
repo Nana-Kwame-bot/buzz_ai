@@ -1,6 +1,6 @@
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class ContactDetails extends StatelessWidget {
   const ContactDetails({Key? key}) : super(key: key);
@@ -9,8 +9,12 @@ class ContactDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: GetBuilder(
-        builder: (ContactDetailController contactDetailController) {
+      child: Consumer(
+        builder: (
+          BuildContext context,
+          ContactDetailController contactDetailController,
+          Widget? child,
+        ) {
           return Form(
             key: contactDetailController.contactDetailsFormKey,
             child: Column(

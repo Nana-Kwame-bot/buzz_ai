@@ -1,6 +1,6 @@
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class EmergencyContactDialog extends StatelessWidget {
   const EmergencyContactDialog({Key? key}) : super(key: key);
@@ -13,8 +13,10 @@ class EmergencyContactDialog extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        child: GetBuilder(
-          builder: (EmergencyContactController emergencyContactController) {
+        child: Consumer(
+          builder: (BuildContext context,
+              EmergencyContactController emergencyContactController,
+              Widget? child) {
             return Form(
               key: emergencyContactController.emergencyContactFormKey,
               child: SingleChildScrollView(
@@ -54,8 +56,8 @@ class EmergencyContactDialog extends StatelessWidget {
                         }
                         return null;
                       },
-                      initialValue: emergencyContactController
-                          .emergencyContact.value.name,
+                      initialValue:
+                          emergencyContactController.emergencyContact.name,
                       onSaved: emergencyContactController.setName,
                       keyboardType: TextInputType.name,
                     ),
@@ -82,8 +84,8 @@ class EmergencyContactDialog extends StatelessWidget {
                         }
                         return null;
                       },
-                      initialValue: emergencyContactController
-                          .emergencyContact.value.relation,
+                      initialValue:
+                          emergencyContactController.emergencyContact.relation,
                       onSaved: emergencyContactController.setRelation,
                       keyboardType: TextInputType.text,
                     ),
@@ -111,7 +113,7 @@ class EmergencyContactDialog extends StatelessWidget {
                         return null;
                       },
                       initialValue: emergencyContactController
-                          .emergencyContact.value.contactNumber,
+                          .emergencyContact.contactNumber,
                       onSaved: emergencyContactController.setEmergencyContact,
                       keyboardType: TextInputType.phone,
                     ),
@@ -123,7 +125,7 @@ class EmergencyContactDialog extends StatelessWidget {
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () {
-                                Get.back();
+                                Navigator.of(context).pop();
                               },
                               child: const Text(
                                 'Close',

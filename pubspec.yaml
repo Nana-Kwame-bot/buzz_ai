@@ -29,23 +29,19 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   fancy_bottom_navigation: ^0.3.3
-  firebase_auth: 
-  firebase_core: 
-  firebase_phone_auth_handler: 
+  firebase_auth: null
+  firebase_core: null
+  firebase_phone_auth_handler: null
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  get:  
-  hive: 
-  hive_flutter: 
-  google_fonts: 
-  geolocator: 
-  map_picker: 
-  map_launcher: 
-  slide_to_confirm: 
+  geolocator: null
+  google_fonts: null
+  hive: null
+  hive_flutter: null
+  map_launcher: null
+  map_picker: null
+  provider: ^6.0.1
+  slide_to_confirm: null
 
 dev_dependencies:
   flutter_lints: ^1.0.0

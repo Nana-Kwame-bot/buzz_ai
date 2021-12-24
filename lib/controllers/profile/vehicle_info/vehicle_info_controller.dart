@@ -1,10 +1,8 @@
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
-import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class VehicleInfoController extends GetxController {
+class VehicleInfoController extends ChangeNotifier {
   VehicleInfo vehicleInfo = VehicleInfo();
 
   final vehicleInfoFormKey = GlobalKey<FormState>();
@@ -14,8 +12,8 @@ class VehicleInfoController extends GetxController {
 
   void addMoreCars() {
     multipleCars.add(const VehicleInformation());
-    Get.back();
-    update();
+
+    notifyListeners();
   }
 
   void validateMultipleCarForms() {
@@ -26,21 +24,21 @@ class VehicleInfoController extends GetxController {
 
   void setOwnerName(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(ownerName: newValue);
-    update();
+    notifyListeners();
   }
 
   void setModel(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(model: newValue);
-    update();
+    notifyListeners();
   }
 
   void setYear(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(year: newValue);
-    update();
+    notifyListeners();
   }
 
   void setPlateNumber(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(plateNumber: newValue);
-    update();
+    notifyListeners();
   }
 }

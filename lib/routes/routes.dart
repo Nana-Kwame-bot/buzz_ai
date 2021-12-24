@@ -1,35 +1,27 @@
-import 'package:buzz_ai/bindings/profile/basic_detail/basic_detail_binding.dart';
-import 'package:buzz_ai/bindings/profile/contact_detail/contact_detail_binding.dart';
-import 'package:buzz_ai/bindings/profile/emergency_contact/emergency_contact_binding.dart';
-import 'package:buzz_ai/bindings/profile/gender/gender_binding.dart';
-import 'package:buzz_ai/bindings/profile/vehicle_info/vehicle_info_binding.dart';
+import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
-abstract class Routes {
-  static const INITIAL = '/';
-  static const PROFILE = '/profile';
-}
-
-abstract class AppPages {
-  static final pages = [
-    GetPage(
-      name: Routes.INITIAL,
-      page: () => SplashScreen(),
-    ),
-    GetPage(
-      name: Routes.PROFILE,
-      page: () => const ProfileScreen(),
-      bindings: [
-        BasicDetailBinding(),
-        ContactDetailBinding(),
-        EmergencyContactBinding(),
-        GenderBinding(),
-        VehicleInfoBinding(),
-      ],
-    ),
-
-    // GetPage(name: Routes.APRESENTACAO, page:()=> ApresentacaoPage()),
-  ];
+class AppRouter {
+  Route onGenerateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
+      case SplashScreen.iD:
+        return MaterialPageRoute(builder: (context) {
+          return const SplashScreen();
+        });
+      case LoginScreen.iD:
+        return MaterialPageRoute(builder: (context) {
+          return const LoginScreen();
+        });
+      case ProfileScreen.iD:
+        return MaterialPageRoute(builder: (context) {
+          return const ProfileScreen();
+        });
+      default:
+        return MaterialPageRoute(builder: (context) {
+          return const Text("You should probably not be passing null");
+        });
+    }
+  }
 }
