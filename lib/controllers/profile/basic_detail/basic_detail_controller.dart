@@ -1,45 +1,42 @@
 import 'package:buzz_ai/models/profile/basic_detail/basic_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class BasicDetailController extends GetxController {
+class BasicDetailController extends ChangeNotifier {
   BasicDetail basicDetail = BasicDetail();
 
   final basicDetailsFormKey = GlobalKey<FormState>();
 
   void validateBasicDetailForms() {
-    if (basicDetailsFormKey.currentState!.validate()) {
-      Get.snackbar("", "Saving Data");
-    }
+    if (basicDetailsFormKey.currentState!.validate()) {}
   }
 
   void setFullName(String? newValue) {
     basicDetail = basicDetail.copyWith(fullname: newValue);
-    update();
+    notifyListeners();
   }
 
   void setDOB(String? newValue) {
     basicDetail = basicDetail.copyWith(dateOfBirth: newValue);
-    update();
+    notifyListeners();
   }
 
   void setWeight(String? newValue) {
     basicDetail = basicDetail.copyWith(weight: int.tryParse(newValue!));
-    update();
+    notifyListeners();
   }
 
   void setAge(String? newValue) {
     basicDetail = basicDetail.copyWith(age: int.tryParse(newValue!));
-    update();
+    notifyListeners();
   }
 
   void setBloodGroup(String? newValue) {
     basicDetail = basicDetail.copyWith(bloodGroup: newValue);
-    update();
+    notifyListeners();
   }
 
   void setLicenseNumber(String? newValue) {
     basicDetail = basicDetail.copyWith(licenseNumber: int.tryParse(newValue!));
-    update();
+    notifyListeners();
   }
 }

@@ -2,7 +2,7 @@ import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller
 import 'package:buzz_ai/controllers/profile/gender/gender_controller.dart';
 import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class BasicDetails extends StatelessWidget {
   const BasicDetails({Key? key}) : super(key: key);
@@ -11,8 +11,9 @@ class BasicDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24.0),
-      child: GetBuilder(
-        builder: (BasicDetailController basicDetailController) {
+      child: Consumer(
+        builder: (BuildContext context,
+            BasicDetailController basicDetailController, Widget? child) {
           return Form(
             key: basicDetailController.basicDetailsFormKey,
             child: Column(
@@ -116,8 +117,9 @@ class BasicDetails extends StatelessWidget {
                     ),
                   ),
                 ),
-                GetBuilder(
-                  builder: (GenderController genderController) {
+                Consumer(
+                  builder: (BuildContext context,
+                      GenderController genderController, Widget? child) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

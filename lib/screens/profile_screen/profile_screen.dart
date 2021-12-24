@@ -7,10 +7,10 @@ import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/submit_form.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:flutter/material.dart';
-
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
+  static const String iD = '/profile';
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
-              Get.back();
+              Navigator.of(context).pop();
             },
             icon: const Icon(
               Icons.arrow_back,
@@ -39,8 +39,12 @@ class ProfileScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: GetBuilder(
-            builder: (VehicleInfoController vehicleInfoController) {
+          child: Consumer(
+            builder: (
+              BuildContext context,
+              VehicleInfoController vehicleInfoController,
+              Widget? child,
+            ) {
               return Column(
                 children: [
                   const ImagePick(),

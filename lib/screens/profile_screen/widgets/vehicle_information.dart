@@ -1,6 +1,6 @@
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:provider/provider.dart';
 
 class VehicleInformation extends StatelessWidget {
   const VehicleInformation({Key? key}) : super(key: key);
@@ -9,8 +9,9 @@ class VehicleInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: GetBuilder(
-        builder: (VehicleInfoController vehicleInfoController) {
+      child: Consumer(
+        builder: (BuildContext context,
+            VehicleInfoController vehicleInfoController, Widget? child) {
           return Form(
             key: vehicleInfoController.vehicleInfoFormKey,
             child: Column(

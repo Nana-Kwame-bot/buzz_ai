@@ -1,6 +1,6 @@
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class MultipleCarDialog extends StatelessWidget {
   const MultipleCarDialog({Key? key}) : super(key: key);
@@ -13,8 +13,9 @@ class MultipleCarDialog extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        child: GetBuilder(
-          builder: (VehicleInfoController vehicleInfoController) {
+        child: Consumer(
+          builder: (BuildContext context,
+              VehicleInfoController vehicleInfoController, Widget? child) {
             return Form(
               key: vehicleInfoController.mutipleCarFormKey,
               child: SingleChildScrollView(
@@ -164,7 +165,7 @@ class MultipleCarDialog extends StatelessWidget {
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () {
-                                Get.back();
+                                Navigator.of(context).pop();
                               },
                               child: const Text(
                                 'Close',

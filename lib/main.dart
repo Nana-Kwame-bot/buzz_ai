@@ -1,8 +1,11 @@
-import 'package:buzz_ai/routes/routes.dart';
-import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
-import 'package:buzz_ai/services/locale/bindings.dart';
+import 'package:buzz_ai/buzzai_app.dart';
+import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
+import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/gender/gender_controller.dart';
+import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +16,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialBinding: ControllerBindings(),
-      initialRoute: Routes.INITIAL,
-      getPages: AppPages.pages,
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<BasicDetailController>(
+          create: (BuildContext context) {
+            return BasicDetailController();
+          },
+        ),
+        ChangeNotifierProvider<ContactDetailController>(
+          create: (BuildContext context) {
+            return ContactDetailController();
+          },
+        ),
+        ChangeNotifierProvider<EmergencyContactController>(
+          create: (BuildContext context) {
+            return EmergencyContactController();
+          },
+        ),
+        ChangeNotifierProvider<GenderController>(
+          create: (BuildContext context) {
+            return GenderController();
+          },
+        ),
+        ChangeNotifierProvider<VehicleInfoController>(
+          create: (BuildContext context) {
+            return VehicleInfoController();
+          },
+        ),
+      ],
+      child: const BuzzaiApp(),
     );
   }
 }
