@@ -29,8 +29,7 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   fancy_bottom_navigation: ^0.3.3
-  firebase_auth: null
-  firebase_core: null
+  firebase_core: ^1.10.6
   firebase_phone_auth_handler: null
   flutter:
     sdk: flutter
