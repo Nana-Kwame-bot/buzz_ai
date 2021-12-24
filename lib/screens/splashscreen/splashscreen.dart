@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.pushNamed(context, LoginScreen.iD);
+          Navigator.pushReplacementNamed(context, LoginScreen.iD);
         }
       });
 
@@ -50,52 +50,54 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    TextWidgetStyle style = TextWidgetStyle();
-
     return Scaffold(
-        body: AnimatedBuilder(
-      animation: _animation,
-      builder: (context, index) {
-        return Container(
-          color: const Color.fromRGBO(82, 71, 197, 1),
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 120, left: 40, right: 40),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 100,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/img/splash2.png"),
-                    fit: BoxFit.fitWidth,
+      body: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, index) {
+          return Container(
+            color: const Color.fromRGBO(82, 71, 197, 1),
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 120, left: 40, right: 40),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/img/splash2.png"),
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Spacer(),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 230,
-              decoration: const BoxDecoration(
+              const Spacer(),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 230,
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                   image: DecorationImage(
-                      image: AssetImage("assets/img/splash1.png"),
-                      fit: BoxFit.fitWidth)),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 18),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: style.Barlow(
+                    image: AssetImage("assets/img/splash1.png"),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 18),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: TextWidgetStyle.Barlow(
                       text: "A Safer way to ride",
                       size: 19,
                       color: const Color.fromRGBO(0, 60, 255, 1),
-                      fontwight: FontWeight.w800),
+                      fontwight: FontWeight.w800,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ]),
-        );
-      },
-    ));
+            ]),
+          );
+        },
+      ),
+    );
   }
 }

@@ -1,4 +1,4 @@
-package com.example.buzz_ai
+package com.piyushlimited.buzzai
 
 import io.flutter.embedding.android.FlutterActivity
 

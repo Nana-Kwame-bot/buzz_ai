@@ -29,20 +29,22 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   fancy_bottom_navigation: ^0.3.3
+  firebase_auth: ^3.3.4
   firebase_core: ^1.10.6
-  firebase_phone_auth_handler: null
   flutter:
     sdk: flutter
   geolocator: null
   google_fonts: null
   hive: null
   hive_flutter: null
+  intl_phone_field: ^2.1.0
   map_launcher: null
   map_picker: null
   provider: ^6.0.1
   slide_to_confirm: null
 
 dev_dependencies:
+  change_app_package_name: ^1.0.0
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter

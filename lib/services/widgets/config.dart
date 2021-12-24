@@ -22,7 +22,8 @@ class Config {
 }
 
 class TextWidgetStyle {
-  Widget Monterserrat({String? text, var color, double? size, var fontwight}) {
+  static Widget Monterserrat(
+      {String? text, var color, double? size, var fontwight}) {
     return Text(
       text!,
       style: TextStyle(
@@ -33,7 +34,7 @@ class TextWidgetStyle {
     );
   }
 
-  Widget Roboto({String? text, var color, double? size, var fontwight}) {
+  static Widget Roboto({String? text, var color, double? size, var fontwight}) {
     return Text(
       text!,
       style: TextStyle(
@@ -44,7 +45,7 @@ class TextWidgetStyle {
     );
   }
 
-  Widget Barlow({String? text, var color, double? size, var fontwight}) {
+  static Widget Barlow({String? text, var color, double? size, var fontwight}) {
     return Text(
       text!,
       style: TextStyle(
