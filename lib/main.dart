@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<EmergencyContactController>(
           create: (BuildContext context) {
-            return EmergencyContactController();
+            return EmergencyContactController()..onStart();
           },
         ),
         ChangeNotifierProvider<GenderController>(

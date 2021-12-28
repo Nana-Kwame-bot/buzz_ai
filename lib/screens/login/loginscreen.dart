@@ -1,8 +1,6 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
+
   var numberAuthFormKey = GlobalKey<FormState>();
 
   @override
@@ -28,14 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       listen: false,
     );
-
-    _authenticationController.onAuthStateChanges.listen((User? user) {
-      if (user != null) {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, ProfileScreen.iD);
-        }
-      }
-    });
   }
 
   @override

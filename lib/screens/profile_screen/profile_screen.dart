@@ -52,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
                   const Emergency(),
                   const VehicleInformation(),
                   const MultipleCar(),
-                  ...vehicleInfoController.multipleCars,
+
                   const SubmitForm(),
                 ],
               );

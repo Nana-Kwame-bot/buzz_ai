@@ -4,6 +4,16 @@ import 'package:flutter/material.dart';
 class EmergencyContactController extends ChangeNotifier {
   var emergencyContact = EmergencyContact();
 
+  void onStart() {
+    emergencyContact = emergencyContact.copyWith(contactAdded: false);
+    notifyListeners();
+  }
+
+  void contactAdded() {
+    emergencyContact = emergencyContact.copyWith(contactAdded: true);
+    notifyListeners();
+  }
+
   void setEmergencyContact(String? newValue) {
     emergencyContact = emergencyContact.copyWith(contactNumber: newValue);
     notifyListeners();

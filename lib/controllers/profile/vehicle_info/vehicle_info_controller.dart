@@ -5,13 +5,7 @@ import 'package:flutter/material.dart';
 class VehicleInfoController extends ChangeNotifier {
   VehicleInfo vehicleInfo = VehicleInfo();
 
-  List<Widget> multipleCars = [];
 
-  void addMoreCars() {
-    multipleCars.add(const VehicleInformation());
-
-    notifyListeners();
-  }
 
   void setOwnerName(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(ownerName: newValue);
