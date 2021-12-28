@@ -4,8 +4,21 @@ import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BasicDetails extends StatelessWidget {
+class BasicDetails extends StatefulWidget {
   const BasicDetails({Key? key}) : super(key: key);
+
+  @override
+  State<BasicDetails> createState() => _BasicDetailsState();
+}
+
+class _BasicDetailsState extends State<BasicDetails> {
+  var basicDetailsFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    basicDetailsFormKey.currentState?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +28,7 @@ class BasicDetails extends StatelessWidget {
         builder: (BuildContext context,
             BasicDetailController basicDetailController, Widget? child) {
           return Form(
-            key: basicDetailController.basicDetailsFormKey,
+            key: basicDetailsFormKey,
             child: Column(
               children: [
                 const Align(
@@ -265,5 +278,9 @@ class BasicDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void validateBasicDetailForms() {
+    if (basicDetailsFormKey.currentState!.validate()) {}
   }
 }

@@ -5,21 +5,12 @@ import 'package:flutter/material.dart';
 class VehicleInfoController extends ChangeNotifier {
   VehicleInfo vehicleInfo = VehicleInfo();
 
-  final vehicleInfoFormKey = GlobalKey<FormState>();
-  final mutipleCarFormKey = GlobalKey<FormState>();
-
   List<Widget> multipleCars = [];
 
   void addMoreCars() {
     multipleCars.add(const VehicleInformation());
 
     notifyListeners();
-  }
-
-  void validateMultipleCarForms() {
-    if (mutipleCarFormKey.currentState!.validate()) {
-      addMoreCars();
-    }
   }
 
   void setOwnerName(String? newValue) {

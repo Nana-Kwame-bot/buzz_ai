@@ -10,6 +10,7 @@ import 'package:slide_to_confirm/slide_to_confirm.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String iD = '/login';
+
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
@@ -18,6 +19,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
+  var numberAuthFormKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    numberAuthFormKey.currentState?.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,10 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Form(
-                  key: Provider.of<AuthenticationController>(
-                    context,
-                    listen: false,
-                  ).numberAuthFormKey,
+                  key: numberAuthFormKey,
                   child: IntlPhoneField(
                     showDropdownIcon: false,
                     showCountryFlag: false,
@@ -107,10 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onSaved: (phoneNumber) async {
                       if (phoneNumber != null) {
-                        bool result = Provider.of<AuthenticationController>(
-                          context,
-                          listen: false,
-                        ).validatenumberForm(
+                        bool result = validateNumberForm(
                           phoneNumber.completeNumber,
                         );
                         if (result) {
@@ -157,10 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 280,
                 height: 60,
                 onConfirmation: () {
-                  Provider.of<AuthenticationController>(context, listen: false)
-                      .numberAuthFormKey
-                      .currentState!
-                      .save();
+                  numberAuthFormKey.currentState!.save();
                 },
               )
             ],
@@ -168,5 +168,15 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  bool validateNumberForm(String? number) {
+    if (numberAuthFormKey.currentState!.validate()) {
+      _authenticationController.onFieldSubmitted(number);
+      return true;
+    } else {
+      numberAuthFormKey.currentState!.reset();
+      return false;
+    }
   }
 }

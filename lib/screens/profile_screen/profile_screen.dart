@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String iD = '/profile';
+
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
@@ -19,9 +20,7 @@ class ProfileScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () {},
             icon: const Icon(
               Icons.arrow_back,
               color: Colors.black,

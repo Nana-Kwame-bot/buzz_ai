@@ -6,6 +6,7 @@ const kBackgroundColor = Color(0xFFFFFFFF);
 const kErrorColor = Color(0xFFFE5350);
 const containerColor = Color.fromRGBO(0, 0, 0, 0.1);
 const AppBarColor = Color.fromRGBO(255, 251, 254, 1);
+const defaultColor = Color(0xff5247C5);
 
 class Config {
   static MediaQueryData? _mediaQueryData;

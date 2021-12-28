@@ -2,8 +2,20 @@ import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VehicleInformation extends StatelessWidget {
+class VehicleInformation extends StatefulWidget {
   const VehicleInformation({Key? key}) : super(key: key);
+
+  @override
+  State<VehicleInformation> createState() => _VehicleInformationState();
+}
+
+class _VehicleInformationState extends State<VehicleInformation> {
+  var vehicleInfoFormKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    vehicleInfoFormKey.currentState?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +25,7 @@ class VehicleInformation extends StatelessWidget {
         builder: (BuildContext context,
             VehicleInfoController vehicleInfoController, Widget? child) {
           return Form(
-            key: vehicleInfoController.vehicleInfoFormKey,
+            key: vehicleInfoFormKey,
             child: Column(
               children: [
                 const Align(

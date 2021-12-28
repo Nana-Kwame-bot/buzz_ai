@@ -2,8 +2,21 @@ import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_contro
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ContactDetails extends StatelessWidget {
+class ContactDetails extends StatefulWidget {
   const ContactDetails({Key? key}) : super(key: key);
+
+  @override
+  State<ContactDetails> createState() => _ContactDetailsState();
+}
+
+class _ContactDetailsState extends State<ContactDetails> {
+  var contactDetailsFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    contactDetailsFormKey.currentState?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +29,7 @@ class ContactDetails extends StatelessWidget {
           Widget? child,
         ) {
           return Form(
-            key: contactDetailController.contactDetailsFormKey,
+            key: contactDetailsFormKey,
             child: Column(
               children: [
                 const Align(
@@ -87,5 +100,9 @@ class ContactDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void validateBasicDetailForms() {
+    if (contactDetailsFormKey.currentState!.validate()) {}
   }
 }

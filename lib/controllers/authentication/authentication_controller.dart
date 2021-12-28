@@ -6,7 +6,6 @@ enum VerificationStatus { loading, codeSent, successFul, failed }
 
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final numberAuthFormKey = GlobalKey<FormState>();
 
   late String _verificationId;
 
@@ -14,17 +13,7 @@ class AuthenticationController extends ChangeNotifier {
     return auth.authStateChanges();
   }
 
-  bool validatenumberForm(String? number) {
-    if (numberAuthFormKey.currentState!.validate()) {
-      _onFieldSubmitted(number);
-      return true;
-    } else {
-      numberAuthFormKey.currentState!.reset();
-      return false;
-    }
-  }
-
-  Future<void> _onFieldSubmitted(String? value) async {
+  Future<void> onFieldSubmitted(String? value) async {
     Future<void> verificationCompleted(
         PhoneAuthCredential phoneAuthCredential) async {
       await auth.signInWithCredential(phoneAuthCredential);

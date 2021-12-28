@@ -4,12 +4,6 @@ import 'package:flutter/material.dart';
 class BasicDetailController extends ChangeNotifier {
   BasicDetail basicDetail = BasicDetail();
 
-  final basicDetailsFormKey = GlobalKey<FormState>();
-
-  void validateBasicDetailForms() {
-    if (basicDetailsFormKey.currentState!.validate()) {}
-  }
-
   void setFullName(String? newValue) {
     basicDetail = basicDetail.copyWith(fullname: newValue);
     notifyListeners();

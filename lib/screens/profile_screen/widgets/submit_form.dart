@@ -1,7 +1,4 @@
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SubmitForm extends StatelessWidget {
   const SubmitForm({Key? key}) : super(key: key);
@@ -19,14 +16,7 @@ class SubmitForm extends StatelessWidget {
             primary: const Color(0xFF5247C5),
             shape: const StadiumBorder(),
             minimumSize: const Size(100, 35)),
-        onPressed: () {
-          Provider.of<AuthenticationController>(
-            context,
-            listen: false,
-          ).auth.signOut().whenComplete(() {
-            Navigator.pushReplacementNamed(context, LoginScreen.iD);
-          });
-        },
+        onPressed: () {},
         child: const Text('SUBMIT'),
       ),
     );

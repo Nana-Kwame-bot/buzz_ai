@@ -2,8 +2,21 @@ import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class EmergencyContactDialog extends StatelessWidget {
+class EmergencyContactDialog extends StatefulWidget {
   const EmergencyContactDialog({Key? key}) : super(key: key);
+
+  @override
+  State<EmergencyContactDialog> createState() => _EmergencyContactDialogState();
+}
+
+class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
+  var emergencyContactFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emergencyContactFormKey.currentState?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +31,7 @@ class EmergencyContactDialog extends StatelessWidget {
               EmergencyContactController emergencyContactController,
               Widget? child) {
             return Form(
-              key: emergencyContactController.emergencyContactFormKey,
+              key: emergencyContactFormKey,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -143,8 +156,7 @@ class EmergencyContactDialog extends StatelessWidget {
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5247C5),
                               ),
-                              onPressed: emergencyContactController
-                                  .validateBasicDetailForms,
+                              onPressed: validateBasicDetailForms,
                               child: const Text(
                                 'Add Contact',
                                 style: TextStyle(
@@ -164,5 +176,11 @@ class EmergencyContactDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void validateBasicDetailForms() {
+    if (emergencyContactFormKey.currentState!.validate()) {
+      emergencyContactFormKey.currentState!.save();
+    }
   }
 }

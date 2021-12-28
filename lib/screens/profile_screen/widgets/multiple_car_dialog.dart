@@ -2,8 +2,21 @@ import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MultipleCarDialog extends StatelessWidget {
+class MultipleCarDialog extends StatefulWidget {
   const MultipleCarDialog({Key? key}) : super(key: key);
+
+  @override
+  State<MultipleCarDialog> createState() => _MultipleCarDialogState();
+}
+
+class _MultipleCarDialogState extends State<MultipleCarDialog> {
+  var multipleCarFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    multipleCarFormKey.currentState?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +30,7 @@ class MultipleCarDialog extends StatelessWidget {
           builder: (BuildContext context,
               VehicleInfoController vehicleInfoController, Widget? child) {
             return Form(
-              key: vehicleInfoController.mutipleCarFormKey,
+              key: multipleCarFormKey,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -183,8 +196,7 @@ class MultipleCarDialog extends StatelessWidget {
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5247C5),
                               ),
-                              onPressed: vehicleInfoController
-                                  .validateMultipleCarForms,
+                              onPressed: validateMultipleCarForms,
                               child: const Text(
                                 'Add Vehicle',
                                 style: TextStyle(
@@ -204,5 +216,11 @@ class MultipleCarDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void validateMultipleCarForms() {
+    if (multipleCarFormKey.currentState!.validate()) {
+      // addMoreCars();
+    }
   }
 }
