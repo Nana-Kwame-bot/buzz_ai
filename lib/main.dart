@@ -4,6 +4,8 @@ import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/gender/gender_controller.dart';
+import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,12 +39,22 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<EmergencyContactController>(
           create: (BuildContext context) {
-            return EmergencyContactController();
+            return EmergencyContactController()..onStart();
+          },
+        ),
+        ChangeNotifierProvider<MultipleVehicleController>(
+          create: (BuildContext context) {
+            return MultipleVehicleController()..onStart();
           },
         ),
         ChangeNotifierProvider<GenderController>(
           create: (BuildContext context) {
             return GenderController();
+          },
+        ),
+        ChangeNotifierProvider<UserProfileController>(
+          create: (BuildContext context) {
+            return UserProfileController();
           },
         ),
         ChangeNotifierProvider<AuthenticationController>(

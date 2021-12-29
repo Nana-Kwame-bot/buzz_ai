@@ -1,8 +1,6 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
+
   var numberAuthFormKey = GlobalKey<FormState>();
 
   @override
@@ -28,14 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       listen: false,
     );
-
-    _authenticationController.onAuthStateChanges.listen((User? user) {
-      if (user != null) {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, ProfileScreen.iD);
-        }
-      }
-    });
   }
 
   @override
@@ -99,6 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Form(
                   key: numberAuthFormKey,
                   child: IntlPhoneField(
+                    // dropdownDecoration: const BoxDecoration(
+                    //   color: Colors.white,
+                    // ),
                     showDropdownIcon: false,
                     showCountryFlag: false,
                     autoValidate: true,
@@ -106,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      labelText: 'Phone Number',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6.0),
                       ),
@@ -126,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ..removeCurrentSnackBar()
                             ..showSnackBar(
                               const SnackBar(
+                                duration: Duration(seconds: 3),
                                 content: Text("Phone number is invalid"),
                               ),
                             );
@@ -135,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ..removeCurrentSnackBar()
                           ..showSnackBar(
                             const SnackBar(
+                              duration: Duration(seconds: 3),
                               content: Text("Phone number can't be empty"),
                             ),
                           );

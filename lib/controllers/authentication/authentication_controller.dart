@@ -6,6 +6,8 @@ enum VerificationStatus { loading, codeSent, successFul, failed }
 
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  String? _phoneNumber;
+  var timeOut = const Duration(seconds: 120);
 
   late String _verificationId;
 
@@ -14,14 +16,17 @@ class AuthenticationController extends ChangeNotifier {
   }
 
   Future<void> onFieldSubmitted(String? value) async {
-    Future<void> verificationCompleted(
-        PhoneAuthCredential phoneAuthCredential) async {
-      await auth.signInWithCredential(phoneAuthCredential);
-      log(
-        'Phone number automatically verified and user signed in: $phoneAuthCredential',
-      );
-      return;
-    }
+    _phoneNumber ?? value;
+    notifyListeners();
+
+    // Future<void> verificationCompleted(
+    //     PhoneAuthCredential phoneAuthCredential) async {
+    //   await auth.signInWithCredential(phoneAuthCredential);
+    //   log(
+    //     'Phone number automatically verified and user signed in: $phoneAuthCredential',
+    //   );
+    //   return;
+    // }
 
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
@@ -40,9 +45,9 @@ class AuthenticationController extends ChangeNotifier {
 
     try {
       await auth.verifyPhoneNumber(
-        phoneNumber: value!,
-        timeout: const Duration(seconds: 120),
-        verificationCompleted: verificationCompleted,
+        phoneNumber: _phoneNumber ?? value!,
+        timeout: timeOut,
+        verificationCompleted: completed,
         verificationFailed: verificationFailed,
         codeSent: codeSent,
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -62,8 +67,11 @@ class AuthenticationController extends ChangeNotifier {
       log('Successfully signed in UID: ${user.uid}');
       return true;
     } catch (e) {
-      debugPrint(e.toString() + 'Failed to sign in');
+      log(e.toString() + 'Failed to sign in');
       return false;
     }
   }
+
+  ///Has to be empty if we don't want automatic sign in
+  void completed(PhoneAuthCredential phoneAuthCredential) {}
 }

@@ -1,16 +1,12 @@
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
-import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:flutter/material.dart';
 
 class VehicleInfoController extends ChangeNotifier {
-  VehicleInfo vehicleInfo = VehicleInfo();
+  VehicleInfo vehicleInfo = const VehicleInfo();
+  final vehicleInfoFormKey = GlobalKey<FormState>();
 
-  List<Widget> multipleCars = [];
-
-  void addMoreCars() {
-    multipleCars.add(const VehicleInformation());
-
-    notifyListeners();
+  bool validateVehicleForms() {
+    return vehicleInfoFormKey.currentState!.validate();
   }
 
   void setOwnerName(String? newValue) {

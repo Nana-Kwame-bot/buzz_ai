@@ -2,21 +2,8 @@ import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_contro
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ContactDetails extends StatefulWidget {
+class ContactDetails extends StatelessWidget {
   const ContactDetails({Key? key}) : super(key: key);
-
-  @override
-  State<ContactDetails> createState() => _ContactDetailsState();
-}
-
-class _ContactDetailsState extends State<ContactDetails> {
-  var contactDetailsFormKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    contactDetailsFormKey.currentState?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +16,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           Widget? child,
         ) {
           return Form(
-            key: contactDetailsFormKey,
+            key: contactDetailController.contactDetailsFormKey,
             child: Column(
               children: [
                 const Align(
@@ -65,7 +52,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                     }
                     return null;
                   },
-                  onSaved: contactDetailController.setAddress,
+                  onChanged: contactDetailController.setAddress,
                   keyboardType: TextInputType.name,
                 ),
                 Container(
@@ -91,7 +78,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                     }
                     return null;
                   },
-                  onSaved: contactDetailController.setPhoneNumber,
+                  onChanged: contactDetailController.setPhoneNumber,
                   keyboardType: TextInputType.phone,
                 ),
               ],
@@ -100,9 +87,5 @@ class _ContactDetailsState extends State<ContactDetails> {
         },
       ),
     );
-  }
-
-  void validateBasicDetailForms() {
-    if (contactDetailsFormKey.currentState!.validate()) {}
   }
 }

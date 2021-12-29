@@ -181,6 +181,9 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
   void validateBasicDetailForms() {
     if (emergencyContactFormKey.currentState!.validate()) {
       emergencyContactFormKey.currentState!.save();
+      Provider.of<EmergencyContactController>(context, listen: false)
+          .contactAdded();
+      Navigator.of(context).pop();
     }
   }
 }
