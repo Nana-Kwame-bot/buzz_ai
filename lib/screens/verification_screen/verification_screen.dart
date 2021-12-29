@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
@@ -97,6 +96,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         listen: false,
                       ).signInWithPhoneNumber(value);
                       if (_result) {
+
                         Navigator.pushReplacementNamed(
                           context,
                           ProfileScreen.iD,
@@ -138,11 +138,23 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     TextSpan(
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          log('tapped');
                           Provider.of<AuthenticationController>(
                             context,
                             listen: false,
                           ).onFieldSubmitted;
+                          final snackBar = SnackBar(
+                            duration: const Duration(seconds: 3),
+                            content: const Text(
+                              'Please check your phone for the verification code',
+                            ),
+                            action: SnackBarAction(
+                              label: 'OK',
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                              },
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
                       text: " Resend Again",
                       style: const TextStyle(

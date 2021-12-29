@@ -1,4 +1,4 @@
-import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
+import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +28,8 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
         padding: const EdgeInsets.all(24.0),
         child: Consumer(
           builder: (BuildContext context,
-              VehicleInfoController vehicleInfoController, Widget? child) {
+              MultipleVehicleController multipleVehicleController,
+              Widget? child) {
             return Form(
               key: multipleCarFormKey,
               child: SingleChildScrollView(
@@ -68,7 +69,7 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                         }
                         return null;
                       },
-                      onSaved: vehicleInfoController.setOwnerName,
+                      onSaved: multipleVehicleController.setOwnerName,
                       keyboardType: TextInputType.name,
                     ),
                     Row(
@@ -100,7 +101,7 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                                   }
                                   return null;
                                 },
-                                onSaved: vehicleInfoController.setModel,
+                                onSaved: multipleVehicleController.setModel,
                                 keyboardType: TextInputType.text,
                               ),
                             ],
@@ -137,7 +138,7 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                                   }
                                   return null;
                                 },
-                                onSaved: vehicleInfoController.setYear,
+                                onSaved: multipleVehicleController.setYear,
                               ),
                             ],
                           ),
@@ -167,8 +168,8 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                         }
                         return null;
                       },
-                      onSaved: vehicleInfoController.setPlateNumber,
-                      keyboardType: TextInputType.text,
+                      onSaved: multipleVehicleController.setPlateNumber,
+                      keyboardType: TextInputType.number,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
@@ -220,7 +221,9 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
 
   void validateMultipleCarForms() {
     if (multipleCarFormKey.currentState!.validate()) {
-      // addMoreCars();
+      multipleCarFormKey.currentState!.save();
+      Provider.of<MultipleVehicleController>(context,listen: false).added();
+      Navigator.of(context).pop();
     }
   }
 }

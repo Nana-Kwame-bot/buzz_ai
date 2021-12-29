@@ -4,21 +4,8 @@ import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BasicDetails extends StatefulWidget {
+class BasicDetails extends StatelessWidget {
   const BasicDetails({Key? key}) : super(key: key);
-
-  @override
-  State<BasicDetails> createState() => _BasicDetailsState();
-}
-
-class _BasicDetailsState extends State<BasicDetails> {
-  var basicDetailsFormKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    basicDetailsFormKey.currentState?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +15,7 @@ class _BasicDetailsState extends State<BasicDetails> {
         builder: (BuildContext context,
             BasicDetailController basicDetailController, Widget? child) {
           return Form(
-            key: basicDetailsFormKey,
+            key: basicDetailController.basicDetailsFormKey,
             child: Column(
               children: [
                 const Align(
@@ -55,7 +42,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                 TextFormField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Fullname',
+                    labelText: 'Full name',
                     hintText: 'Enter your full name',
                   ),
                   validator: (String? value) {
@@ -64,7 +51,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     }
                     return null;
                   },
-                  onSaved: basicDetailController.setFullName,
+                  onChanged: basicDetailController.setFullName,
                   keyboardType: TextInputType.name,
                 ),
                 Container(
@@ -90,7 +77,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     }
                     return null;
                   },
-                  onSaved: basicDetailController.setDOB,
+                  onChanged: basicDetailController.setDOB,
                   keyboardType: TextInputType.datetime,
                 ),
                 Container(
@@ -116,7 +103,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     }
                     return null;
                   },
-                  onSaved: basicDetailController.setWeight,
+                  onChanged: basicDetailController.setWeight,
                   keyboardType: TextInputType.number,
                 ),
                 Container(
@@ -203,7 +190,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                               }
                               return null;
                             },
-                            onSaved: basicDetailController.setAge,
+                            onChanged: basicDetailController.setAge,
                             keyboardType: TextInputType.number,
                           ),
                         ],
@@ -239,7 +226,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                               }
                               return null;
                             },
-                            onSaved: basicDetailController.setBloodGroup,
+                            onChanged: basicDetailController.setBloodGroup,
                           ),
                         ],
                       ),
@@ -270,7 +257,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     return null;
                   },
                   keyboardType: TextInputType.number,
-                  onSaved: basicDetailController.setLicenseNumber,
+                  onChanged: basicDetailController.setLicenseNumber,
                 ),
               ],
             ),
@@ -278,9 +265,5 @@ class _BasicDetailsState extends State<BasicDetails> {
         },
       ),
     );
-  }
-
-  void validateBasicDetailForms() {
-    if (basicDetailsFormKey.currentState!.validate()) {}
   }
 }

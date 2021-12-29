@@ -2,20 +2,9 @@ import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VehicleInformation extends StatefulWidget {
+class VehicleInformation extends StatelessWidget {
   const VehicleInformation({Key? key}) : super(key: key);
 
-  @override
-  State<VehicleInformation> createState() => _VehicleInformationState();
-}
-
-class _VehicleInformationState extends State<VehicleInformation> {
-  var vehicleInfoFormKey = GlobalKey<FormState>();
-  @override
-  void dispose() {
-    vehicleInfoFormKey.currentState?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +14,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
         builder: (BuildContext context,
             VehicleInfoController vehicleInfoController, Widget? child) {
           return Form(
-            key: vehicleInfoFormKey,
+            key: vehicleInfoController.vehicleInfoFormKey,
             child: Column(
               children: [
                 const Align(
@@ -61,7 +50,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                     }
                     return null;
                   },
-                  onSaved: vehicleInfoController.setOwnerName,
+                  onChanged: vehicleInfoController.setOwnerName,
                   keyboardType: TextInputType.name,
                 ),
                 Row(
@@ -92,7 +81,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                               }
                               return null;
                             },
-                            onSaved: vehicleInfoController.setModel,
+                            onChanged: vehicleInfoController.setModel,
                             keyboardType: TextInputType.text,
                           ),
                         ],
@@ -128,7 +117,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                               }
                               return null;
                             },
-                            onSaved: vehicleInfoController.setYear,
+                            onChanged: vehicleInfoController.setYear,
                           ),
                         ],
                       ),
@@ -149,17 +138,17 @@ class _VehicleInformationState extends State<VehicleInformation> {
                 TextFormField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Vehicle plate numer',
-                    hintText: "Enter the vehicle's plate numer",
+                    labelText: 'Vehicle plate number',
+                    hintText: "Enter the vehicle's plate number",
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter the vehicle's plate numer";
+                      return "Please enter the vehicle's plate number";
                     }
                     return null;
                   },
-                  onSaved: vehicleInfoController.setPlateNumber,
-                  keyboardType: TextInputType.text,
+                  onChanged: vehicleInfoController.setPlateNumber,
+                  keyboardType: TextInputType.number,
                 ),
               ],
             ),

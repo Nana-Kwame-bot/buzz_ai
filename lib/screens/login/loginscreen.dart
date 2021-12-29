@@ -90,6 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Form(
                   key: numberAuthFormKey,
                   child: IntlPhoneField(
+                    // dropdownDecoration: const BoxDecoration(
+                    //   color: Colors.white,
+                    // ),
                     showDropdownIcon: false,
                     showCountryFlag: false,
                     autoValidate: true,
@@ -97,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      labelText: 'Phone Number',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6.0),
                       ),
@@ -117,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ..removeCurrentSnackBar()
                             ..showSnackBar(
                               const SnackBar(
+                                duration: Duration(seconds: 3),
                                 content: Text("Phone number is invalid"),
                               ),
                             );
@@ -126,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ..removeCurrentSnackBar()
                           ..showSnackBar(
                             const SnackBar(
+                              duration: Duration(seconds: 3),
                               content: Text("Phone number can't be empty"),
                             ),
                           );

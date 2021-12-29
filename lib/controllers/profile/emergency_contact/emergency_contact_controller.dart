@@ -2,7 +2,7 @@ import 'package:buzz_ai/models/profile/emergency_contact/emergency_contact.dart'
 import 'package:flutter/material.dart';
 
 class EmergencyContactController extends ChangeNotifier {
-  var emergencyContact = EmergencyContact();
+  var emergencyContact = const EmergencyContact();
 
   void onStart() {
     emergencyContact = emergencyContact.copyWith(contactAdded: false);

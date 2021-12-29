@@ -45,15 +45,14 @@ class ProfileScreen extends StatelessWidget {
               Widget? child,
             ) {
               return Column(
-                children: [
-                  const ImagePick(),
-                  const BasicDetails(),
-                  const ContactDetails(),
-                  const Emergency(),
-                  const VehicleInformation(),
-                  const MultipleCar(),
-
-                  const SubmitForm(),
+                children: const [
+                  ImagePick(),
+                  BasicDetails(),
+                  ContactDetails(),
+                  Emergency(),
+                  VehicleInformation(),
+                  MultipleCar(),
+                  SubmitForm(),
                 ],
               );
             },

@@ -67,10 +67,11 @@ class AuthenticationController extends ChangeNotifier {
       log('Successfully signed in UID: ${user.uid}');
       return true;
     } catch (e) {
-      debugPrint(e.toString() + 'Failed to sign in');
+      log(e.toString() + 'Failed to sign in');
       return false;
     }
   }
 
+  ///Has to be empty if we don't want automatic sign in
   void completed(PhoneAuthCredential phoneAuthCredential) {}
 }

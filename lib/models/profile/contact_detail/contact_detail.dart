@@ -2,26 +2,31 @@ class ContactDetail {
   final String? address;
   final String? phoneNumber;
 
-  ContactDetail({
+//<editor-fold desc="Data Methods">
+
+  const ContactDetail({
     this.address,
     this.phoneNumber,
   });
 
   @override
-  String toString() =>
-      'ContactDetail(address: $address, phoneNumber: $phoneNumber)';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is ContactDetail &&
-        other.address == address &&
-        other.phoneNumber == phoneNumber;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ContactDetail &&
+          runtimeType == other.runtimeType &&
+          address == other.address &&
+          phoneNumber == other.phoneNumber);
 
   @override
   int get hashCode => address.hashCode ^ phoneNumber.hashCode;
+
+  @override
+  String toString() {
+    return 'ContactDetail{' +
+        ' address: $address,' +
+        ' phoneNumber: $phoneNumber,' +
+        '}';
+  }
 
   ContactDetail copyWith({
     String? address,
@@ -32,4 +37,20 @@ class ContactDetail {
       phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'address': address,
+      'phoneNumber': phoneNumber,
+    };
+  }
+
+  factory ContactDetail.fromMap(Map<String, dynamic> map) {
+    return ContactDetail(
+      address: map['address'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+    );
+  }
+
+//</editor-fold>
 }
