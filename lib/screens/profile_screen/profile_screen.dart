@@ -1,4 +1,3 @@
-import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/emergency.dart';
@@ -7,7 +6,6 @@ import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/submit_form.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String iD = '/profile';
@@ -38,24 +36,16 @@ class ProfileScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: Consumer(
-            builder: (
-              BuildContext context,
-              VehicleInfoController vehicleInfoController,
-              Widget? child,
-            ) {
-              return Column(
-                children: const [
-                  ImagePick(),
-                  BasicDetails(),
-                  ContactDetails(),
-                  Emergency(),
-                  VehicleInformation(),
-                  MultipleCar(),
-                  SubmitForm(),
-                ],
-              );
-            },
+          child: Column(
+            children: const [
+              ImagePick(),
+              BasicDetails(),
+              ContactDetails(),
+              Emergency(),
+              VehicleInformation(),
+              MultipleCar(),
+              SubmitForm(),
+            ],
           ),
         ),
       ),
