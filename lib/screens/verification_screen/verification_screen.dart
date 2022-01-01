@@ -1,5 +1,5 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +99,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
                         Navigator.pushReplacementNamed(
                           context,
-                          ProfileScreen.iD,
+                          BottomNavigation.iD,
                         );
                       }
                     },
