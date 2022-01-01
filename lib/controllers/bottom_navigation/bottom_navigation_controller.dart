@@ -20,7 +20,7 @@ class BottomNavigationController extends ChangeNotifier {
   }
 
   List<Widget> pages = [
-    MapSample(),
+    HomeScreen(),
     Container(
       color: Colors.greenAccent,
     ),

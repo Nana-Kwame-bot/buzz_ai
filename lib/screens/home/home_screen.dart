@@ -1,47 +1,86 @@
-import 'dart:async';
+import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
+import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
-class MapSample extends StatefulWidget {
-  @override
-  State<MapSample> createState() => MapSampleState();
-}
-
-class MapSampleState extends State<MapSample> {
-  final Completer<GoogleMapController> _controller = Completer();
-
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static const CameraPosition _kLake = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    tilt: 59.440717697143555,
-    zoom: 19.151926040649414,
-  );
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
-      ),
+    return Consumer<HomeScreenController>(
+      builder: (BuildContext context, value, Widget? child) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: constraints.maxHeight * 0.2,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        40.0,
+                        16.0,
+                        40.0,
+                        8.0,
+                      ),
+                      child: Column(
+                        children: const [
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                icon: Icon(Icons.my_location),
+                                border: OutlineInputBorder(),
+                                hintText: 'Your Location',
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                icon: Icon(Icons.place),
+                                border: OutlineInputBorder(),
+                                hintText: 'Destination',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: constraints.maxHeight * 0.8,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: GoogleMap(
+                        mapType: MapType.normal,
+                        initialCameraPosition: value.kGooglePlex,
+                        onMapCreated: (GoogleMapController controller) {
+                          value.controller.complete(controller);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: accentColor,
+            onPressed: value.showRouteLines,
+            child: const Icon(
+              Icons.navigation,
+              color: Colors.white,
+              size: 40.0,
+            ),
+          ),
+        );
+      },
     );
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
