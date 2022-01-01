@@ -1,3 +1,4 @@
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
@@ -22,6 +23,10 @@ class AppRouter {
       case VerificationScreen.iD:
         return MaterialPageRoute(builder: (context) {
           return const VerificationScreen();
+        });
+      case BottomNavigation.iD:
+        return MaterialPageRoute(builder: (context) {
+          return const BottomNavigation();
         });
       default:
         return MaterialPageRoute(builder: (context) {

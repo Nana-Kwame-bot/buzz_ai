@@ -1,3 +1,4 @@
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String iD = '/';
+
 //repository injection
 //final MyRepository repository = MyRepository(apiClient: MyApiClient(httpClient: http.Client()));
 
@@ -32,7 +34,8 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.pushReplacementNamed(context, LoginScreen.iD);
+          //Originally LoginScreen will change later
+          Navigator.pushReplacementNamed(context, BottomNavigation.iD);
         }
       });
 

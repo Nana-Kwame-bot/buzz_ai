@@ -1,5 +1,6 @@
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
@@ -65,6 +66,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<VehicleInfoController>(
           create: (BuildContext context) {
             return VehicleInfoController();
+          },
+        ),
+        ChangeNotifierProvider<BottomNavigationController>(
+          create: (BuildContext context) {
+            return BottomNavigationController();
           },
         ),
       ],
