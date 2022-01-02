@@ -2,12 +2,17 @@ import 'package:buzz_ai/models/profile/basic_detail/basic_detail.dart';
 import 'package:flutter/material.dart';
 
 class BasicDetailController extends ChangeNotifier {
-  var basicDetail = const BasicDetail(imageURL: 'ghjk');
+  var basicDetail = const BasicDetail();
   final basicDetailsFormKey = GlobalKey<FormState>();
 
 
   bool validateBasicDetailForms() {
     return basicDetailsFormKey.currentState!.validate();
+  }
+
+  void setImagePath(String? newValue) {
+    basicDetail = basicDetail.copyWith(imageURL: newValue);
+    notifyListeners();
   }
 
   void setFullName(String? newValue) {

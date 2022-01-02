@@ -24,7 +24,7 @@ class BottomNavigation extends StatelessWidget {
               circleColor: defaultColor,
               inactiveIconColor: Colors.black54,
               key: value.bottomNavigationKey,
-              initialSelection: 3,
+              initialSelection: 0,
               textColor: defaultColor,
               onTabChangedListener: value.changePage,
               tabs: value.tabs,
