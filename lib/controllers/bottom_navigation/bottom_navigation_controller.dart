@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class BottomNavigationController extends ChangeNotifier {
   GlobalKey bottomNavigationKey = GlobalKey();
-  int currentPage = 3;
+  int currentPage = 0;
 
   List<TabData> tabs = [
     TabData(iconData: Icons.home_outlined, title: 'Home'),
@@ -20,7 +20,7 @@ class BottomNavigationController extends ChangeNotifier {
   }
 
   List<Widget> pages = [
-    HomeScreen(),
+    const HomeScreen(),
     Container(
       color: Colors.greenAccent,
     ),

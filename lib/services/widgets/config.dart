@@ -8,6 +8,7 @@ const containerColor = Color.fromRGBO(0, 0, 0, 0.1);
 const AppBarColor = Color.fromRGBO(255, 251, 254, 1);
 const defaultColor = Color(0xff5247C5);
 const accentColor = Color(0xFFF79D34);
+const apiKey = 'AIzaSyAQEAKU4g6prYDWSpLkxNS3ECvTmUXWnu0';
 
 class Config {
   static MediaQueryData? _mediaQueryData;

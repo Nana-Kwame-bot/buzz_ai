@@ -1,7 +1,9 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,33 +20,77 @@ class HomeScreen extends StatelessWidget {
               return Column(
                 children: [
                   SizedBox(
-                    height: constraints.maxHeight * 0.2,
+                    height: (constraints.maxHeight * 0.2) + 8.0,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
                         40.0,
                         16.0,
                         40.0,
-                        8.0,
+                        0.0,
                       ),
                       child: Column(
-                        children: const [
+                        children: [
                           Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                icon: Icon(Icons.my_location),
+                            child: TextFormField(
+                              onTap: () async {
+                                Prediction? p = await PlacesAutocomplete.show(
+                                  offset: 0,
+                                  types: [],
+                                  strictbounds: false,
+                                  context: context,
+                                  mode: Mode.overlay,
+                                  language: "en",
+                                  components: []
+                                  apiKey: apiKey,
+                                  onError: (PlacesAutocompleteResponse value) {
+                                    onError(value, context);
+                                  },
+                                );
+                                await value.getUserLocation(p);
+                              },
+                              decoration: const InputDecoration(
+                                icon: Icon(
+                                  Icons.my_location,
+                                  color: defaultColor,
+                                ),
                                 border: OutlineInputBorder(),
                                 hintText: 'Your Location',
                               ),
+                              enabled: true,
+                              readOnly: true,
+                              controller: value.sourceTextController,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10.0,
                           ),
                           Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                icon: Icon(Icons.place),
+                            child: TextFormField(
+                              onTap: () async {
+                                Prediction? p = await PlacesAutocomplete.show(
+                                  offset: 0,
+                                  types: [],
+                                  strictbounds: false,
+                                  context: context,
+                                  mode: Mode.overlay,
+                                  language: "en",
+                                  components: []
+                                  apiKey: apiKey,
+                                  onError: (PlacesAutocompleteResponse value) {
+                                    onError(value, context);
+                                  },
+                                );
+                                await value.getDestinationLocation(p);
+                              },
+                              controller: value.destinationTextController,
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                icon: Icon(
+                                  Icons.place,
+                                  color: Color(0xFFD1403C),
+                                ),
                                 border: OutlineInputBorder(),
+                                enabled: true,
                                 hintText: 'Destination',
                               ),
                             ),
@@ -53,17 +99,21 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16.0),
                   SizedBox(
-                    height: constraints.maxHeight * 0.8,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: GoogleMap(
-                        mapType: MapType.normal,
-                        initialCameraPosition: value.kGooglePlex,
-                        onMapCreated: (GoogleMapController controller) {
-                          value.controller.complete(controller);
-                        },
-                      ),
+                    height: (constraints.maxHeight * 0.8) - 32.0,
+                    child: GoogleMap(
+                      mapType: MapType.hybrid,
+                      initialCameraPosition: value.kGooglePlex,
+                      myLocationEnabled: true,
+                      compassEnabled: true,
+                      tiltGesturesEnabled: false,
+                      scrollGesturesEnabled: true,
+                      zoomGesturesEnabled: true,
+                      markers: Set<Marker>.of(value.markers.values),
+                      polylines: Set<Polyline>.of(value.polylines.values),
+                      onMapCreated: value.onMapCreated,
+
                     ),
                   ),
                 ],
@@ -72,7 +122,7 @@ class HomeScreen extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: accentColor,
-            onPressed: value.showRouteLines,
+            onPressed: value.getRoute,
             child: const Icon(
               Icons.navigation,
               color: Colors.white,
@@ -83,4 +133,13 @@ class HomeScreen extends StatelessWidget {
       },
     );
   }
+
+  void onError(value, context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(value.toString()),
+      ),
+    );
+  }
+
 }
