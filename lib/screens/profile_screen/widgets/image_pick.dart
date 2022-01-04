@@ -24,12 +24,13 @@ class ImagePick extends StatelessWidget {
                       "Choose option",
                       style: TextStyle(color: defaultColor),
                     ),
-                    content: SingleChildScrollView(
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          const Divider(height: 1, color: defaultColor),
-                          ListTile(
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Divider(height: 1, color: defaultColor),
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: ListTile(
                             onTap: () async {
                               await value.openGallery(context);
                             },
@@ -39,11 +40,14 @@ class ImagePick extends StatelessWidget {
                               color: defaultColor,
                             ),
                           ),
-                          const Divider(
-                            height: 1,
-                            color: defaultColor,
-                          ),
-                          ListTile(
+                        ),
+                        const Divider(
+                          height: 1,
+                          color: defaultColor,
+                        ),
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: ListTile(
                             onTap: () async {
                               await value.openCamera(context);
                             },
@@ -53,8 +57,8 @@ class ImagePick extends StatelessWidget {
                               color: defaultColor,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 });
