@@ -86,6 +86,8 @@ class UserProfile {
     };
   }
 
+
+
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
       basicDetail: BasicDetail.fromMap(map['basicDetail']),

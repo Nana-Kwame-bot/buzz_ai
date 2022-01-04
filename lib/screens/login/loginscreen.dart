@@ -1,6 +1,8 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       listen: false,
     );
+
+    _authenticationController.onAuthStateChanges.listen((User? user) {
+      if (user == null) {
+        debugPrint('User is currently signed out!');
+      } else {
+        debugPrint('User is signed in!');
+        Navigator.of(context).pushNamed(BottomNavigation.iD);
+      }
+    });
   }
 
   @override

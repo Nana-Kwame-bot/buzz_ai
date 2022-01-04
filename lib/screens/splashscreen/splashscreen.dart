@@ -1,7 +1,10 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,11 +24,17 @@ class _SplashScreenState extends State<SplashScreen>
   // static const double _iconSize = 50;
 
   late AnimationController _animationController;
+  late AuthenticationController _authenticationController;
   late Animation _animation;
 
   @override
   void initState() {
     super.initState();
+
+    _authenticationController = Provider.of<AuthenticationController>(
+      context,
+      listen: false,
+    );
 
     _animationController = AnimationController(
       vsync: this,
@@ -34,8 +43,15 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          //Originally LoginScreen will change later
-          Navigator.pushReplacementNamed(context, BottomNavigation.iD);
+          _authenticationController.onAuthStateChanges.listen((User? user) {
+            if (user == null) {
+              debugPrint('User is currently signed out!');
+              Navigator.pushReplacementNamed(context, LoginScreen.iD);
+            } else {
+              debugPrint('User is signed in!');
+              Navigator.of(context).pushReplacementNamed(BottomNavigation.iD);
+            }
+          });
         }
       });
 

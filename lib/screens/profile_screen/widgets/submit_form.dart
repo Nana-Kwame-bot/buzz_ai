@@ -60,7 +60,7 @@ class _SubmitFormState extends State<SubmitForm> {
 
           userProfile =
               Provider.of<UserProfileController>(context, listen: false)
-                  .getProfileData(
+                  .setProfileData(
             basicDetail:
                 Provider.of<BasicDetailController>(context, listen: false)
                     .basicDetail,

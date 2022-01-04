@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
@@ -8,6 +11,7 @@ import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:buzz_ai/models/profile/multiple_vehicle/multiple_vehicle.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +20,7 @@ class UserProfileController extends ChangeNotifier {
 
   bool validateForms({required BuildContext context}) {
     if (Provider.of<BasicDetailController>(context, listen: false)
-            .validateBasicDetailForms() &&
+        .validateBasicDetailForms() &&
         Provider.of<ContactDetailController>(context, listen: false)
             .validateContactDetailForms() &&
         Provider.of<VehicleInfoController>(context, listen: false)
@@ -26,7 +30,7 @@ class UserProfileController extends ChangeNotifier {
     return false;
   }
 
-  UserProfile getProfileData({
+  UserProfile setProfileData({
     required BasicDetail basicDetail,
     required ContactDetail contactDetail,
     required EmergencyContact emergencyContact,
@@ -45,4 +49,18 @@ class UserProfileController extends ChangeNotifier {
 
     return userProfile;
   }
+
+  Future<void> readProfileData({required String userId}) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
+    // Get the data once
+    DatabaseEvent event = await ref.once();
+
+    DataSnapshot dataSnapshot = event.snapshot;
+
+    //
+    userProfile = UserProfile.fromMap(dataSnapshot.value as Map<String,dynamic>);
+    // Print the data of the snapshot
+    debugPrint(userProfile.toString());
+  }
+
 }
