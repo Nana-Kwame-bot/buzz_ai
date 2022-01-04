@@ -24,35 +24,37 @@ class ImagePick extends StatelessWidget {
                       "Choose option",
                       style: TextStyle(color: defaultColor),
                     ),
-                    content: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        const Divider(height: 1, color: defaultColor),
-                        ListTile(
-                          onTap: () async {
-                            await value.openGallery(context);
-                          },
-                          title: const Text("Gallery"),
-                          leading: const Icon(
-                            Icons.account_box,
+                    content: SingleChildScrollView(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          const Divider(height: 1, color: defaultColor),
+                          ListTile(
+                            onTap: () async {
+                              await value.openGallery(context);
+                            },
+                            title: const Text("Gallery"),
+                            leading: const Icon(
+                              Icons.account_box,
+                              color: defaultColor,
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
                             color: defaultColor,
                           ),
-                        ),
-                        const Divider(
-                          height: 1,
-                          color: defaultColor,
-                        ),
-                        ListTile(
-                          onTap: () async {
-                            await value.openCamera(context);
-                          },
-                          title: const Text("Camera"),
-                          leading: const Icon(
-                            Icons.camera,
-                            color: defaultColor,
+                          ListTile(
+                            onTap: () async {
+                              await value.openCamera(context);
+                            },
+                            title: const Text("Camera"),
+                            leading: const Icon(
+                              Icons.camera,
+                              color: defaultColor,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 });
