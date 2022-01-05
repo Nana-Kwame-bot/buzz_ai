@@ -1,9 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/image_pick.dart';
 import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AccidentReportScreen extends StatefulWidget {
   static const String iD = '/accidentreport';
@@ -15,6 +15,17 @@ class AccidentReportScreen extends StatefulWidget {
 }
 
 class _AccidentReportScreenState extends State<AccidentReportScreen> {
+  File?image;
+  final ImagePicker imagePicker = ImagePicker();
+
+
+  Future  uploadImage() async {
+    final image = await imagePicker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    final imageTemporary = File(image.path);
+    this.image = imageTemporary;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
