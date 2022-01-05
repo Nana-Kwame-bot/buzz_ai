@@ -28,5 +28,6 @@ class BottomNavigationController extends ChangeNotifier {
       color: Colors.redAccent,
     ),
     const ProfileScreen(),
+
   ];
 }
