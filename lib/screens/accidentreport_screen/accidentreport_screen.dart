@@ -15,6 +15,8 @@ class AccidentReportScreen extends StatefulWidget {
 }
 
 class _AccidentReportScreenState extends State<AccidentReportScreen> {
+
+  ImagePickController imagePickController = ImagePickController();
   File?image;
   final ImagePicker imagePicker = ImagePicker();
 
@@ -43,7 +45,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
           'Report Accident',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16.0,
+            fontSize: 22.0,
           ),
         ),
         centerTitle: true,
@@ -68,7 +70,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                           Center(child: Image.asset('assets/img/upload.png')),
                           const Text("You Need To Upload Your", style: TextStyle(color: Colors.white,),textAlign: TextAlign.center,),
                           const Text("Report Accident Details", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),textAlign: TextAlign.center, ),
-                          const Text("Lorem Ipsum is simply dummy text of the printing and typesetting world", style: TextStyle(color: Colors.white,),textAlign: TextAlign.center,)
+                          const Text("If you saw any accident and need help then you can report accident here", style: TextStyle(color: Colors.white,),textAlign: TextAlign.center,)
 
 
 
@@ -82,7 +84,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                   height: MediaQuery.of(context).size.height * 0.5,
                   color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 30, 20, 10),
+                    padding: const EdgeInsets.fromLTRB(10, 30, 20, 0),
                     child: Column(
                       children: [
                         const SizedBox(height: 5,),
@@ -151,6 +153,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
                         TextFormField(
                           textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
                           style: const TextStyle(
                               fontSize: 14,
                               height: 1
@@ -162,7 +165,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black, width: 1.0),
                             ),
-                            hintText: 'How many people saw the accident',
+                            hintText: ' How many people are injured',
                           ),
                         ),
 
@@ -191,7 +194,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                         border: Border.all(
                         ),
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      color: const Color.fromRGBO(255, 200, 20, 1),
+                      color: const Color.fromRGBO(248, 157, 52, 1),
 
                     ),
                     child: GestureDetector(
@@ -202,7 +205,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                           const SizedBox(width: 5),
                           const Text("Use Camera", style: TextStyle(color: Colors.white),)
                         ],
+
                       ),
+                      onTap: () {
+                        uploadImage();
+                        
+                      },
                     )
                 )
             )
