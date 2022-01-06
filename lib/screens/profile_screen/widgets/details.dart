@@ -5,8 +5,16 @@ import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BasicDetails extends StatelessWidget {
+class BasicDetails extends StatefulWidget {
   const BasicDetails({Key? key}) : super(key: key);
+
+  @override
+  State<BasicDetails> createState() => _BasicDetailsState();
+}
+
+class _BasicDetailsState extends State<BasicDetails> {
+  final basicDetailsFormKey =
+      GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +28,15 @@ class BasicDetails extends StatelessWidget {
           Widget? child,
         ) {
           return Form(
-            key: basicDetailController.basicDetailsFormKey,
+            autovalidateMode: AutovalidateMode.always,
+            onChanged: () {
+              if (basicDetailsFormKey.currentState!.validate()) {
+                basicDetailController.makeValid();
+              } else {
+                basicDetailController.makeInvalid();
+              }
+            },
+            key: basicDetailsFormKey,
             child: Column(
               children: [
                 Row(
@@ -76,8 +92,7 @@ class BasicDetails extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue:
-                      userProfileController.userProfile.basicDetail?.fullName,
+                  initialValue: basicDetailController.basicDetail.fullName,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     // labelText: 'Full name',
@@ -105,8 +120,7 @@ class BasicDetails extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController
-                      .userProfile.basicDetail?.dateOfBirth,
+                  initialValue: basicDetailController.basicDetail.dateOfBirth,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Date of birth',
@@ -134,9 +148,11 @@ class BasicDetails extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController
-                      .userProfile.basicDetail?.weight
-                      .toString(),
+                  initialValue:
+                      basicDetailController.basicDetail.weight.toString() ==
+                              'null'
+                          ? ''
+                          : basicDetailController.basicDetail.weight.toString(),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Weight',
@@ -162,56 +178,49 @@ class BasicDetails extends StatelessWidget {
                     ),
                   ),
                 ),
-                Consumer(
-                  builder: (BuildContext context,
-
-                      UserProfileController controller,
-                      Widget? child) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: RadioListTile<Gender>(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(),
-                              borderRadius: BorderRadius.circular(
-                                4.0,
-                              ),
-                            ),
-                            value: Gender.male,
-                            title: const Text(
-                              'Male',
-                            ),
-                            groupValue: userProfileController.gender,
-                            onChanged: controller.formEnabled
-                                ? userProfileController.setGender
-                                : null,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: RadioListTile<Gender>(
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(),
+                          borderRadius: BorderRadius.circular(
+                            4.0,
                           ),
                         ),
-                        const SizedBox(
-                          width: 20.0,
+                        value: Gender.male,
+                        title: const Text(
+                          'Male',
                         ),
-                        Expanded(
-                          child: RadioListTile<Gender>(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(),
-                              borderRadius: BorderRadius.circular(
-                                4.0,
-                              ),
-                            ),
-                            value: Gender.female,
-                            title: const Text(
-                              'Female',
-                            ),
-                            groupValue: userProfileController.gender,
-                            onChanged: controller.formEnabled
-                                ? userProfileController.setGender
-                                : null,
+                        groupValue: userProfileController.gender,
+                        onChanged: userProfileController.formEnabled
+                            ? userProfileController.setGender
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    ),
+                    Expanded(
+                      child: RadioListTile<Gender>(
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(),
+                          borderRadius: BorderRadius.circular(
+                            4.0,
                           ),
                         ),
-                      ],
-                    );
-                  },
+                        value: Gender.female,
+                        title: const Text(
+                          'Female',
+                        ),
+                        groupValue: userProfileController.gender,
+                        onChanged: userProfileController.formEnabled
+                            ? userProfileController.setGender
+                            : null,
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   children: [
@@ -231,9 +240,12 @@ class BasicDetails extends StatelessWidget {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController
-                                .userProfile.basicDetail?.age
-                                .toString(),
+                            initialValue: basicDetailController.basicDetail.age
+                                        .toString() ==
+                                    'null'
+                                ? ''
+                                : basicDetailController.basicDetail.age
+                                    .toString(),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Age',
@@ -270,8 +282,8 @@ class BasicDetails extends StatelessWidget {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController
-                                .userProfile.basicDetail?.bloodGroup,
+                            initialValue:
+                                basicDetailController.basicDetail.bloodGroup,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
@@ -304,9 +316,12 @@ class BasicDetails extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController
-                      .userProfile.basicDetail?.licenseNumber
-                      .toString(),
+                  initialValue: basicDetailController.basicDetail.licenseNumber
+                              .toString() ==
+                          'null'
+                      ? ''
+                      : basicDetailController.basicDetail.licenseNumber
+                          .toString(),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'License number',
@@ -327,5 +342,11 @@ class BasicDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    basicDetailsFormKey.currentState?.dispose();
+    super.dispose();
   }
 }

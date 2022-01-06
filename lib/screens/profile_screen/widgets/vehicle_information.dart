@@ -3,8 +3,16 @@ import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VehicleInformation extends StatelessWidget {
+class VehicleInformation extends StatefulWidget {
   const VehicleInformation({Key? key}) : super(key: key);
+
+  @override
+  State<VehicleInformation> createState() => _VehicleInformationState();
+}
+
+class _VehicleInformationState extends State<VehicleInformation> {
+  final vehicleInfoFormKey =
+      GlobalKey<FormState>(debugLabel: 'vehicleInfoFormKey');
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +24,15 @@ class VehicleInformation extends StatelessWidget {
             UserProfileController userProfileController,
             Widget? child) {
           return Form(
-            key: vehicleInfoController.vehicleInfoFormKey,
+            autovalidateMode: AutovalidateMode.always,
+            onChanged: () {
+              if (vehicleInfoFormKey.currentState!.validate()) {
+                vehicleInfoController.makeValid();
+              } else {
+                vehicleInfoController.makeInvalid();
+              }
+            },
+            key: vehicleInfoFormKey,
             child: Column(
               children: [
                 const Align(
@@ -42,7 +58,8 @@ class VehicleInformation extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController.userProfile.vehicleInfo?.ownerName,
+                  initialValue:
+                  vehicleInfoController.vehicleInfo.ownerName,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Owner name',
@@ -75,7 +92,7 @@ class VehicleInformation extends StatelessWidget {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController.userProfile.vehicleInfo?.model,
+                            initialValue:vehicleInfoController.vehicleInfo.model,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Model',
@@ -112,7 +129,7 @@ class VehicleInformation extends StatelessWidget {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController.userProfile.vehicleInfo?.year,
+                            initialValue: vehicleInfoController.vehicleInfo.year,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Year',
@@ -145,7 +162,7 @@ class VehicleInformation extends StatelessWidget {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController.userProfile.vehicleInfo?.plateNumber,
+                  initialValue: vehicleInfoController.vehicleInfo.plateNumber,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Vehicle plate number',
@@ -166,5 +183,11 @@ class VehicleInformation extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    vehicleInfoFormKey.currentState?.dispose();
+    super.dispose();
   }
 }

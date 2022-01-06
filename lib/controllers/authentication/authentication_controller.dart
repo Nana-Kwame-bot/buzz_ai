@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  bool isNewUser = true;
   String? _phoneNumber;
   var timeOut = const Duration(seconds: 120);
 
@@ -13,18 +14,23 @@ class AuthenticationController extends ChangeNotifier {
     return auth.authStateChanges();
   }
 
+  void updateIsNew(bool? value) {
+    isNewUser = value!;
+    notifyListeners();
+  }
+
   Future<void> onFieldSubmitted(String? value) async {
     _phoneNumber ?? value;
     notifyListeners();
 
-    Future<void> verificationCompleted(
-        PhoneAuthCredential phoneAuthCredential) async {
-      await auth.signInWithCredential(phoneAuthCredential);
-      log(
-        'Phone number automatically verified and user signed in: $phoneAuthCredential',
-      );
-      return;
-    }
+    // Future<void> verificationCompleted(
+    //     PhoneAuthCredential phoneAuthCredential) async {
+    //   await auth.signInWithCredential(phoneAuthCredential);
+    //   log(
+    //     'Phone number automatically verified and user signed in: $phoneAuthCredential',
+    //   );
+    //   return;
+    // }
 
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
@@ -45,7 +51,7 @@ class AuthenticationController extends ChangeNotifier {
       await auth.verifyPhoneNumber(
         phoneNumber: _phoneNumber ?? value!,
         timeout: timeOut,
-        verificationCompleted: verificationCompleted,
+        verificationCompleted: completed,
         verificationFailed: verificationFailed,
         codeSent: codeSent,
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -55,13 +61,21 @@ class AuthenticationController extends ChangeNotifier {
     }
   }
 
+  Future<UserCredential?> signIn() async {}
+
   Future<bool> signInWithPhoneNumber(String? smsCode) async {
     try {
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: smsCode!,
       );
-      final User user = (await auth.signInWithCredential(credential)).user!;
+      final User user =
+          await auth.signInWithCredential(credential).then((value) {
+            log(value.additionalUserInfo!.isNewUser.toString());
+        updateIsNew(value.additionalUserInfo?.isNewUser);
+        return value.user!;
+      });
+      // final User user = (await auth.signInWithCredential(credential)).user!;
       log('Successfully signed in UID: ${user.uid}');
       return true;
     } catch (e) {
@@ -70,11 +84,10 @@ class AuthenticationController extends ChangeNotifier {
     }
   }
 
-
   Future<void> signOut() async {
     await auth.signOut();
   }
 
   ///Has to be empty if we don't want automatic sign in
-  // void completed(PhoneAuthCredential phoneAuthCredential) {}
+  void completed(PhoneAuthCredential phoneAuthCredential) {}
 }

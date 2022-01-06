@@ -1,5 +1,4 @@
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
-import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,10 +26,9 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        child: Consumer2(
+        child: Consumer(
           builder: (BuildContext context,
               EmergencyContactController emergencyContactController,
-              UserProfileController userProfileController,
               Widget? child) {
             return Form(
               key: emergencyContactFormKey,
@@ -60,7 +58,6 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                       ),
                     ),
                     TextFormField(
-                      
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Name',

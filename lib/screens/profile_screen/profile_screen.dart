@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -12,10 +13,41 @@ import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   static const String iD = '/profile';
 
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late UserProfileController userProfileController;
+  late AuthenticationController _authenticationController;
+  late String userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticationController = Provider.of<AuthenticationController>(
+      context,
+      listen: false,
+    );
+
+    userProfileController = Provider.of<UserProfileController>(
+      context,
+      listen: false,
+    );
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      userId = _authenticationController.auth.currentUser!.uid;
+     await userProfileController.readProfileData(
+        userId: _authenticationController.auth.currentUser!.uid,
+        context: context,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

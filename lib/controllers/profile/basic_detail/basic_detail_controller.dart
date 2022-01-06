@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 
 class BasicDetailController extends ChangeNotifier {
   var basicDetail = const BasicDetail();
-  final basicDetailsFormKey = GlobalKey<FormState>();
 
+  bool isBasicDetailValid = false;
 
-  bool validateBasicDetailForms() {
-    return basicDetailsFormKey.currentState!.validate();
+  void makeValid() {
+    isBasicDetailValid = true;
+    notifyListeners();
+  }
+
+  void makeInvalid() {
+    isBasicDetailValid = false;
+    notifyListeners();
   }
 
   void setImagePath(String? newValue) {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
@@ -67,7 +65,19 @@ class _SubmitFormState extends State<SubmitForm> {
   }
 
   Future<void> onPressed() async {
+    final requiredSnackBar = SnackBar(
+      duration: const Duration(seconds: 3),
+      content: const Text('Please fill out all the required fields'),
+      action: SnackBarAction(
+        label: 'Dismiss',
+        onPressed: () {
+          ScaffoldMessenger.of(context).clearSnackBars();
+        },
+      ),
+    );
+
     if (!userProfileController.validateForms(context: context)) {
+      ScaffoldMessenger.of(context).showSnackBar(requiredSnackBar);
       return;
     }
 
@@ -81,7 +91,8 @@ class _SubmitFormState extends State<SubmitForm> {
       emergencyContact:
           Provider.of<EmergencyContactController>(context, listen: false)
               .emergencyContact,
-      gender: Provider.of<UserProfileController>(context, listen: false).gender!,
+      gender:
+          Provider.of<UserProfileController>(context, listen: false).gender!,
       multipleVehicle:
           Provider.of<MultipleVehicleController>(context, listen: false)
               .multipleVehicle,
@@ -91,8 +102,7 @@ class _SubmitFormState extends State<SubmitForm> {
 
     try {
       await _userRef.set(userProfile?.toMap());
-
-      final snackBar = SnackBar(
+      final successSnackBar = SnackBar(
         duration: const Duration(seconds: 3),
         content: const Text('Profile Set'),
         action: SnackBarAction(
@@ -102,9 +112,10 @@ class _SubmitFormState extends State<SubmitForm> {
           },
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
     } on Exception catch (e) {
-      final snackBar = SnackBar(
+      final failureSnackBar = SnackBar(
         duration: const Duration(seconds: 3),
         content: Text(e.toString()),
         action: SnackBarAction(
@@ -114,7 +125,7 @@ class _SubmitFormState extends State<SubmitForm> {
           },
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(failureSnackBar);
     }
   }
 }

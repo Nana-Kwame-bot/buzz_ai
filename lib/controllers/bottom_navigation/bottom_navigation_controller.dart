@@ -1,3 +1,4 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/foundation.dart' show kDebugMode;
 
 class BottomNavigationController extends ChangeNotifier {
-  GlobalKey bottomNavigationKey = GlobalKey();
+
   int currentPage = 0;
 
   List<TabData> tabs = [
