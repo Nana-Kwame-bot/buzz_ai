@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
@@ -14,8 +15,8 @@ class ImagePick extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer2(
-      builder: (BuildContext context, ImagePickController value, UserProfileController controller,
-          Widget? child) {
+      builder: (BuildContext context, ImagePickController value,
+          UserProfileController controller, Widget? child) {
         return GestureDetector(
           onTap: controller.formEnabled
               ? () async {
@@ -66,6 +67,7 @@ class ImagePick extends StatelessWidget {
                         );
                       });
                   if (path != null) {
+                    log(path);
                     Provider.of<BasicDetailController>(context, listen: false)
                         .setImagePath(path);
                   }
@@ -77,17 +79,15 @@ class ImagePick extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Consumer<UserProfileController>(
+                Consumer<BasicDetailController>(
                   builder: (BuildContext context, value, Widget? child) {
                     return CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.brown,
-                      backgroundImage: value
-                                  .userProfile.basicDetail?.imageURL ==
-                              null
+                      backgroundImage: value.basicDetail.imageURL == null
                           ? null
                           : FileImage(
-                              File(value.userProfile.basicDetail!.imageURL!),
+                              File(value.basicDetail.imageURL!),
                             ),
                     );
                   },

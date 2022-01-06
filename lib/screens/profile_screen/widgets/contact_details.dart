@@ -61,7 +61,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 TextFormField(
                   enabled: userProfileController.formEnabled,
                   initialValue:
-                      userProfileController.userProfile.contactDetail?.address,
+                      contactDetailController.contactDetail.address,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Address',
@@ -89,8 +89,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController
-                      .userProfile.contactDetail?.phoneNumber,
+                  initialValue: contactDetailController.contactDetail.phoneNumber,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',

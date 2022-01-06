@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
-import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -27,7 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late UserProfileController userProfileController;
   late AuthenticationController _authenticationController;
   late String userId;
-  late Future<UserProfile> profileData;
 
   @override
   void initState() {
@@ -42,9 +40,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listen: false,
     );
 
-    userId = _authenticationController.auth.currentUser!.uid;
-
-    profileData = userProfileController.readProfileData(userId: userId);
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      userId = _authenticationController.auth.currentUser!.uid;
+     await userProfileController.readProfileData(
+        userId: _authenticationController.auth.currentUser!.uid,
+        context: context,
+      );
+    });
   }
 
   @override
@@ -114,37 +116,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: Consumer<UserProfileController>(
-            builder: (BuildContext context, controller, Widget? child) {
-              return FutureBuilder<UserProfile>(
-                future: profileData,
-                builder:
-                    (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
-                  if (snapshot.data == null || snapshot.hasError) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasData) {
-                    return Column(
-                      children: const [
-                        ImagePick(),
-                        BasicDetails(),
-                        ContactDetails(),
-                        Emergency(),
-                        VehicleInformation(),
-                        MultipleCar(),
-                        SubmitForm(),
-                      ],
-                    );
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              );
-            },
+          child: Column(
+            children: const [
+              ImagePick(),
+              BasicDetails(),
+              ContactDetails(),
+              Emergency(),
+              VehicleInformation(),
+              MultipleCar(),
+              SubmitForm(),
+            ],
           ),
         ),
       ),

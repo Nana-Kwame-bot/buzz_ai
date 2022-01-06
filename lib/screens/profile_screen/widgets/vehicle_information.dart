@@ -59,7 +59,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                 TextFormField(
                   enabled: userProfileController.formEnabled,
                   initialValue:
-                      userProfileController.userProfile.vehicleInfo?.ownerName,
+                  vehicleInfoController.vehicleInfo.ownerName,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Owner name',
@@ -92,8 +92,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController
-                                .userProfile.vehicleInfo?.model,
+                            initialValue:vehicleInfoController.vehicleInfo.model,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Model',
@@ -130,8 +129,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: userProfileController
-                                .userProfile.vehicleInfo?.year,
+                            initialValue: vehicleInfoController.vehicleInfo.year,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Year',
@@ -164,8 +162,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: userProfileController
-                      .userProfile.vehicleInfo?.plateNumber,
+                  initialValue: vehicleInfoController.vehicleInfo.plateNumber,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Vehicle plate number',

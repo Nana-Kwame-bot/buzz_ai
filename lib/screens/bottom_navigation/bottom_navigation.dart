@@ -14,48 +14,35 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  GlobalKey bottomNavigationKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      final FancyBottomNavigationState fState =
-      bottomNavigationKey.currentState as FancyBottomNavigationState;
-      fState.setPage(0);
-    });
-
-  }
-
+  final PageController controller = PageController(keepPage: false);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Consumer<BottomNavigationController>(
-        builder: (BuildContext context, value, Widget? child) {
+      child: Consumer(
+        builder: (BuildContext context, BottomNavigationController value,
+            Widget? child) {
           return Scaffold(
             backgroundColor: Colors.white,
-            body: IndexedStack(
-              index: value.currentPage,
+            body: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: controller,
+              // index: value.currentPage,
               children: value.pages,
             ),
             bottomNavigationBar: FancyBottomNavigation(
-              key: bottomNavigationKey,
               circleColor: defaultColor,
               inactiveIconColor: Colors.black54,
               initialSelection: 0,
               textColor: defaultColor,
-              onTabChangedListener: value.changePage,
+              onTabChangedListener: (int index){
+                value.changePage(index);
+                controller.jumpToPage(index);
+              },
               tabs: value.tabs,
             ),
           );
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    bottomNavigationKey.currentState?.dispose();
-    super.dispose();
   }
 }

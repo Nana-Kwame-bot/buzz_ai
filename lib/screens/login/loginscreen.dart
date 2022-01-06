@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         debugPrint('User is signed in!');
 
         if (mounted) {
-          Navigator.of(context).pushNamed(BottomNavigation.iD);
+          Navigator.of(context).pushReplacementNamed(BottomNavigation.iD);
         }
       }
     });
