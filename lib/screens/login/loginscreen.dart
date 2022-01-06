@@ -34,22 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
       listen: false,
     );
 
-
-
     _authenticationController.onAuthStateChanges.listen((User? user) {
       if (user == null) {
         debugPrint('User is currently signed out!');
       } else {
         debugPrint('User is signed in!');
 
-
+        if (mounted) {
           Navigator.of(context).pushNamed(BottomNavigation.iD);
-
+        }
       }
     });
   }
-
-
 
   @override
   void dispose() {
