@@ -17,7 +17,7 @@ class SubmitAccidentReport with ChangeNotifier {
     }
   }
 
-  void changeCarNumberPlate(String value) {
+  changeCarNumberPlate(String value) {
     if (value.length >= 3) {
       _carNumberPlate = ValidationItem(value, "");
     } else {
@@ -25,7 +25,7 @@ class SubmitAccidentReport with ChangeNotifier {
     }
     notifyListeners();
   }
-  void changeNumberOfPeopleInjured(String value) {
+  changeNumberOfPeopleInjured(String value) {
     if (value.isNotEmpty) {
       _numberOfPeopleInjured = ValidationItem(value, "");
     } else {

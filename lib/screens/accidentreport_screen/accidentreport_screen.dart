@@ -1,10 +1,12 @@
+import 'dart:collection';
 import 'dart:io';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class AccidentReportScreen extends StatefulWidget {
   static const String iD = '/accidentreport';
@@ -17,20 +19,47 @@ class AccidentReportScreen extends StatefulWidget {
 }
 
 class _AccidentReportScreenState extends State<AccidentReportScreen> {
-  final referenceDatabase = FirebaseDatabase.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  ImagePickController imagePickController = ImagePickController();
-  File?image;
-  final ImagePicker imagePicker = ImagePicker();
-
-
-  Future  uploadImage() async {
-    final image = await imagePicker.pickImage(source: ImageSource.camera);
-    if (image == null) return;
-
-    final imageTemporary = File(image.path);
-    this.image = imageTemporary;
+  @override
+  void initState() {
+    super.initState();
   }
+
+
+
+
+  final picker = ImagePicker();
+  late File imageFile;
+  dynamic carNumberPlate, peopleInjured;
+
+
+
+  Future<void> pickImage() async {
+    dynamic picture = await picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      imageFile = picture;
+    });
+  }
+
+  Future<void> uploadAccidentReport() async {
+    final User user = await auth.currentUser!;
+    final userid = user.uid;
+    final referenceDatabase = FirebaseDatabase.instance.ref().child("$userid/");
+    await firebase_storage.FirebaseStorage.instance
+            .ref().child("$userid/$imageFile").
+        child(DateTime.now().microsecondsSinceEpoch.toString() + "." + imageFile.path).putFile(imageFile);
+
+    var imageUrl = referenceDatabase.get().toString();
+
+    HashMap map = HashMap();
+    map["carNumberplate"] = carNumberPlate;
+    map["peopleInjured"] = peopleInjured;
+    map["imageUrl"] = imageUrl;
+
+  }
+
+
 
 
   @override
@@ -134,7 +163,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
                           ),
                           onChanged: (dynamic value) {
-
+                            carNumberPlate = validationService.changeCarNumberPlate(value);
                           },
                         ),
 
@@ -148,7 +177,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                                 endIndent: 5,
 
                               )),
-                              Text("How many people saw the accident", style: TextStyle(
+                              Text("How many people were injured", style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,
 
@@ -179,7 +208,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             hintText: ' How many people are injured',
                           ),
                           onChanged: (dynamic value) {
-                            validationService.changeCarNumberPlate(value);
+                            peopleInjured = validationService.changeNumberOfPeopleInjured(value);
                           },
                         ),
 
@@ -222,7 +251,6 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
                       ),
                       onTap: () {
-                        uploadImage();
 
                       },
                     )
