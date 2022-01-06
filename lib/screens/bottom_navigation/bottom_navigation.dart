@@ -4,10 +4,28 @@ import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BottomNavigation extends StatelessWidget {
+class BottomNavigation extends StatefulWidget {
   static const String iD = '/bottom_navigation';
 
   const BottomNavigation({Key? key}) : super(key: key);
+
+  @override
+  State<BottomNavigation> createState() => _BottomNavigationState();
+}
+
+class _BottomNavigationState extends State<BottomNavigation> {
+  GlobalKey bottomNavigationKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      final FancyBottomNavigationState fState =
+      bottomNavigationKey.currentState as FancyBottomNavigationState;
+      fState.setPage(0);
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +39,7 @@ class BottomNavigation extends StatelessWidget {
               children: value.pages,
             ),
             bottomNavigationBar: FancyBottomNavigation(
+              key: bottomNavigationKey,
               circleColor: defaultColor,
               inactiveIconColor: Colors.black54,
               initialSelection: 0,
@@ -32,5 +51,11 @@ class BottomNavigation extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    bottomNavigationKey.currentState?.dispose();
+    super.dispose();
   }
 }
