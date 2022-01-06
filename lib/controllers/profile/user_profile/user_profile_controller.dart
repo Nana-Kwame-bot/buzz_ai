@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
@@ -8,11 +10,24 @@ import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:buzz_ai/models/profile/multiple_vehicle/multiple_vehicle.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
-  UserProfile userProfile = const UserProfile();
+  UserProfile userProfile =  const UserProfile();
+  Gender? gender = Gender.male;
+  bool formEnabled = false;
+
+  void changeFormState() {
+    formEnabled = !formEnabled;
+    notifyListeners();
+  }
+
+  void setGender(Gender? value) {
+    gender = value;
+    notifyListeners();
+  }
 
   bool validateForms({required BuildContext context}) {
     if (Provider.of<BasicDetailController>(context, listen: false)
@@ -26,7 +41,7 @@ class UserProfileController extends ChangeNotifier {
     return false;
   }
 
-  UserProfile getProfileData({
+  UserProfile setProfileData({
     required BasicDetail basicDetail,
     required ContactDetail contactDetail,
     required EmergencyContact emergencyContact,
@@ -44,5 +59,25 @@ class UserProfileController extends ChangeNotifier {
     );
 
     return userProfile;
+  }
+
+  Future<void> readProfileData({required String userId}) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
+
+    try {
+      final DataSnapshot? snapShot = await ref.get();
+
+      Map<String, dynamic> data = jsonDecode(jsonEncode(snapShot?.value));
+
+      userProfile = UserProfile.fromMap(data);
+
+      setGender(userProfile.gender);
+
+      notifyListeners();
+
+      log(userProfile.toString());
+    } on Exception catch (e) {
+      log(e.toString());
+    }
   }
 }

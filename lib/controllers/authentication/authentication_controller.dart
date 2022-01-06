@@ -2,8 +2,6 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-enum VerificationStatus { loading, codeSent, successFul, failed }
-
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
   String? _phoneNumber;
@@ -19,14 +17,14 @@ class AuthenticationController extends ChangeNotifier {
     _phoneNumber ?? value;
     notifyListeners();
 
-    // Future<void> verificationCompleted(
-    //     PhoneAuthCredential phoneAuthCredential) async {
-    //   await auth.signInWithCredential(phoneAuthCredential);
-    //   log(
-    //     'Phone number automatically verified and user signed in: $phoneAuthCredential',
-    //   );
-    //   return;
-    // }
+    Future<void> verificationCompleted(
+        PhoneAuthCredential phoneAuthCredential) async {
+      await auth.signInWithCredential(phoneAuthCredential);
+      log(
+        'Phone number automatically verified and user signed in: $phoneAuthCredential',
+      );
+      return;
+    }
 
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
@@ -47,7 +45,7 @@ class AuthenticationController extends ChangeNotifier {
       await auth.verifyPhoneNumber(
         phoneNumber: _phoneNumber ?? value!,
         timeout: timeOut,
-        verificationCompleted: completed,
+        verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
         codeSent: codeSent,
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -72,6 +70,11 @@ class AuthenticationController extends ChangeNotifier {
     }
   }
 
+
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
+
   ///Has to be empty if we don't want automatic sign in
-  void completed(PhoneAuthCredential phoneAuthCredential) {}
+  // void completed(PhoneAuthCredential phoneAuthCredential) {}
 }
