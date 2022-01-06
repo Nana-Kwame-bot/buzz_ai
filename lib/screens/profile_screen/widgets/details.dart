@@ -5,8 +5,16 @@ import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BasicDetails extends StatelessWidget {
+class BasicDetails extends StatefulWidget {
   const BasicDetails({Key? key}) : super(key: key);
+
+  @override
+  State<BasicDetails> createState() => _BasicDetailsState();
+}
+
+class _BasicDetailsState extends State<BasicDetails> {
+  final basicDetailsFormKey =
+      GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +28,15 @@ class BasicDetails extends StatelessWidget {
           Widget? child,
         ) {
           return Form(
-            key: basicDetailController.basicDetailsFormKey,
+            autovalidateMode: AutovalidateMode.always,
+            onChanged: () {
+              if (basicDetailsFormKey.currentState!.validate()) {
+                basicDetailController.makeValid();
+              } else {
+                basicDetailController.makeInvalid();
+              }
+            },
+            key: basicDetailsFormKey,
             child: Column(
               children: [
                 Row(
@@ -164,9 +180,7 @@ class BasicDetails extends StatelessWidget {
                 ),
                 Consumer(
                   builder: (BuildContext context,
-
-                      UserProfileController controller,
-                      Widget? child) {
+                      UserProfileController controller, Widget? child) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -327,5 +341,11 @@ class BasicDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    basicDetailsFormKey.currentState?.dispose();
+    super.dispose();
   }
 }

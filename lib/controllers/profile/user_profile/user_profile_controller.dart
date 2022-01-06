@@ -15,9 +15,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
-  UserProfile userProfile =  const UserProfile();
+  UserProfile userProfile = const UserProfile();
   Gender? gender = Gender.male;
   bool formEnabled = false;
+
+  bool isBasicDetailValid = false;
+  bool isContactDetailValid = false;
+  bool isVehicleFormValid = false;
+
+  void getBasicDetailValid(bool? value) {
+    isBasicDetailValid = value ?? false;
+    notifyListeners();
+  }
+
+  void getContactDetailValid(bool? value) {
+    isContactDetailValid = value ?? false;
+    notifyListeners();
+  }
+
+  void getVehicleFormValid(bool? value) {
+    isVehicleFormValid = value ?? false;
+    notifyListeners();
+  }
 
   void changeFormState() {
     formEnabled = !formEnabled;
@@ -31,11 +50,11 @@ class UserProfileController extends ChangeNotifier {
 
   bool validateForms({required BuildContext context}) {
     if (Provider.of<BasicDetailController>(context, listen: false)
-            .validateBasicDetailForms() &&
+            .isBasicDetailValid &&
         Provider.of<ContactDetailController>(context, listen: false)
-            .validateContactDetailForms() &&
+            .isContactDetailValid &&
         Provider.of<VehicleInfoController>(context, listen: false)
-            .validateVehicleForms()) {
+            .isVehicleInfoValid) {
       return true;
     }
     return false;
@@ -61,23 +80,17 @@ class UserProfileController extends ChangeNotifier {
     return userProfile;
   }
 
-  Future<void> readProfileData({required String userId}) async {
+  Future<UserProfile> readProfileData({required String userId}) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
 
-    try {
-      final DataSnapshot? snapShot = await ref.get();
+    final DataSnapshot? snapShot = await ref.get();
 
-      Map<String, dynamic> data = jsonDecode(jsonEncode(snapShot?.value));
+    Map<String, dynamic> data = jsonDecode(jsonEncode(snapShot?.value));
 
-      userProfile = UserProfile.fromMap(data);
+    userProfile = UserProfile.fromMap(data);
 
-      setGender(userProfile.gender);
-
-      notifyListeners();
-
-      log(userProfile.toString());
-    } on Exception catch (e) {
-      log(e.toString());
-    }
+    setGender(userProfile.gender);
+    log(userProfile.toString());
+    return userProfile;
   }
 }

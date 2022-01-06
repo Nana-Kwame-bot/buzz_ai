@@ -21,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
-  late UserProfileController userProfileController;
+
   late String userId;
 
   var numberAuthFormKey = GlobalKey<FormState>();
@@ -34,31 +34,22 @@ class _LoginScreenState extends State<LoginScreen> {
       listen: false,
     );
 
-    userProfileController = Provider.of<UserProfileController>(
-      context,
-      listen: false,
-    );
+
 
     _authenticationController.onAuthStateChanges.listen((User? user) {
       if (user == null) {
         debugPrint('User is currently signed out!');
       } else {
         debugPrint('User is signed in!');
-        userId = _authenticationController.auth.currentUser!.uid;
-        readData(userId).whenComplete(() {
+
+
           Navigator.of(context).pushNamed(BottomNavigation.iD);
-        });
+
       }
     });
   }
 
-  Future<void> readData(String uid) async {
-    try {
-      await userProfileController.readProfileData(userId: uid);
-    } on Exception catch (e) {
-     log(e.toString());
-    }
-  }
+
 
   @override
   void dispose() {
@@ -141,8 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           phoneNumber.completeNumber,
                         );
                         if (result) {
-                          Navigator.pushReplacementNamed(
-                            context,
+                          Navigator.of(context).pushReplacementNamed(
                             VerificationScreen.iD,
                           );
                         } else {

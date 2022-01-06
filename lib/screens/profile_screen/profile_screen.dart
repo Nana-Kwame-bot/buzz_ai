@@ -1,5 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -12,10 +14,38 @@ import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   static const String iD = '/profile';
 
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late UserProfileController userProfileController;
+  late AuthenticationController _authenticationController;
+  late String userId;
+  late Future<UserProfile> profileData;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticationController = Provider.of<AuthenticationController>(
+      context,
+      listen: false,
+    );
+
+    userProfileController = Provider.of<UserProfileController>(
+      context,
+      listen: false,
+    );
+
+    userId = _authenticationController.auth.currentUser!.uid;
+
+    profileData = userProfileController.readProfileData(userId: userId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,16 +114,37 @@ class ProfileScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: Column(
-            children: const [
-              ImagePick(),
-              BasicDetails(),
-              ContactDetails(),
-              Emergency(),
-              VehicleInformation(),
-              MultipleCar(),
-              SubmitForm(),
-            ],
+          child: Consumer<UserProfileController>(
+            builder: (BuildContext context, controller, Widget? child) {
+              return FutureBuilder<UserProfile>(
+                future: profileData,
+                builder:
+                    (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+                  if (snapshot.data == null || snapshot.hasError) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Column(
+                      children: const [
+                        ImagePick(),
+                        BasicDetails(),
+                        ContactDetails(),
+                        Emergency(),
+                        VehicleInformation(),
+                        MultipleCar(),
+                        SubmitForm(),
+                      ],
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
+            },
           ),
         ),
       ),

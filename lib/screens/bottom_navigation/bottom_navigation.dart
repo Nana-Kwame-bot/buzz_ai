@@ -23,7 +23,6 @@ class BottomNavigation extends StatelessWidget {
             bottomNavigationBar: FancyBottomNavigation(
               circleColor: defaultColor,
               inactiveIconColor: Colors.black54,
-              key: value.bottomNavigationKey,
               initialSelection: 0,
               textColor: defaultColor,
               onTabChangedListener: value.changePage,

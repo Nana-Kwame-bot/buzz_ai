@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.pushReplacementNamed(context, LoginScreen.iD);
+          Navigator.of(context).pushReplacementNamed(LoginScreen.iD);
         }
       });
 
