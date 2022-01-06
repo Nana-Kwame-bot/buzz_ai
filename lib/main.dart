@@ -10,6 +10,7 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
+import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -83,6 +84,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ImagePickController>(
           create: (BuildContext context) {
             return ImagePickController();
+          },
+        ),
+        ChangeNotifierProvider<SubmitAccidentReport>(
+          create: (BuildContext context) {
+            return SubmitAccidentReport();
           },
         ),
       ],

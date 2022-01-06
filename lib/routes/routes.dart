@@ -29,7 +29,7 @@ class AppRouter {
 
       case AccidentReportScreen.iD:
         return MaterialPageRoute(builder: (context) {
-          return const AccidentReportScreen();
+          return AccidentReportScreen();
         });
       case BottomNavigation.iD:
         return MaterialPageRoute(builder: (context) {

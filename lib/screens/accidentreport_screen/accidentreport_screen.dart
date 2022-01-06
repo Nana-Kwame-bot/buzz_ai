@@ -1,20 +1,23 @@
 import 'dart:io';
+import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:buzz_ai/screens/profile_screen/widgets/image_pick.dart';
 import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AccidentReportScreen extends StatefulWidget {
   static const String iD = '/accidentreport';
 
   const AccidentReportScreen({Key? key}) : super(key: key);
 
+
   @override
   _AccidentReportScreenState createState() => _AccidentReportScreenState();
 }
 
 class _AccidentReportScreenState extends State<AccidentReportScreen> {
+  final referenceDatabase = FirebaseDatabase.instance;
 
   ImagePickController imagePickController = ImagePickController();
   File?image;
@@ -28,8 +31,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
     final imageTemporary = File(image.path);
     this.image = imageTemporary;
   }
+
+
   @override
   Widget build(BuildContext context) {
+    
+    final validationService = Provider.of<SubmitAccidentReport>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -124,7 +131,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                               borderSide: BorderSide(color: Colors.black, width: 1.0),
                             ),
                             hintText: 'Car Number Plate',
+
                           ),
+                          onChanged: (dynamic value) {
+
+                          },
                         ),
 
                         const SizedBox(height: 5,),
@@ -167,6 +178,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             ),
                             hintText: ' How many people are injured',
                           ),
+                          onChanged: (dynamic value) {
+                            validationService.changeCarNumberPlate(value);
+                          },
                         ),
 
                         const SizedBox(height: 20,),
@@ -209,7 +223,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                       ),
                       onTap: () {
                         uploadImage();
-                        
+
                       },
                     )
                 )
