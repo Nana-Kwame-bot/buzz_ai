@@ -1,6 +1,7 @@
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
-import 'package:buzz_ai/controllers/profile/gender/gender_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/gender/gender.dart';
+import 'package:buzz_ai/services/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,22 +12,56 @@ class BasicDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24.0),
-      child: Consumer(
-        builder: (BuildContext context,
-            BasicDetailController basicDetailController, Widget? child) {
+      child: Consumer2(
+        builder: (
+          BuildContext context,
+          BasicDetailController basicDetailController,
+          UserProfileController userProfileController,
+          Widget? child,
+        ) {
           return Form(
             key: basicDetailController.basicDetailsFormKey,
             child: Column(
               children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Basic Detail',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.0,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Basic Detail',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14.0,
+                        ),
+                      ),
                     ),
-                  ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        onPressed: () {
+                          userProfileController.changeFormState();
+                          ScaffoldMessenger.of(context)
+                            ..clearSnackBars()
+                            ..showSnackBar(
+                              SnackBar(
+                                backgroundColor: defaultColor,
+                                duration: const Duration(seconds: 2),
+                                content: Text(
+                                  userProfileController.formEnabled
+                                      ? 'Form Enabled'
+                                      : 'Form Disabled',
+                                ),
+                              ),
+                            );
+                        },
+                        icon: const Icon(
+                          Icons.edit,
+                          color: defaultColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -40,10 +75,13 @@ class BasicDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue:
+                      userProfileController.userProfile.basicDetail?.fullName,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Full name',
-                    hintText: 'Enter your full name',
+                    // labelText: 'Full name',
+                    // hintText: 'Enter your full name',
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -66,6 +104,9 @@ class BasicDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue: userProfileController
+                      .userProfile.basicDetail?.dateOfBirth,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Date of birth',
@@ -92,6 +133,10 @@ class BasicDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue: userProfileController
+                      .userProfile.basicDetail?.weight
+                      .toString(),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Weight',
@@ -119,7 +164,9 @@ class BasicDetails extends StatelessWidget {
                 ),
                 Consumer(
                   builder: (BuildContext context,
-                      GenderController genderController, Widget? child) {
+
+                      UserProfileController controller,
+                      Widget? child) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -135,8 +182,10 @@ class BasicDetails extends StatelessWidget {
                             title: const Text(
                               'Male',
                             ),
-                            groupValue: genderController.gender,
-                            onChanged: genderController.setGender,
+                            groupValue: userProfileController.gender,
+                            onChanged: controller.formEnabled
+                                ? userProfileController.setGender
+                                : null,
                           ),
                         ),
                         const SizedBox(
@@ -154,8 +203,10 @@ class BasicDetails extends StatelessWidget {
                             title: const Text(
                               'Female',
                             ),
-                            groupValue: genderController.gender,
-                            onChanged: genderController.setGender,
+                            groupValue: userProfileController.gender,
+                            onChanged: controller.formEnabled
+                                ? userProfileController.setGender
+                                : null,
                           ),
                         ),
                       ],
@@ -179,6 +230,10 @@ class BasicDetails extends StatelessWidget {
                             ),
                           ),
                           TextFormField(
+                            enabled: userProfileController.formEnabled,
+                            initialValue: userProfileController
+                                .userProfile.basicDetail?.age
+                                .toString(),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Age',
@@ -214,6 +269,9 @@ class BasicDetails extends StatelessWidget {
                             ),
                           ),
                           TextFormField(
+                            enabled: userProfileController.formEnabled,
+                            initialValue: userProfileController
+                                .userProfile.basicDetail?.bloodGroup,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
@@ -245,6 +303,10 @@ class BasicDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue: userProfileController
+                      .userProfile.basicDetail?.licenseNumber
+                      .toString(),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'License number',

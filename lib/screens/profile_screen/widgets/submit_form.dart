@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
-import 'package:buzz_ai/controllers/profile/gender/gender_controller.dart';
 import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
@@ -21,6 +22,7 @@ class SubmitForm extends StatefulWidget {
 class _SubmitFormState extends State<SubmitForm> {
   late UserProfileController userProfileController;
   late AuthenticationController authenticationController;
+
   late DatabaseReference _userRef;
   UserProfile? userProfile;
   late String userId;
@@ -48,67 +50,71 @@ class _SubmitFormState extends State<SubmitForm> {
         right: 24.0,
         bottom: 32.0,
       ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            primary: const Color(0xFF5247C5),
-            shape: const StadiumBorder(),
-            minimumSize: const Size(100, 35)),
-        onPressed: () async {
-          if (!userProfileController.validateForms(context: context)) {
-            return;
-          }
-
-          userProfile =
-              Provider.of<UserProfileController>(context, listen: false)
-                  .setProfileData(
-            basicDetail:
-                Provider.of<BasicDetailController>(context, listen: false)
-                    .basicDetail,
-            contactDetail:
-                Provider.of<ContactDetailController>(context, listen: false)
-                    .contactDetail,
-            emergencyContact:
-                Provider.of<EmergencyContactController>(context, listen: false)
-                    .emergencyContact,
-            gender:
-                Provider.of<GenderController>(context, listen: false).gender!,
-            multipleVehicle:
-                Provider.of<MultipleVehicleController>(context, listen: false)
-                    .multipleVehicle,
-            vehicleInfo:
-                Provider.of<VehicleInfoController>(context, listen: false)
-                    .vehicleInfo,
+      child: Consumer(
+        builder:
+            (BuildContext context, UserProfileController value, Widget? child) {
+          return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: const Color(0xFF5247C5),
+                shape: const StadiumBorder(),
+                minimumSize: const Size(100, 35)),
+            onPressed: value.formEnabled ? onPressed : null,
+            child: const Text('SUBMIT'),
           );
-
-          try {
-            await _userRef.set(userProfile?.toMap());
-            final snackBar = SnackBar(
-              duration: const Duration(seconds: 3),
-              content: const Text('Profile Set'),
-              action: SnackBarAction(
-                label: 'OK',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                },
-              ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } on Exception catch (e) {
-            final snackBar = SnackBar(
-              duration: const Duration(seconds: 3),
-              content: Text(e.toString()),
-              action: SnackBarAction(
-                label: 'Dismiss',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                },
-              ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
         },
-        child: const Text('SUBMIT'),
       ),
     );
+  }
+
+  Future<void> onPressed() async {
+    if (!userProfileController.validateForms(context: context)) {
+      return;
+    }
+
+    userProfile = Provider.of<UserProfileController>(context, listen: false)
+        .setProfileData(
+      basicDetail: Provider.of<BasicDetailController>(context, listen: false)
+          .basicDetail,
+      contactDetail:
+          Provider.of<ContactDetailController>(context, listen: false)
+              .contactDetail,
+      emergencyContact:
+          Provider.of<EmergencyContactController>(context, listen: false)
+              .emergencyContact,
+      gender: Provider.of<UserProfileController>(context, listen: false).gender!,
+      multipleVehicle:
+          Provider.of<MultipleVehicleController>(context, listen: false)
+              .multipleVehicle,
+      vehicleInfo: Provider.of<VehicleInfoController>(context, listen: false)
+          .vehicleInfo,
+    );
+
+    try {
+      await _userRef.set(userProfile?.toMap());
+
+      final snackBar = SnackBar(
+        duration: const Duration(seconds: 3),
+        content: const Text('Profile Set'),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } on Exception catch (e) {
+      final snackBar = SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Text(e.toString()),
+        action: SnackBarAction(
+          label: 'Dismiss',
+          onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }

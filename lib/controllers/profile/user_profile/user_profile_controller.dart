@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
@@ -16,11 +15,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
-  UserProfile userProfile = const UserProfile();
+  UserProfile userProfile =  const UserProfile();
+  Gender? gender = Gender.male;
+  bool formEnabled = false;
+
+  void changeFormState() {
+    formEnabled = !formEnabled;
+    notifyListeners();
+  }
+
+  void setGender(Gender? value) {
+    gender = value;
+    notifyListeners();
+  }
 
   bool validateForms({required BuildContext context}) {
     if (Provider.of<BasicDetailController>(context, listen: false)
-        .validateBasicDetailForms() &&
+            .validateBasicDetailForms() &&
         Provider.of<ContactDetailController>(context, listen: false)
             .validateContactDetailForms() &&
         Provider.of<VehicleInfoController>(context, listen: false)
@@ -52,15 +63,21 @@ class UserProfileController extends ChangeNotifier {
 
   Future<void> readProfileData({required String userId}) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
-    // Get the data once
-    DatabaseEvent event = await ref.once();
 
-    DataSnapshot dataSnapshot = event.snapshot;
+    try {
+      final DataSnapshot? snapShot = await ref.get();
 
-    //
-    userProfile = UserProfile.fromMap(dataSnapshot.value as Map<String,dynamic>);
-    // Print the data of the snapshot
-    debugPrint(userProfile.toString());
+      Map<String, dynamic> data = jsonDecode(jsonEncode(snapShot?.value));
+
+      userProfile = UserProfile.fromMap(data);
+
+      setGender(userProfile.gender);
+
+      notifyListeners();
+
+      log(userProfile.toString());
+    } on Exception catch (e) {
+      log(e.toString());
+    }
   }
-
 }

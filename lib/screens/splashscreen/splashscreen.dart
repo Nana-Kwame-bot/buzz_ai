@@ -1,4 +1,5 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
@@ -25,7 +26,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   late AnimationController _animationController;
   late AuthenticationController _authenticationController;
+  late UserProfileController userProfileController;
   late Animation _animation;
+  late String userId;
 
   @override
   void initState() {
@@ -35,6 +38,14 @@ class _SplashScreenState extends State<SplashScreen>
       context,
       listen: false,
     );
+
+    userProfileController = Provider.of<UserProfileController>(
+      context,
+      listen: false,
+    );
+
+    userId = _authenticationController.auth.currentUser!.uid;
+    userProfileController.readProfileData(userId: userId);
 
     _animationController = AnimationController(
       vsync: this,
