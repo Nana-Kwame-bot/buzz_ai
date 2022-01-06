@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
@@ -19,6 +21,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
+  late UserProfileController userProfileController;
+  late String userId;
 
   var numberAuthFormKey = GlobalKey<FormState>();
 
@@ -30,14 +34,30 @@ class _LoginScreenState extends State<LoginScreen> {
       listen: false,
     );
 
+    userProfileController = Provider.of<UserProfileController>(
+      context,
+      listen: false,
+    );
+
     _authenticationController.onAuthStateChanges.listen((User? user) {
       if (user == null) {
         debugPrint('User is currently signed out!');
       } else {
         debugPrint('User is signed in!');
-        Navigator.of(context).pushNamed(BottomNavigation.iD);
+        userId = _authenticationController.auth.currentUser!.uid;
+        readData(userId).whenComplete(() {
+          Navigator.of(context).pushNamed(BottomNavigation.iD);
+        });
       }
     });
+  }
+
+  Future<void> readData(String uid) async {
+    try {
+      await userProfileController.readProfileData(userId: uid);
+    } on Exception catch (e) {
+     log(e.toString());
+    }
   }
 
   @override

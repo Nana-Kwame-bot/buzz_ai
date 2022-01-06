@@ -1,18 +1,10 @@
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
-import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/widgets/config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String iD = '/';
-
-//repository injection
-//final MyRepository repository = MyRepository(apiClient: MyApiClient(httpClient: http.Client()));
 
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -25,27 +17,13 @@ class _SplashScreenState extends State<SplashScreen>
   // static const double _iconSize = 50;
 
   late AnimationController _animationController;
-  late AuthenticationController _authenticationController;
-  late UserProfileController userProfileController;
+
   late Animation _animation;
   late String userId;
 
   @override
   void initState() {
     super.initState();
-
-    _authenticationController = Provider.of<AuthenticationController>(
-      context,
-      listen: false,
-    );
-
-    userProfileController = Provider.of<UserProfileController>(
-      context,
-      listen: false,
-    );
-
-    userId = _authenticationController.auth.currentUser!.uid;
-    userProfileController.readProfileData(userId: userId);
 
     _animationController = AnimationController(
       vsync: this,
@@ -54,15 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          _authenticationController.onAuthStateChanges.listen((User? user) {
-            if (user == null) {
-              debugPrint('User is currently signed out!');
-              Navigator.pushReplacementNamed(context, LoginScreen.iD);
-            } else {
-              debugPrint('User is signed in!');
-              Navigator.of(context).pushReplacementNamed(BottomNavigation.iD);
-            }
-          });
+          Navigator.pushReplacementNamed(context, LoginScreen.iD);
         }
       });
 

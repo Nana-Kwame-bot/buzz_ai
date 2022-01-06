@@ -70,6 +70,11 @@ class AuthenticationController extends ChangeNotifier {
     }
   }
 
+
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
+
   ///Has to be empty if we don't want automatic sign in
   // void completed(PhoneAuthCredential phoneAuthCredential) {}
 }
