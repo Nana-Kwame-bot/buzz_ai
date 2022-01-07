@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 
 class ContactDetailController extends ChangeNotifier {
   ContactDetail contactDetail = const ContactDetail();
-  final contactDetailsFormKey = GlobalKey<FormState>();
 
-  bool validateContactDetailForms() {
-    return contactDetailsFormKey.currentState!.validate();
+  bool isContactDetailValid = false;
+
+  void makeValid() {
+    isContactDetailValid = true;
+    notifyListeners();
+  }
+
+  void makeInvalid() {
+    isContactDetailValid = false;
+    notifyListeners();
   }
 
   void setAddress(String? newValue) {
@@ -18,4 +25,6 @@ class ContactDetailController extends ChangeNotifier {
     contactDetail = contactDetail.copyWith(phoneNumber: newValue);
     notifyListeners();
   }
+
+
 }

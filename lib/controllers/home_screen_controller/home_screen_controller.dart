@@ -59,8 +59,10 @@ class HomeScreenController extends ChangeNotifier {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    googleMapController.complete(controller);
-    notifyListeners();
+    if (!googleMapController.isCompleted) {
+      googleMapController.complete(controller);
+      notifyListeners();
+    }
   }
 
   var userDestination = '';
