@@ -96,9 +96,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         listen: false,
                       ).signInWithPhoneNumber(value);
                       if (_result) {
-
-                        Navigator.pushReplacementNamed(
-                          context,
+                        Navigator.of(context).pushReplacementNamed(
                           BottomNavigation.iD,
                         );
                       }

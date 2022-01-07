@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/profile/basic_detail/basic_detail.dart';
 import 'package:buzz_ai/models/profile/contact_detail/contact_detail.dart';
@@ -8,25 +12,57 @@ import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:buzz_ai/models/profile/multiple_vehicle/multiple_vehicle.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/models/profile/vehicle_info/vehicle_info.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
   UserProfile userProfile = const UserProfile();
+  Gender? gender = Gender.male;
+  bool formEnabled = false;
+
+  bool isBasicDetailValid = false;
+  bool isContactDetailValid = false;
+  bool isVehicleFormValid = false;
+
+  void getBasicDetailValid(bool? value) {
+    isBasicDetailValid = value ?? false;
+    notifyListeners();
+  }
+
+  void getContactDetailValid(bool? value) {
+    isContactDetailValid = value ?? false;
+    notifyListeners();
+  }
+
+  void getVehicleFormValid(bool? value) {
+    isVehicleFormValid = value ?? false;
+    notifyListeners();
+  }
+
+  void changeFormState() {
+    formEnabled = !formEnabled;
+    notifyListeners();
+  }
+
+  void setGender(Gender? value) {
+    gender = value;
+    notifyListeners();
+  }
 
   bool validateForms({required BuildContext context}) {
     if (Provider.of<BasicDetailController>(context, listen: false)
-            .validateBasicDetailForms() &&
+            .isBasicDetailValid &&
         Provider.of<ContactDetailController>(context, listen: false)
-            .validateContactDetailForms() &&
+            .isContactDetailValid &&
         Provider.of<VehicleInfoController>(context, listen: false)
-            .validateVehicleForms()) {
+            .isVehicleInfoValid) {
       return true;
     }
     return false;
   }
 
-  UserProfile getProfileData({
+  UserProfile setProfileData({
     required BasicDetail basicDetail,
     required ContactDetail contactDetail,
     required EmergencyContact emergencyContact,
@@ -44,5 +80,82 @@ class UserProfileController extends ChangeNotifier {
     );
 
     return userProfile;
+  }
+
+  void getBasicDetail(BasicDetail basicDetail, BuildContext context) {
+    var basicDetailController = context.read<BasicDetailController>();
+    basicDetailController.basicDetail.copyWith(
+      imageURL: basicDetail.imageURL,
+      fullName: basicDetail.fullName,
+      dateOfBirth: basicDetail.dateOfBirth,
+      weight: basicDetail.weight,
+      age: basicDetail.age,
+      bloodGroup: basicDetail.bloodGroup,
+      licenseNumber: basicDetail.licenseNumber,
+    );
+  }
+
+  void getContactDetail(ContactDetail contactDetail, BuildContext context) {
+    var contactDetailController = context.read<ContactDetailController>();
+    contactDetailController.contactDetail.copyWith(
+      address: contactDetail.address,
+      phoneNumber: contactDetail.phoneNumber,
+    );
+  }
+
+  void getEmergencyContact(
+      EmergencyContact emergencyContact, BuildContext context) {
+    var emergencyContactController = context.read<EmergencyContactController>();
+    emergencyContactController.emergencyContact.copyWith(
+      name: emergencyContact.name,
+      relation: emergencyContact.relation,
+      contactNumber: emergencyContact.contactNumber,
+      contactAdded: emergencyContact.contactAdded,
+    );
+  }
+
+  void getMultipleVehicle(
+      MultipleVehicle multipleVehicle, BuildContext context) {
+    var multipleVehicleController = context.read<MultipleVehicleController>();
+    multipleVehicleController.multipleVehicle.copyWith(
+      ownerName: multipleVehicle.ownerName,
+      model: multipleVehicle.model,
+      year: multipleVehicle.year,
+      plateNumber: multipleVehicle.plateNumber,
+      added: multipleVehicle.added,
+    );
+  }
+
+  void getVehicleInfo(VehicleInfo vehicleInfo, BuildContext context) {
+    var vehicleInfoController = context.read<VehicleInfoController>();
+    vehicleInfoController.vehicleInfo.copyWith(
+      ownerName: vehicleInfo.ownerName,
+      model: vehicleInfo.model,
+      year: vehicleInfo.year,
+      plateNumber: vehicleInfo.plateNumber,
+    );
+  }
+
+  Future<void> readProfileData(
+      {required String userId, required BuildContext context}) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
+
+    final DataSnapshot? snapShot = await ref.get();
+
+    Map<String, dynamic>? data = jsonDecode(jsonEncode(snapShot?.value));
+
+    if (data != null) {
+      log(data.toString());
+      log('data is not null');
+      userProfile = UserProfile.fromMap(data);
+      getBasicDetail(userProfile.basicDetail!, context);
+      getContactDetail(userProfile.contactDetail!, context);
+      getEmergencyContact(userProfile.emergencyContact!, context);
+      getMultipleVehicle(userProfile.multipleVehicle!, context);
+      getVehicleInfo(userProfile.vehicleInfo!, context);
+      setGender(userProfile.gender);
+    }else{
+      log('data is null');
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/emergency_contact_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,9 @@ class Emergency extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Consumer<EmergencyContactController>(
-        builder: (BuildContext context, value, Widget? child) {
+      child: Consumer2(
+        builder: (BuildContext context, EmergencyContactController value,
+            UserProfileController controller, Widget? child) {
           return ListTile(
             leading: value.emergencyContact.contactAdded!
                 ? const SizedBox.shrink()
@@ -25,13 +27,15 @@ class Emergency extends StatelessWidget {
                   : 'Add Emergency Contact',
               style: const TextStyle(fontSize: 14.0),
             ),
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const EmergencyContactDialog();
-                  });
-            },
+            onTap: controller.formEnabled
+                ? () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const EmergencyContactDialog();
+                        });
+                  }
+                : null,
           );
         },
       ),
