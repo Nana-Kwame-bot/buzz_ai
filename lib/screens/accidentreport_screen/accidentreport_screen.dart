@@ -265,8 +265,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             width: double.infinity,
                             color: const Color.fromRGBO(82, 71, 197, 1),
                             child: TextButton(
-                              onPressed: () {
-                                uploadAccidentReport();
+                              onPressed: () async {
+                                await uploadAccidentReport();
                               },
                               child: const Text(
                                 "Submit", style: TextStyle(color: Colors.white
@@ -303,8 +303,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             ],
 
                           ),
-                          onTap: () {
-                            pickImage();
+                          onTap: () async {
+                            await pickImage();
                           },
                         )
                     )
