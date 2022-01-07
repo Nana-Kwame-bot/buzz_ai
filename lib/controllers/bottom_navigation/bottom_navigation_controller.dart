@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/foundation.dart' show kDebugMode;
 
 class BottomNavigationController extends ChangeNotifier {
-
   int currentPage = 0;
 
   List<TabData> tabs = [
