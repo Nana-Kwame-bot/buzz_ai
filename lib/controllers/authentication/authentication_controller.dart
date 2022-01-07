@@ -2,10 +2,9 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-enum VerificationStatus { loading, codeSent, successFul, failed }
-
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  bool isNewUser = true;
   String? _phoneNumber;
   var timeOut = const Duration(seconds: 120);
 
@@ -13,6 +12,11 @@ class AuthenticationController extends ChangeNotifier {
 
   Stream<User?> get onAuthStateChanges {
     return auth.authStateChanges();
+  }
+
+  void updateIsNew(bool? value) {
+    isNewUser = value!;
+    notifyListeners();
   }
 
   Future<void> onFieldSubmitted(String? value) async {
@@ -57,19 +61,31 @@ class AuthenticationController extends ChangeNotifier {
     }
   }
 
+  Future<UserCredential?> signIn() async {}
+
   Future<bool> signInWithPhoneNumber(String? smsCode) async {
     try {
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: smsCode!,
       );
-      final User user = (await auth.signInWithCredential(credential)).user!;
+      final User user =
+          await auth.signInWithCredential(credential).then((value) {
+            log(value.additionalUserInfo!.isNewUser.toString());
+        updateIsNew(value.additionalUserInfo?.isNewUser);
+        return value.user!;
+      });
+      // final User user = (await auth.signInWithCredential(credential)).user!;
       log('Successfully signed in UID: ${user.uid}');
       return true;
     } catch (e) {
       log(e.toString() + 'Failed to sign in');
       return false;
     }
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
   }
 
   ///Has to be empty if we don't want automatic sign in

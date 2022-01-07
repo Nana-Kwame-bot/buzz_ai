@@ -1,22 +1,40 @@
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ContactDetails extends StatelessWidget {
+class ContactDetails extends StatefulWidget {
   const ContactDetails({Key? key}) : super(key: key);
+
+  @override
+  State<ContactDetails> createState() => _ContactDetailsState();
+}
+
+class _ContactDetailsState extends State<ContactDetails> {
+  final contactDetailsFormKey =
+      GlobalKey<FormState>(debugLabel: 'contactDetailsFormKey');
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Consumer(
+      child: Consumer2(
         builder: (
           BuildContext context,
           ContactDetailController contactDetailController,
+          UserProfileController userProfileController,
           Widget? child,
         ) {
           return Form(
-            key: contactDetailController.contactDetailsFormKey,
+            autovalidateMode: AutovalidateMode.always,
+            onChanged: () {
+              if (contactDetailsFormKey.currentState!.validate()) {
+                contactDetailController.makeValid();
+              } else {
+                contactDetailController.makeInvalid();
+              }
+            },
+            key: contactDetailsFormKey,
             child: Column(
               children: [
                 const Align(
@@ -41,6 +59,9 @@ class ContactDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue:
+                      contactDetailController.contactDetail.address,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Address',
@@ -67,6 +88,8 @@ class ContactDetails extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
+                  enabled: userProfileController.formEnabled,
+                  initialValue: contactDetailController.contactDetail.phoneNumber,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',
@@ -87,5 +110,11 @@ class ContactDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    contactDetailsFormKey.currentState?.dispose();
+    super.dispose();
   }
 }

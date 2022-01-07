@@ -3,11 +3,19 @@ import 'package:flutter/material.dart';
 
 class VehicleInfoController extends ChangeNotifier {
   VehicleInfo vehicleInfo = const VehicleInfo();
-  final vehicleInfoFormKey = GlobalKey<FormState>();
 
-  bool validateVehicleForms() {
-    return vehicleInfoFormKey.currentState!.validate();
+  bool isVehicleInfoValid = false;
+
+  void makeValid() {
+    isVehicleInfoValid = true;
+    notifyListeners();
   }
+
+  void makeInvalid() {
+    isVehicleInfoValid = false;
+    notifyListeners();
+  }
+
 
   void setOwnerName(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(ownerName: newValue);

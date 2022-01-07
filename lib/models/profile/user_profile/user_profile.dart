@@ -87,11 +87,16 @@ class UserProfile {
   }
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
+    final genderString = map['gender'] as String;
+    var gender = genderString.substring(
+      genderString.lastIndexOf(".") + 1,
+      genderString.length,
+    );
     return UserProfile(
       basicDetail: BasicDetail.fromMap(map['basicDetail']),
       contactDetail: ContactDetail.fromMap(map['contactDetail']),
       emergencyContact: EmergencyContact.fromMap(map['emergencyContact']),
-      gender: Gender.values.byName(map['gender']),
+      gender: Gender.values.byName(gender),
       multipleVehicle: MultipleVehicle.fromMap(map['multipleVehicle']),
       vehicleInfo: VehicleInfo.fromMap(map['vehicleInfo']),
     );

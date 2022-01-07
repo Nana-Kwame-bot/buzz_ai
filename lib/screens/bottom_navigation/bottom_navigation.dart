@@ -4,29 +4,40 @@ import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BottomNavigation extends StatelessWidget {
+class BottomNavigation extends StatefulWidget {
   static const String iD = '/bottom_navigation';
 
   const BottomNavigation({Key? key}) : super(key: key);
 
   @override
+  State<BottomNavigation> createState() => _BottomNavigationState();
+}
+
+class _BottomNavigationState extends State<BottomNavigation> {
+  final PageController controller = PageController(keepPage: false);
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Consumer<BottomNavigationController>(
-        builder: (BuildContext context, value, Widget? child) {
+      child: Consumer(
+        builder: (BuildContext context, BottomNavigationController value,
+            Widget? child) {
           return Scaffold(
             backgroundColor: Colors.white,
-            body: IndexedStack(
-              index: value.currentPage,
+            body: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: controller,
+              // index: value.currentPage,
               children: value.pages,
             ),
             bottomNavigationBar: FancyBottomNavigation(
               circleColor: defaultColor,
               inactiveIconColor: Colors.black54,
-              key: value.bottomNavigationKey,
               initialSelection: 0,
               textColor: defaultColor,
-              onTabChangedListener: value.changePage,
+              onTabChangedListener: (int index){
+                value.changePage(index);
+                controller.jumpToPage(index);
+              },
               tabs: value.tabs,
             ),
           );
