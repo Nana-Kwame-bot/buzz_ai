@@ -51,9 +51,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
     final _uid = user?.uid;
 
     final ref = FirebaseStorage.instance
-        .ref()
-        .child(_uid!)
-        .child('.jpg');
+        .ref(_uid!)
+        // .child(_uid!)
+        .child('accidentImage.jpg');
     await ref.putFile(imageFile);
     var url = await ref.getDownloadURL();
 
