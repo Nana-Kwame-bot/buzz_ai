@@ -28,6 +28,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
   final picker = ImagePicker();
   late File imageFile;
   dynamic carNumberPlate, peopleInjured;
+  late TextEditingController carPlateNumber, numberOfPeopleInjured;
 
 
   Future<void> pickImage() async {
@@ -52,41 +53,53 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
     final ref = FirebaseStorage.instance
         .ref(_uid!)
-        // .child(_uid!)
+        // .child(_uid)
         .child('accidentImage.jpg');
     await ref.putFile(imageFile);
     var url = await ref.getDownloadURL();
 
     await FirebaseFirestore.instance
-        .collection('users')
-        .doc("uploadAccidentReport")
+        .collection('uploadAccidentReport')
+        .doc(_uid + "." + "${Timestamp.now()}")
         .set({
-      'carNumberPlate': carNumberPlate,
-      'peopleInjured': peopleInjured,
+      'carNumberPlate': carPlateNumber,
+      'peopleInjured': numberOfPeopleInjured,
       'AccidentImage': url,
-      'userId': _uid,
+      // 'userId': _uid,
       'createdAt': Timestamp.now(),
     });
     Navigator.canPop(context) ? Navigator.pop(context) : null;
   }
 
+  showAlertDialog(BuildContext context) {
+    // Create button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
 
-  // final User user = await auth.currentUser!;
-  // final userid = user.uid;
-  // final referenceDatabase = FirebaseDatabase.instance.ref().child("$userid/");
-  // await firebase_storage.FirebaseStorage.instance
-  //         .ref().child("$userid/$imageFile").
-  //     child(DateTime.now().microsecondsSinceEpoch.toString() + "." + imageFile.path).putFile(imageFile);
-  //
-  // var imageUrl = referenceDatabase.get().toString();
-  //
-  // HashMap map = HashMap();
-  // map["carNumberplate"] = carNumberPlate;
-  // map["peopleInjured"] = peopleInjured;
-  // map["imageUrl"] = imageUrl;
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Details Not complete"),
+      content: const Text("You Must Upload image and Car Number Plate"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
 
-  @override
+    @override
   Widget build(BuildContext context) {
     final validationService = Provider.of<SubmitAccidentReport>(context);
     return Scaffold(
@@ -203,9 +216,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                               hintText: 'Car Number Plate',
 
                             ),
+                            controller: carPlateNumber,
+                            validator: (value) => value!.isEmpty ? "Enter Email" : null ,
                             onChanged: (dynamic value) {
                               carNumberPlate =
                                   validationService.changeCarNumberPlate(value);
+                              setState(() {
+                                carPlateNumber = value;
+                              });
                             },
                           ),
 
@@ -252,10 +270,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                               ),
                               hintText: ' How many people are injured',
                             ),
+                            controller: numberOfPeopleInjured,
                             onChanged: (dynamic value) {
                               peopleInjured =
                                   validationService.changeNumberOfPeopleInjured(
                                       value);
+                              setState(() {
+                                numberOfPeopleInjured = value;
+                              });
                             },
                           ),
 
@@ -266,7 +288,17 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             color: const Color.fromRGBO(82, 71, 197, 1),
                             child: TextButton(
                               onPressed: () async {
-                                await uploadAccidentReport();
+                                if(imageFile.path.isNotEmpty && carNumberPlate.toString().trim().isNotEmpty){
+                                  await uploadAccidentReport();
+                                }
+                                else{
+                                  if(imageFile.path.isEmpty){
+                                    showAlertDialog(context);
+                                  }
+                                  else if(carNumberPlate.toString().trim().isEmpty){
+                                    showAlertDialog(context);
+                                  }
+                                }
                               },
                               child: const Text(
                                 "Submit", style: TextStyle(color: Colors.white
