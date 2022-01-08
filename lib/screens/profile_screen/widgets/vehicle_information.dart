@@ -153,7 +153,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: const Text(
-                    'Vehicle plate numer',
+                    'Vehicle plate number',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 12.0,
