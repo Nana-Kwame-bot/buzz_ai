@@ -22,13 +22,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
   @override
   void initState() {
+    carPlateNumber = TextEditingController(text: 'Car Number Plate');
+    numberOfPeopleInjured = TextEditingController(text: '0');
     super.initState();
   }
 
   final picker = ImagePicker();
   late File imageFile;
   dynamic carNumberPlate, peopleInjured;
-  late TextEditingController carPlateNumber, numberOfPeopleInjured;
+  late TextEditingController? carPlateNumber;
+  late TextEditingController? numberOfPeopleInjured;
 
 
   Future<void> pickImage() async {
@@ -74,7 +77,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
   showAlertDialog(BuildContext context) {
     // Create button
     Widget okButton = TextButton(
-      child: Text("OK"),
+      child: const Text("OK"),
       onPressed: () {
         Navigator.of(context).pop();
       },
@@ -218,9 +221,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                             ),
                             controller: carPlateNumber,
                             validator: (value) => value!.isEmpty ? "Enter Email" : null ,
-                            onChanged: (dynamic value) {
+                            onChanged: (dynamic value) async {
                               carNumberPlate =
-                                  validationService.changeCarNumberPlate(value);
+                                 await validationService.changeCarNumberPlate(value);
                               setState(() {
                                 carPlateNumber = value;
                               });
