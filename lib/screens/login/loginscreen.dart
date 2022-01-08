@@ -46,12 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void dispose() {
-    numberAuthFormKey.currentState?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(82, 71, 197, 1),
@@ -180,7 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   bool validateNumberForm(String? number) {
     if (numberAuthFormKey.currentState!.validate()) {
       _authenticationController.onFieldSubmitted(number);
@@ -191,5 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
+  @override
+  void dispose() {
+    numberAuthFormKey.currentState?.dispose();
+    super.dispose();
+  }
 }
