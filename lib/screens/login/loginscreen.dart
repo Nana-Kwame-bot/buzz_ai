@@ -1,9 +1,7 @@
-import 'dart:developer';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -182,6 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   bool validateNumberForm(String? number) {
     if (numberAuthFormKey.currentState!.validate()) {
       _authenticationController.onFieldSubmitted(number);
@@ -191,4 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
       return false;
     }
   }
+
+
 }

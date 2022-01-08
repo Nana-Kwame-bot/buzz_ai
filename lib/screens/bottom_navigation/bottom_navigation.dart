@@ -1,5 +1,5 @@
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,5 +44,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }

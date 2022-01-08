@@ -9,7 +9,7 @@ import 'package:buzz_ai/screens/profile_screen/widgets/image_pick.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/multiple_car.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/submit_form.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

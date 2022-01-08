@@ -1,6 +1,6 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

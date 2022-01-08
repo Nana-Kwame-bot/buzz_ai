@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

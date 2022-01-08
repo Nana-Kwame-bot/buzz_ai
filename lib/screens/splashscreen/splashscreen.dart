@@ -1,5 +1,5 @@
 import 'package:buzz_ai/screens/login/loginscreen.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
