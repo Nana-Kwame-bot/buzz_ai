@@ -63,9 +63,12 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                         labelText: 'Owner name',
                         hintText: 'Enter owner name',
                       ),
+                      initialValue:
+                          multipleVehicleController.multipleVehicle.ownerName ??
+                              '',
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter owner name';
+                          return 'Enter owner name';
                         }
                         return null;
                       },
@@ -95,9 +98,12 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                                   labelText: 'Model',
                                   hintText: 'Enter the model',
                                 ),
+                                initialValue: multipleVehicleController
+                                        .multipleVehicle.model ??
+                                    '',
                                 validator: (String? value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please the model';
+                                    return 'Enter the model';
                                   }
                                   return null;
                                 },
@@ -132,9 +138,12 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                                   hintText: 'Enter the year',
                                 ),
                                 keyboardType: TextInputType.datetime,
+                                initialValue: multipleVehicleController
+                                        .multipleVehicle.year ??
+                                    '',
                                 validator: (String? value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter the year';
+                                    return 'Enter the year';
                                   }
                                   return null;
                                 },
@@ -162,9 +171,10 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                         labelText: 'Vehicle plate number',
                         hintText: 'Enter the Vehicle plate number',
                       ),
+                      initialValue: multipleVehicleController.multipleVehicle.plateNumber ?? '',
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter  the Vehicle plate number';
+                          return 'Enter the Vehicle plate number';
                         }
                         return null;
                       },
@@ -222,7 +232,7 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
   void validateMultipleCarForms() {
     if (multipleCarFormKey.currentState!.validate()) {
       multipleCarFormKey.currentState!.save();
-      Provider.of<MultipleVehicleController>(context,listen: false).added();
+      Provider.of<MultipleVehicleController>(context, listen: false).added();
       Navigator.of(context).pop();
     }
   }

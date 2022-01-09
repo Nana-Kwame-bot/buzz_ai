@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:buzz_ai/models/address/address.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';

@@ -1,5 +1,5 @@
 import 'package:buzz_ai/screens/login/loginscreen.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushReplacementNamed(LoginScreen.iD);
+          Navigator.of(context).pushNamed(LoginScreen.iD);
         }
       });
 

@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
-import 'package:buzz_ai/services/widgets/config.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,9 +17,28 @@ class VerificationScreen extends StatefulWidget {
 
 class _VerificationScreenState extends State<VerificationScreen> {
   var verificationFormKey = GlobalKey<FormState>();
+  bool isTimerComplete = false;
+  late Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(
+      const Duration(seconds: 30),
+      () {
+        setState(() {
+          isTimerComplete = true;
+        });
+      },
+    );
+  }
 
   @override
   void dispose() {
+    if (_timer != null) {
+      _timer?.cancel();
+      _timer = null;
+    }
     verificationFormKey.currentState?.dispose();
     super.dispose();
   }
@@ -95,10 +115,25 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         context,
                         listen: false,
                       ).signInWithPhoneNumber(value);
+
                       if (_result) {
                         Navigator.of(context).pushReplacementNamed(
                           BottomNavigation.iD,
                         );
+                      } else {
+                        final snackBar = SnackBar(
+                          duration: const Duration(seconds: 3),
+                          content: const Text(
+                            'Invalid verification code',
+                          ),
+                          action: SnackBarAction(
+                            label: 'Dismiss',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                            },
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     },
                     keyboardType: TextInputType.number,
@@ -135,28 +170,32 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     ),
                     TextSpan(
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Provider.of<AuthenticationController>(
-                            context,
-                            listen: false,
-                          ).onFieldSubmitted;
-                          final snackBar = SnackBar(
-                            duration: const Duration(seconds: 3),
-                            content: const Text(
-                              'Please check your phone for the verification code',
-                            ),
-                            action: SnackBarAction(
-                              label: 'OK',
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                              },
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
+                        ..onTap = isTimerComplete
+                            ? () async {
+                                Provider.of<AuthenticationController>(
+                                  context,
+                                  listen: false,
+                                ).onFieldSubmitted;
+                                final snackBar = SnackBar(
+                                  duration: const Duration(seconds: 3),
+                                  content: const Text(
+                                    'Please check your phone for the verification code',
+                                  ),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context)
+                                          .clearSnackBars();
+                                    },
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            : null,
                       text: " Resend Again",
-                      style: const TextStyle(
-                        color: defaultColor,
+                      style: TextStyle(
+                        color: isTimerComplete ? defaultColor : Colors.grey,
                       ),
                     ),
                   ],

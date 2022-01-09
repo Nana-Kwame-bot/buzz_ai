@@ -37,7 +37,7 @@ class _SubmitFormState extends State<SubmitForm> {
       listen: false,
     );
     userId = authenticationController.auth.currentUser!.uid;
-    _userRef = FirebaseDatabase.instance.ref('users/$userId');
+    _userRef = userProfileController.database.ref('users/$userId');
   }
 
   @override

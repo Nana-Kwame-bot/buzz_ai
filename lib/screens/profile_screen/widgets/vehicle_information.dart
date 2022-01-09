@@ -59,7 +59,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                 TextFormField(
                   enabled: userProfileController.formEnabled,
                   initialValue:
-                  vehicleInfoController.vehicleInfo.ownerName,
+                  vehicleInfoController.vehicleInfo.ownerName ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Owner name',
@@ -67,7 +67,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter the owner's name";
+                      return "Enter the owner's name";
                     }
                     return null;
                   },
@@ -92,7 +92,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue:vehicleInfoController.vehicleInfo.model,
+                            initialValue:vehicleInfoController.vehicleInfo.model ?? '',
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Model',
@@ -100,7 +100,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                             ),
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please the model';
+                                return 'Enter the model';
                               }
                               return null;
                             },
@@ -129,7 +129,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                           ),
                           TextFormField(
                             enabled: userProfileController.formEnabled,
-                            initialValue: vehicleInfoController.vehicleInfo.year,
+                            initialValue: vehicleInfoController.vehicleInfo.year ?? '',
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Year',
@@ -138,7 +138,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                             keyboardType: TextInputType.datetime,
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter the year';
+                                return 'Enter the year';
                               }
                               return null;
                             },
@@ -153,7 +153,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: const Text(
-                    'Vehicle plate numer',
+                    'Vehicle plate number',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 12.0,
@@ -162,7 +162,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: vehicleInfoController.vehicleInfo.plateNumber,
+                  initialValue: vehicleInfoController.vehicleInfo.plateNumber ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Vehicle plate number',
@@ -170,7 +170,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter the vehicle's plate number";
+                      return "Enter the vehicle's plate number";
                     }
                     return null;
                   },

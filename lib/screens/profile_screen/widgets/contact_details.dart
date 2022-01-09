@@ -61,7 +61,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 TextFormField(
                   enabled: userProfileController.formEnabled,
                   initialValue:
-                      contactDetailController.contactDetail.address,
+                      contactDetailController.contactDetail.address ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Address',
@@ -69,7 +69,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your address';
+                      return 'Enter your address';
                     }
                     return null;
                   },
@@ -89,7 +89,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: contactDetailController.contactDetail.phoneNumber,
+                  initialValue: contactDetailController.contactDetail.phoneNumber ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',
@@ -97,7 +97,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
+                      return 'Enter your phone number';
                     }
                     return null;
                   },

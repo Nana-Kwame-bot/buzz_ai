@@ -65,12 +65,12 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Enter your name';
                         }
                         return null;
                       },
                       initialValue:
-                          emergencyContactController.emergencyContact.name,
+                          emergencyContactController.emergencyContact.name ?? '',
                       onSaved: emergencyContactController.setName,
                       keyboardType: TextInputType.name,
                     ),
@@ -121,12 +121,12 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your emergency contact';
+                          return 'Enter your emergency contact';
                         }
                         return null;
                       },
                       initialValue: emergencyContactController
-                          .emergencyContact.contactNumber,
+                          .emergencyContact.contactNumber ?? '',
                       onSaved: emergencyContactController.setEmergencyContact,
                       keyboardType: TextInputType.phone,
                     ),

@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
   UserProfile userProfile = const UserProfile();
+  FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
 
@@ -84,7 +85,8 @@ class UserProfileController extends ChangeNotifier {
 
   void getBasicDetail(BasicDetail basicDetail, BuildContext context) {
     var basicDetailController = context.read<BasicDetailController>();
-    basicDetailController.basicDetail.copyWith(
+    basicDetailController.basicDetail =
+        basicDetailController.basicDetail.copyWith(
       imageURL: basicDetail.imageURL,
       fullName: basicDetail.fullName,
       dateOfBirth: basicDetail.dateOfBirth,
@@ -97,7 +99,8 @@ class UserProfileController extends ChangeNotifier {
 
   void getContactDetail(ContactDetail contactDetail, BuildContext context) {
     var contactDetailController = context.read<ContactDetailController>();
-    contactDetailController.contactDetail.copyWith(
+    contactDetailController.contactDetail =
+        contactDetailController.contactDetail.copyWith(
       address: contactDetail.address,
       phoneNumber: contactDetail.phoneNumber,
     );
@@ -106,7 +109,9 @@ class UserProfileController extends ChangeNotifier {
   void getEmergencyContact(
       EmergencyContact emergencyContact, BuildContext context) {
     var emergencyContactController = context.read<EmergencyContactController>();
-    emergencyContactController.emergencyContact.copyWith(
+
+    emergencyContactController.emergencyContact =
+        emergencyContactController.emergencyContact.copyWith(
       name: emergencyContact.name,
       relation: emergencyContact.relation,
       contactNumber: emergencyContact.contactNumber,
@@ -117,7 +122,8 @@ class UserProfileController extends ChangeNotifier {
   void getMultipleVehicle(
       MultipleVehicle multipleVehicle, BuildContext context) {
     var multipleVehicleController = context.read<MultipleVehicleController>();
-    multipleVehicleController.multipleVehicle.copyWith(
+    multipleVehicleController.multipleVehicle =
+        multipleVehicleController.multipleVehicle.copyWith(
       ownerName: multipleVehicle.ownerName,
       model: multipleVehicle.model,
       year: multipleVehicle.year,
@@ -128,7 +134,8 @@ class UserProfileController extends ChangeNotifier {
 
   void getVehicleInfo(VehicleInfo vehicleInfo, BuildContext context) {
     var vehicleInfoController = context.read<VehicleInfoController>();
-    vehicleInfoController.vehicleInfo.copyWith(
+    vehicleInfoController.vehicleInfo =
+        vehicleInfoController.vehicleInfo.copyWith(
       ownerName: vehicleInfo.ownerName,
       model: vehicleInfo.model,
       year: vehicleInfo.year,
@@ -136,13 +143,22 @@ class UserProfileController extends ChangeNotifier {
     );
   }
 
-  Future<void> readProfileData(
+  void setPersistence() {
+    database.setPersistenceEnabled(true);
+    notifyListeners();
+  }
+
+  Future<UserProfile> readProfileData(
       {required String userId, required BuildContext context}) async {
-    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
+    DatabaseReference ref = database.ref("users/$userId");
+    Map<String, dynamic>? data;
 
-    final DataSnapshot? snapShot = await ref.get();
-
-    Map<String, dynamic>? data = jsonDecode(jsonEncode(snapShot?.value));
+    try {
+      final DataSnapshot? snapShot = await ref.get();
+      data = jsonDecode(jsonEncode(snapShot?.value));
+    } on Exception catch (e) {
+      log(e.toString());
+    }
 
     if (data != null) {
       log(data.toString());
@@ -154,8 +170,10 @@ class UserProfileController extends ChangeNotifier {
       getMultipleVehicle(userProfile.multipleVehicle!, context);
       getVehicleInfo(userProfile.vehicleInfo!, context);
       setGender(userProfile.gender);
-    }else{
+      notifyListeners();
+    } else {
       log('data is null');
     }
+    return userProfile;
   }
 }

@@ -28,13 +28,11 @@ class Emergency extends StatelessWidget {
               style: const TextStyle(fontSize: 14.0),
             ),
             onTap: controller.formEnabled
-                ? () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const EmergencyContactDialog();
-                        });
-                  }
+                ? () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const EmergencyContactDialog();
+                    })
                 : null,
           );
         },
