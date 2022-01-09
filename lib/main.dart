@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<UserProfileController>(
           create: (BuildContext context) {
-            return UserProfileController();
+            return UserProfileController()..setPersistence();
           },
         ),
         ChangeNotifierProvider<BasicDetailController>(

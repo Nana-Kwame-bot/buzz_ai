@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 
 class UserProfileController extends ChangeNotifier {
   UserProfile userProfile = const UserProfile();
+  FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
 
@@ -136,13 +137,22 @@ class UserProfileController extends ChangeNotifier {
     );
   }
 
+  void setPersistence(){
+    database.setPersistenceEnabled(true);
+    notifyListeners();
+  }
+
   Future<void> readProfileData(
       {required String userId, required BuildContext context}) async {
-    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$userId");
+    DatabaseReference ref = database.ref("users/$userId");
+    Map<String, dynamic>? data;
 
-    final DataSnapshot? snapShot = await ref.get();
-
-    Map<String, dynamic>? data = jsonDecode(jsonEncode(snapShot?.value));
+    try {
+      final DataSnapshot? snapShot = await ref.get();
+      data = jsonDecode(jsonEncode(snapShot?.value));
+    } on Exception catch (e) {
+      log(e.toString());
+    }
 
     if (data != null) {
       log(data.toString());
@@ -154,7 +164,7 @@ class UserProfileController extends ChangeNotifier {
       getMultipleVehicle(userProfile.multipleVehicle!, context);
       getVehicleInfo(userProfile.vehicleInfo!, context);
       setGender(userProfile.gender);
-    }else{
+    } else {
       log('data is null');
     }
   }
