@@ -92,7 +92,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: basicDetailController.basicDetail.fullName,
+                  initialValue: basicDetailController.basicDetail.fullName ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     // labelText: 'Full name',
@@ -100,7 +100,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your full name';
+                      return 'Enter your full name';
                     }
                     return null;
                   },
@@ -120,7 +120,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: basicDetailController.basicDetail.dateOfBirth,
+                  initialValue: basicDetailController.basicDetail.dateOfBirth ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Date of birth',
@@ -128,7 +128,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your date of birth';
+                      return 'Enter your date of birth';
                     }
                     return null;
                   },
@@ -160,7 +160,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your  weight';
+                      return 'Enter your  weight';
                     }
                     return null;
                   },
@@ -253,7 +253,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                             ),
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your age';
+                                return 'Enter your age';
                               }
                               return null;
                             },
@@ -283,7 +283,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                           TextFormField(
                             enabled: userProfileController.formEnabled,
                             initialValue:
-                                basicDetailController.basicDetail.bloodGroup,
+                                basicDetailController.basicDetail.bloodGroup ?? '',
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
@@ -292,7 +292,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                             keyboardType: TextInputType.text,
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your blood group';
+                                return 'Enter your blood group';
                               }
                               return null;
                             },
@@ -329,7 +329,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your license number';
+                      return 'Enter your license number';
                     }
                     return null;
                   },

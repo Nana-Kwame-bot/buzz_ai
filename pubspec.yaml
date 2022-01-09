@@ -49,6 +49,7 @@ dependencies:
   map_launcher:
   map_picker:
   provider: ^6.0.1
+  fluttertoast: ^8.0.8
   slide_to_confirm:
 
 dev_dependencies:

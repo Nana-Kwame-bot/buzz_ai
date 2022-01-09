@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -39,13 +40,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context,
       listen: false,
     );
+    userId = _authenticationController.auth.currentUser!.uid;
 
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      userId = _authenticationController.auth.currentUser!.uid;
-     await userProfileController.readProfileData(
-        userId: _authenticationController.auth.currentUser!.uid,
-        context: context,
-      );
+      // userId = _authenticationController.auth.currentUser!.uid;
+      // await userProfileController.readProfileData(
+      //   userId: _authenticationController.auth.currentUser!.uid,
+      //   context: context,
+      // );
     });
   }
 
@@ -72,7 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             listen: false,
                           ).signOut().whenComplete(() {
                             Navigator.of(context)
-                                .pushReplacementNamed(LoginScreen.iD);
+                              ..pop()
+                              ..pop()
+                              ..popAndPushNamed(LoginScreen.iD);
                           });
                         },
                         child: const Text(
@@ -116,16 +120,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: Column(
-            children: const [
-              ImagePick(),
-              BasicDetails(),
-              ContactDetails(),
-              Emergency(),
-              VehicleInformation(),
-              MultipleCar(),
-              SubmitForm(),
-            ],
+          child: FutureBuilder<UserProfile>(
+            future: userProfileController.readProfileData(
+              userId: userId,
+              context: context,
+            ),
+            builder:
+                (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                return Column(
+                  children: const [
+                    ImagePick(),
+                    BasicDetails(),
+                    ContactDetails(),
+                    Emergency(),
+                    VehicleInformation(),
+                    MultipleCar(),
+                    SubmitForm(),
+                  ],
+                );
+              }
+              return SizedBox(
+                height: MediaQuery.of(context).size.height / 1.3,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
           ),
         ),
       ),
