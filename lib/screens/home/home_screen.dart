@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     height: (constraints.maxHeight * 0.8) - 32.0,
                     child: GoogleMap(
-                      mapType: MapType.hybrid,
+                      mapType: MapType.normal,
                       initialCameraPosition: value.kGooglePlex,
                       myLocationEnabled: true,
                       compassEnabled: true,

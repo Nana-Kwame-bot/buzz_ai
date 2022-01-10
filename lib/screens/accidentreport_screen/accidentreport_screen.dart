@@ -12,7 +12,6 @@ class AccidentReportScreen extends StatefulWidget {
 
   const AccidentReportScreen({Key? key}) : super(key: key);
 
-
   @override
   _AccidentReportScreenState createState() => _AccidentReportScreenState();
 }
@@ -32,7 +31,6 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
   dynamic carNumberPlate, peopleInjured;
   late TextEditingController? carPlateNumber;
   late TextEditingController? numberOfPeopleInjured;
-
 
   Future<void> pickImage() async {
     // dynamic picture = await picker.pickImage(source: ImageSource.camera);
@@ -101,8 +99,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
     );
   }
 
-
-    @override
+  @override
   Widget build(BuildContext context) {
     final validationService = Provider.of<SubmitAccidentReport>(context);
     return Scaffold(
@@ -126,205 +123,227 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
           centerTitle: true,
         ),
         backgroundColor: Colors.white,
-
-
         body: ListView(
           reverse: true,
           shrinkWrap: true,
           children: [
             Stack(
               alignment: Alignment.center,
-              children: [ Column(
-                children: [
-                  Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.5,
-                    color: const Color.fromRGBO(82, 71, 197, 1),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Center(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.41,
+                      color: const Color.fromRGBO(82, 71, 197, 1),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Center(
+                                  child: Image.asset('assets/img/upload.png')),
+                              const Text(
+                                "You Need To Upload Your",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const Text(
+                                "Report Accident Details",
+                                style: TextStyle(
+                                    fontSize: 22.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                              const Text(
+                                "If you saw any accident and need help then you can report accident here",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(
+                                height: 5.0,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.41,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 30, 20, 0),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Center(child: Image.asset('assets/img/upload.png')),
-                            const Text("You Need To Upload Your",
-                              style: TextStyle(color: Colors.white,),
-                              textAlign: TextAlign.center,),
-                            const Text("Report Accident Details",
-                              style: TextStyle(color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,),
-                            const Text(
-                              "If you saw any accident and need help then you can report accident here",
-                              style: TextStyle(color: Colors.white,),
-                              textAlign: TextAlign.center,)
-
-
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            Row(children: const [
+                              Expanded(
+                                  child: Divider(
+                                color: Colors.black45,
+                                indent: 0,
+                                endIndent: 5,
+                              )),
+                              Text(
+                                "Car Number Plate",
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Divider(
+                                color: Colors.black45,
+                                indent: 5,
+                                endIndent: 0,
+                              )),
+                            ]),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            TextFormField(
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 14, height: 1),
+                              decoration: const InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black45, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black45, width: 1.0),
+                                ),
+                                hintText: 'Car Number Plate',
+                              ),
+                              controller: carPlateNumber,
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter Email" : null,
+                              onChanged: (dynamic value) async {
+                                carNumberPlate = await validationService
+                                    .changeCarNumberPlate(value);
+                                setState(() {
+                                  carPlateNumber = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(children: const [
+                              Expanded(
+                                  child: Divider(
+                                color: Colors.black45,
+                                indent: 0,
+                                endIndent: 5,
+                              )),
+                              Text(
+                                "How many people were injured",
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Divider(
+                                color: Colors.black45,
+                                indent: 5,
+                                endIndent: 0,
+                              )),
+                            ]),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            TextFormField(
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(fontSize: 14, height: 1),
+                              decoration: const InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black45, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black45, width: 1.0),
+                                ),
+                                hintText: ' How many people are injured',
+                              ),
+                              controller: numberOfPeopleInjured,
+                              onChanged: (dynamic value) {
+                                peopleInjured = validationService
+                                    .changeNumberOfPeopleInjured(value);
+                                setState(() {
+                                  numberOfPeopleInjured = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              color: const Color.fromRGBO(82, 71, 197, 1),
+                              child: TextButton(
+                                onPressed: () async {
+                                  if (imageFile.path.isNotEmpty &&
+                                      carNumberPlate
+                                          .toString()
+                                          .trim()
+                                          .isNotEmpty) {
+                                    await uploadAccidentReport();
+                                  } else {
+                                    if (imageFile.path.isEmpty) {
+                                      showAlertDialog(context);
+                                    } else if (carNumberPlate
+                                        .toString()
+                                        .trim()
+                                        .isEmpty) {
+                                      showAlertDialog(context);
+                                    }
+                                  }
+                                },
+                                child: const Text(
+                                  "Submit",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
                     ),
-                  ),
-
-                  Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.5,
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 30, 20, 0),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 5,),
-
-                          Row(
-                              children: const [
-                                Expanded(child: Divider(
-                                  color: Colors.black,
-                                  indent: 0,
-                                  endIndent: 5,
-
-                                )),
-                                Text("Car Number Plate", style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                ),),
-                                Expanded(child: Divider(
-                                  color: Colors.black,
-                                  indent: 5,
-                                  endIndent: 0,
-                                )),
-
-                              ]),
-                          const SizedBox(height: 10,),
-
-                          TextFormField(
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                height: 1
-                            ),
-                            decoration: const InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.black, width: 1.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.black, width: 1.0),
-                              ),
-                              hintText: 'Car Number Plate',
-
-                            ),
-                            controller: carPlateNumber,
-                            validator: (value) => value!.isEmpty ? "Enter Email" : null ,
-                            onChanged: (dynamic value) async {
-                              carNumberPlate =
-                                 await validationService.changeCarNumberPlate(value);
-                              setState(() {
-                                carPlateNumber = value;
-                              });
-                            },
-                          ),
-
-                          const SizedBox(height: 5,),
-
-                          Row(
-                              children: const [
-                                Expanded(child: Divider(
-                                  color: Colors.black,
-                                  indent: 0,
-                                  endIndent: 5,
-
-                                )),
-                                Text("How many people were injured",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-
-                                  ),),
-                                Expanded(child: Divider(
-                                  color: Colors.black,
-                                  indent: 5,
-                                  endIndent: 0,
-                                )),
-
-                              ]),
-                          const SizedBox(height: 10,),
-
-                          TextFormField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                height: 1
-                            ),
-                            decoration: const InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.black, width: 1.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.black, width: 1.0),
-                              ),
-                              hintText: ' How many people are injured',
-                            ),
-                            controller: numberOfPeopleInjured,
-                            onChanged: (dynamic value) {
-                              peopleInjured =
-                                  validationService.changeNumberOfPeopleInjured(
-                                      value);
-                              setState(() {
-                                numberOfPeopleInjured = value;
-                              });
-                            },
-                          ),
-
-                          const SizedBox(height: 20,),
-
-                          Container(
-                            width: double.infinity,
-                            color: const Color.fromRGBO(82, 71, 197, 1),
-                            child: TextButton(
-                              onPressed: () async {
-                                if(imageFile.path.isNotEmpty && carNumberPlate.toString().trim().isNotEmpty){
-                                  await uploadAccidentReport();
-                                }
-                                else{
-                                  if(imageFile.path.isEmpty){
-                                    showAlertDialog(context);
-                                  }
-                                  else if(carNumberPlate.toString().trim().isEmpty){
-                                    showAlertDialog(context);
-                                  }
-                                }
-                              },
-                              child: const Text(
-                                "Submit", style: TextStyle(color: Colors.white
-                              ),),),
-                          )
-
-                        ],
-                      ),
-                    ),
-                  ),
-                ],),
-
+                  ],
+                ),
                 Positioned(
                     child: Container(
                         height: 50,
                         width: 180,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                          ),
-                          borderRadius: const BorderRadius.all(
-                              Radius.circular(20)),
-                          color: const Color.fromRGBO(248, 157, 52, 1),
-
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.orange,
+                              offset: Offset(
+                                2.0,
+                                2.0,
+                              ),
+                              blurRadius: 5.0,
+                              spreadRadius: 1.0,
+                            ), //BoxShadow
+                            BoxShadow(
+                              color: Colors.orange,
+                              offset: Offset(0.0, 0.0),
+                              blurRadius: 0.0,
+                              spreadRadius: 0.0,
+                            ), //BoxShadow
+                          ],
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          color: Color.fromRGBO(248, 157, 52, 1),
                         ),
                         child: GestureDetector(
                           child: Row(
@@ -333,20 +352,18 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                               Image.asset('assets/img/camera.png'),
                               const SizedBox(width: 5),
                               const Text(
-                                "Use Camera", style: TextStyle(color: Colors
-                                  .white),)
+                                "Use Camera",
+                                style: TextStyle(color: Colors.white),
+                              )
                             ],
-
                           ),
                           onTap: () async {
                             await pickImage();
                           },
-                        )
-                    )
-                )
-              ],),
+                        )))
+              ],
+            ),
           ],
-        )
-    );
+        ));
   }
 }
