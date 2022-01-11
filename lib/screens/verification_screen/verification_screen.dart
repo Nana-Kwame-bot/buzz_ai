@@ -175,7 +175,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 Provider.of<AuthenticationController>(
                                   context,
                                   listen: false,
-                                ).onFieldSubmitted;
+                                ).resendOTP();
                                 final snackBar = SnackBar(
                                   duration: const Duration(seconds: 3),
                                   content: const Text(
