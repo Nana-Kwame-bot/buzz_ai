@@ -63,11 +63,11 @@ class Address {
 
   Map<String, dynamic> toMap() {
     return {
-      'street': this.street,
-      'subLocality': this.subLocality,
-      'locality': this.locality,
-      'postalCode': this.postalCode,
-      'country': this.country,
+      'street': street,
+      'subLocality': subLocality,
+      'locality': locality,
+      'postalCode': postalCode,
+      'country': country,
     };
   }
 

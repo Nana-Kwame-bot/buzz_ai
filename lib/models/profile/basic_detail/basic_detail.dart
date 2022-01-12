@@ -77,25 +77,25 @@ class BasicDetail {
 
   Map<String, dynamic> toMap() {
     return {
-      'imageURL': imageURL,
-      'fullName': fullName,
-      'dateOfBirth': dateOfBirth,
-      'weight': weight,
-      'age': age,
-      'bloodGroup': bloodGroup,
-      'licenseNumber': licenseNumber,
+      'imageURL': imageURL ?? '',
+      'fullName': fullName ?? '',
+      'dateOfBirth': dateOfBirth ?? '',
+      'weight': weight ?? '',
+      'age': age ?? '',
+      'bloodGroup': bloodGroup ?? '',
+      'licenseNumber': licenseNumber ?? '',
     };
   }
 
   factory BasicDetail.fromMap(Map<String, dynamic> map) {
     return BasicDetail(
-      imageURL: map['imageURL'] as String,
-      fullName: map['fullName'] as String,
-      dateOfBirth: map['dateOfBirth'] as String,
-      weight: map['weight'] as int,
-      age: map['age'] as int,
-      bloodGroup: map['bloodGroup'] as String,
-      licenseNumber: map['licenseNumber'] as int,
+      imageURL: map['imageURL'] ?? '',
+      fullName: map['fullName'] ?? '',
+      dateOfBirth: map['dateOfBirth'] ?? '',
+      weight: map['weight'] ?? '',
+      age: map['age'] ?? '',
+      bloodGroup: map['bloodGroup'] ?? '',
+      licenseNumber: map['licenseNumber'] ?? '',
     );
   }
 
