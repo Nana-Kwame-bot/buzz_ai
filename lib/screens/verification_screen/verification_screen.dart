@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/services/config.dart';
@@ -17,191 +16,167 @@ class VerificationScreen extends StatefulWidget {
 
 class _VerificationScreenState extends State<VerificationScreen> {
   var verificationFormKey = GlobalKey<FormState>();
-  bool isTimerComplete = false;
-  late Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer(
-      const Duration(seconds: 30),
-      () {
-        setState(() {
-          isTimerComplete = true;
-        });
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    if (_timer != null) {
-      _timer?.cancel();
-      _timer = null;
-    }
-    verificationFormKey.currentState?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 60.0,
-              ),
-              CircleAvatar(
-                radius: MediaQuery.of(context).size.width / 4,
-                backgroundColor: const Color(0xFFF7F7F7),
-                child: Image.asset(
-                  'assets/img/smartphone.jpg',
-                ),
-              ),
-              const Text(
-                'Verification',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                ),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              RichText(
-                text: const TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'You will get OTP via',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' SMS',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 82.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Form(
-                  key: verificationFormKey,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Enter OTP',
-                      border: OutlineInputBorder(),
-                    ),
-                    autofocus: false,
-                    textAlign: TextAlign.center,
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your OTP';
-                      }
-                      return null;
-                    },
-                    onSaved: (String? value) async {
-                      bool _result =
-                          await Provider.of<AuthenticationController>(
-                        context,
-                        listen: false,
-                      ).signInWithPhoneNumber(value);
-
-                      if (_result) {
-                        Navigator.of(context).pushReplacementNamed(
-                          BottomNavigation.iD,
-                        );
-                      } else {
-                        final snackBar = SnackBar(
-                          duration: const Duration(seconds: 3),
-                          content: const Text(
-                            'Invalid verification code',
-                          ),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).clearSnackBars();
-                            },
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }
-                    },
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
+          child: Consumer<AuthenticationController>(
+            builder: (BuildContext context, authController, Widget? child) {
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 60.0,
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 45.0,
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: defaultColor),
-                  onPressed: () {
-                    validateVerificationForms();
-                  },
-                  child: const Text('VERIFY'),
-                ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: "Didn't receive the verification code?",
-                      style: TextStyle(
-                        color: Colors.black,
+                  CircleAvatar(
+                    radius: MediaQuery.of(context).size.width / 4,
+                    backgroundColor: const Color(0xFFF7F7F7),
+                    child: Image.asset(
+                      'assets/img/smartphone.jpg',
+                    ),
+                  ),
+                  const Text(
+                    'Verification',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  RichText(
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'You will get OTP via',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' SMS',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 82.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Form(
+                      key: verificationFormKey,
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter OTP',
+                          border: OutlineInputBorder(),
+                        ),
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your OTP';
+                          }
+                          return null;
+                        },
+                        onSaved: (String? value) async {
+                          bool _result =
+                              await authController.signInWithPhoneNumber(value);
+                          if (_result) {
+                            Navigator.of(context).pushReplacementNamed(
+                              BottomNavigation.iD,
+                            );
+                          } else {
+                            final snackBar = SnackBar(
+                              duration: const Duration(seconds: 3),
+                              content: const Text(
+                                'Invalid verification code',
+                              ),
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
+                                },
+                              ),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          }
+                        },
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
                       ),
                     ),
-                    TextSpan(
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = isTimerComplete
-                            ? () async {
-                                Provider.of<AuthenticationController>(
-                                  context,
-                                  listen: false,
-                                ).resendOTP();
-                                final snackBar = SnackBar(
-                                  duration: const Duration(seconds: 3),
-                                  content: const Text(
-                                    'Please check your phone for the verification code',
-                                  ),
-                                  action: SnackBarAction(
-                                    label: 'OK',
-                                    onPressed: () {
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                    },
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              }
-                            : null,
-                      text: " Resend Again",
-                      style: TextStyle(
-                        color: isTimerComplete ? defaultColor : Colors.grey,
-                      ),
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 45.0,
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(primary: defaultColor),
+                      onPressed: () {
+                        validateVerificationForms();
+                      },
+                      child: const Text('VERIFY'),
                     ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: "Didn't receive the verification code?",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = authController.timedOut
+                                ? () async {
+                                    authController.resendOTP();
+                                    final snackBar = SnackBar(
+                                      duration: const Duration(seconds: 3),
+                                      content: const Text(
+                                        'Please check your phone for the verification code',
+                                      ),
+                                      action: SnackBarAction(
+                                        label: 'OK',
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context)
+                                              .clearSnackBars();
+                                        },
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                : null,
+                          text: " Resend Again",
+                          style: TextStyle(
+                            color: authController.timedOut
+                                ? defaultColor
+                                : Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
