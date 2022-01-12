@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
@@ -21,6 +22,13 @@ class UserProfileController extends ChangeNotifier {
   FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
+
+  StreamController<bool> validateController =
+      StreamController<bool>.broadcast();
+
+  Sink get updateValidation => validateController.sink;
+
+  Stream<bool> get validationStream => validateController.stream;
 
   bool isBasicDetailValid = false;
   bool isContactDetailValid = false;
@@ -51,7 +59,15 @@ class UserProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void validateControllers() {
+    updateValidation
+      ..add(true)
+      ..add(false);
+    notifyListeners();
+  }
+
   bool validateForms({required BuildContext context}) {
+    validateControllers();
     if (Provider.of<BasicDetailController>(context, listen: false)
             .isBasicDetailValid &&
         Provider.of<ContactDetailController>(context, listen: false)
@@ -175,5 +191,11 @@ class UserProfileController extends ChangeNotifier {
       log('data is null');
     }
     return userProfile;
+  }
+
+  @override
+  void dispose() {
+    validateController.close();
+    super.dispose();
   }
 }

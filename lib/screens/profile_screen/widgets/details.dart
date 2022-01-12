@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/gender/gender.dart';
@@ -13,8 +15,27 @@ class BasicDetails extends StatefulWidget {
 }
 
 class _BasicDetailsState extends State<BasicDetails> {
+  late StreamSubscription profileSub;
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
+
+  @override
+  void initState() {
+    super.initState();
+    profileSub =
+        context.read<UserProfileController>().validationStream.listen((event) {
+      if (event) {
+        log('validate called');
+        if (basicDetailsFormKey.currentState!.validate()) {
+          context.read<BasicDetailController>().makeValid();
+          log('valid');
+        } else {
+          context.read<BasicDetailController>().makeInvalid();
+          log('invalid');
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +50,6 @@ class _BasicDetailsState extends State<BasicDetails> {
         ) {
           return Form(
             autovalidateMode: AutovalidateMode.always,
-            onChanged: () {
-              if (basicDetailsFormKey.currentState!.validate()) {
-                basicDetailController.makeValid();
-              } else {
-                basicDetailController.makeInvalid();
-              }
-            },
             key: basicDetailsFormKey,
             child: Column(
               children: [
@@ -92,11 +106,12 @@ class _BasicDetailsState extends State<BasicDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: basicDetailController.basicDetail.fullName ?? '',
+                  initialValue:
+                      basicDetailController.basicDetail.fullName ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    // labelText: 'Full name',
-                    // hintText: 'Enter your full name',
+                    labelText: 'Full name',
+                    hintText: 'Enter your full name',
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -120,7 +135,8 @@ class _BasicDetailsState extends State<BasicDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: basicDetailController.basicDetail.dateOfBirth ?? '',
+                  initialValue:
+                      basicDetailController.basicDetail.dateOfBirth ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Date of birth',
@@ -283,7 +299,8 @@ class _BasicDetailsState extends State<BasicDetails> {
                           TextFormField(
                             enabled: userProfileController.formEnabled,
                             initialValue:
-                                basicDetailController.basicDetail.bloodGroup ?? '',
+                                basicDetailController.basicDetail.bloodGroup ??
+                                    '',
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
@@ -346,6 +363,7 @@ class _BasicDetailsState extends State<BasicDetails> {
 
   @override
   void dispose() {
+    profileSub.cancel();
     basicDetailsFormKey.currentState?.dispose();
     super.dispose();
   }

@@ -6,7 +6,7 @@ class EmergencyContact {
 
 //<editor-fold desc="Data Methods">
 
-   const EmergencyContact({
+  const EmergencyContact({
     this.name,
     this.relation,
     this.contactNumber,
@@ -56,19 +56,19 @@ class EmergencyContact {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'relation': relation,
-      'contactNumber': contactNumber,
-      'contactAdded': contactAdded,
+      'name': name ?? '',
+      'relation': relation ?? '',
+      'contactNumber': contactNumber ?? '',
+      'contactAdded': contactAdded ?? '',
     };
   }
 
   factory EmergencyContact.fromMap(Map<String, dynamic> map) {
     return EmergencyContact(
-      name: map['name'] as String,
-      relation: map['relation'] as String,
-      contactNumber: map['contactNumber'] as String,
-      contactAdded: map['contactAdded'] as bool,
+      name: map['name'] ?? '',
+      relation: map['relation'] ?? '',
+      contactNumber: map['contactNumber'] ?? '',
+      contactAdded: map['contactAdded'] ?? '',
     );
   }
 

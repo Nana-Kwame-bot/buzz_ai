@@ -63,22 +63,21 @@ class MultipleVehicle {
 
   Map<String, dynamic> toMap() {
     return {
-
-      'ownerName': ownerName,
-      'model': model,
-      'year': year,
-      'plateNumber': plateNumber,
-      'added': added,
+      'ownerName': ownerName ?? '',
+      'model': model ?? '',
+      'year': year ?? '',
+      'plateNumber': plateNumber ?? '',
+      'added': added ?? '',
     };
   }
 
   factory MultipleVehicle.fromMap(Map<String, dynamic> map) {
     return MultipleVehicle(
-      ownerName: map['ownerName'] as String,
-      model: map['model'] as String,
-      year: map['year'] as String,
-      plateNumber: map['plateNumber'] as String,
-      added: map['added'] as bool,
+      ownerName: map['ownerName'] ?? '',
+      model: map['model'] ?? '',
+      year: map['year'] ?? '',
+      plateNumber: map['plateNumber'] ?? '',
+      added: map['added'] ?? '',
     );
   }
 

@@ -40,15 +40,15 @@ class ContactDetail {
 
   Map<String, dynamic> toMap() {
     return {
-      'address': address,
-      'phoneNumber': phoneNumber,
+      'address': address ?? '',
+      'phoneNumber': phoneNumber ?? '',
     };
   }
 
   factory ContactDetail.fromMap(Map<String, dynamic> map) {
     return ContactDetail(
-      address: map['address'] as String,
-      phoneNumber: map['phoneNumber'] as String,
+      address: map['address'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
     );
   }
 

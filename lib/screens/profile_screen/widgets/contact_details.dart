@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,24 @@ class ContactDetails extends StatefulWidget {
 }
 
 class _ContactDetailsState extends State<ContactDetails> {
+  late StreamSubscription profileSub;
   final contactDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'contactDetailsFormKey');
+
+  @override
+  void initState() {
+    super.initState();
+    profileSub =
+        context.read<UserProfileController>().validationStream.listen((event) {
+      if (event) {
+        if (contactDetailsFormKey.currentState!.validate()) {
+          context.read<ContactDetailController>().makeValid();
+        } else {
+          context.read<ContactDetailController>().makeInvalid();
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +44,6 @@ class _ContactDetailsState extends State<ContactDetails> {
         ) {
           return Form(
             autovalidateMode: AutovalidateMode.always,
-            onChanged: () {
-              if (contactDetailsFormKey.currentState!.validate()) {
-                contactDetailController.makeValid();
-              } else {
-                contactDetailController.makeInvalid();
-              }
-            },
             key: contactDetailsFormKey,
             child: Column(
               children: [
@@ -89,7 +99,8 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: contactDetailController.contactDetail.phoneNumber ?? '',
+                  initialValue:
+                      contactDetailController.contactDetail.phoneNumber ?? '',
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',
@@ -114,6 +125,7 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   @override
   void dispose() {
+    profileSub.cancel();
     contactDetailsFormKey.currentState?.dispose();
     super.dispose();
   }

@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
+import 'package:buzz_ai/controllers/profile/image_pick/image_pick_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
-import 'package:buzz_ai/models/profile/image_pick/image_pick_controller.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +84,7 @@ class ImagePick extends StatelessWidget {
                     return CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.brown,
-                      backgroundImage: value.basicDetail.imageURL == null
+                      backgroundImage: value.basicDetail.imageURL == ''
                           ? null
                           : FileImage(
                               File(value.basicDetail.imageURL!),
