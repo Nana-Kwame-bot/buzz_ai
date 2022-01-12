@@ -8,6 +8,7 @@ class AuthenticationController extends ChangeNotifier {
   String? _phoneNumber;
   var timeOut = const Duration(seconds: 30);
   int? _resendingToken;
+  bool timedOut = false;
 
   late String _verificationId;
 
@@ -17,17 +18,20 @@ class AuthenticationController extends ChangeNotifier {
 
   void updateIsNew(bool? value) {
     isNewUser = value!;
+    log(value.toString());
     notifyListeners();
   }
 
   Future<void> resendOTP() async {
+    timedOut = false;
+    notifyListeners();
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
           'Message: ${authException.message}');
     }
 
     void codeSent(String verificationId, [int? forceResendingToken]) async {
-      log('Please check your phone for the verification code.$forceResendingToken');
+      log('Please check your phone for the verification code.');
 
       _verificationId = verificationId;
       _resendingToken = forceResendingToken;
@@ -36,6 +40,8 @@ class AuthenticationController extends ChangeNotifier {
 
     void codeAutoRetrievalTimeout(String verificationId) {
       _verificationId = verificationId;
+      timedOut = true;
+      notifyListeners();
     }
 
     try {
@@ -54,17 +60,9 @@ class AuthenticationController extends ChangeNotifier {
   }
 
   Future<void> onFieldSubmitted(String? value) async {
-    _phoneNumber ?? value;
+    _phoneNumber ??= value;
+    timedOut = false;
     notifyListeners();
-
-    // Future<void> verificationCompleted(
-    //     PhoneAuthCredential phoneAuthCredential) async {
-    //   await auth.signInWithCredential(phoneAuthCredential);
-    //   log(
-    //     'Phone number automatically verified and user signed in: $phoneAuthCredential',
-    //   );
-    //   return;
-    // }
 
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
@@ -72,7 +70,7 @@ class AuthenticationController extends ChangeNotifier {
     }
 
     void codeSent(String verificationId, [int? forceResendingToken]) async {
-      log('Please check your phone for the verification code.$forceResendingToken');
+      log('Please check your phone for the verification code.');
 
       _verificationId = verificationId;
       _resendingToken = forceResendingToken;
@@ -80,7 +78,9 @@ class AuthenticationController extends ChangeNotifier {
     }
 
     void codeAutoRetrievalTimeout(String verificationId) {
+      timedOut = true;
       _verificationId = verificationId;
+      notifyListeners();
     }
 
     try {
@@ -105,7 +105,6 @@ class AuthenticationController extends ChangeNotifier {
       );
       final User user =
           await auth.signInWithCredential(credential).then((value) {
-        log(value.additionalUserInfo!.isNewUser.toString());
         updateIsNew(value.additionalUserInfo?.isNewUser);
         return value.user!;
       });

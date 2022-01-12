@@ -73,10 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             context,
                             listen: false,
                           ).signOut().whenComplete(() {
-                            Navigator.of(context)
-                              ..pop()
-                              ..pop()
-                              ..popAndPushNamed(LoginScreen.iD);
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                LoginScreen.iD, (route) {
+                              return false;
+                            });
                           });
                         },
                         child: const Text(
