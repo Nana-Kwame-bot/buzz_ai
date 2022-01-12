@@ -84,7 +84,7 @@ class ImagePick extends StatelessWidget {
                     return CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.brown,
-                      backgroundImage: value.basicDetail.imageURL == ''
+                      backgroundImage: value.basicDetail.imageURL == null
                           ? null
                           : FileImage(
                               File(value.basicDetail.imageURL!),
