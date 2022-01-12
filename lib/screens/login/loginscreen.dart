@@ -20,8 +20,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late AuthenticationController _authenticationController;
 
-  late String userId;
-
   var numberAuthFormKey = GlobalKey<FormState>();
 
   @override
@@ -31,147 +29,191 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       listen: false,
     );
-
-    _authenticationController.onAuthStateChanges.listen((User? user) {
-      if (user == null) {
-        debugPrint('User is currently signed out!');
-      } else {
-        debugPrint('User is signed in!');
-
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed(BottomNavigation.iD);
-        }
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(82, 71, 197, 1),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 85,
+    return StreamBuilder<User?>(
+        stream: context.select((AuthenticationController controller) {
+      return controller.onAuthStateChanges;
+    }), builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.active) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: const Color.fromRGBO(82, 71, 197, 1),
+            body: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 85,
+                    ),
+                    Container(
+                      width: 140,
+                      height: 43,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/img/splash2.png"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 55,
+                    ),
+                    TextWidgetStyle.Barlow(
+                        text: "Enter Your",
+                        color: Colors.white,
+                        size: 22,
+                        fontwight: FontWeight.w700),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextWidgetStyle.Barlow(
+                        text: "Phone Number",
+                        color: Colors.white,
+                        size: 22,
+                        fontwight: FontWeight.w700),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextWidgetStyle.Barlow(
+                        text: "You will receive a 6 digit code to verify next",
+                        color: Colors.white,
+                        size: 14,
+                        fontwight: FontWeight.w400),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Form(
+                        key: numberAuthFormKey,
+                        child: IntlPhoneField(
+                          // dropdownDecoration: const BoxDecoration(
+                          //   color: Colors.white,
+                          // ),
+                          showDropdownIcon: false,
+                          showCountryFlag: false,
+                          autoValidate: true,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                          ),
+                          onSaved: (phoneNumber) async {
+                            if (phoneNumber != null) {
+                              bool result = validateNumberForm(
+                                phoneNumber.completeNumber,
+                              );
+                              if (result) {
+                                Navigator.of(context).pushReplacementNamed(
+                                  VerificationScreen.iD,
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                  ..removeCurrentSnackBar()
+                                  ..showSnackBar(
+                                    const SnackBar(
+                                      duration: Duration(seconds: 3),
+                                      content: Text("Phone number is invalid"),
+                                    ),
+                                  );
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                ..removeCurrentSnackBar()
+                                ..showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(seconds: 3),
+                                    content:
+                                        Text("Phone number can't be empty"),
+                                  ),
+                                );
+                            }
+                          },
+                          initialCountryCode: 'IN',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ConfirmationSlider(
+                      foregroundColor: const Color.fromRGBO(84, 71, 189, 1),
+                      sliderButtonContent: const Icon(
+                        Icons.chevron_right_outlined,
+                        color: Colors.white,
+                      ),
+                      text: "Send OTP",
+                      textStyle:
+                          const TextStyle(color: Colors.white, fontSize: 16),
+                      backgroundColor: const Color.fromRGBO(66, 54, 183, 1),
+                      iconColor: Colors.transparent,
+                      width: 280,
+                      height: 60,
+                      onConfirmation: () {
+                        numberAuthFormKey.currentState!.save();
+                      },
+                    )
+                  ],
+                ),
               ),
-              Container(
-                width: 140,
-                height: 43,
+            ),
+          );
+        } else {
+          return const BottomNavigation();
+        }
+      } else {
+        return Container(
+          color: const Color.fromRGBO(82, 71, 197, 1),
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 120, left: 40, right: 40),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 100,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/img/splash2.png"),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 55,
+            ),
+            const Spacer(),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 230,
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                image: DecorationImage(
+                  image: AssetImage("assets/img/splash1.png"),
+                  fit: BoxFit.fitWidth,
+                ),
               ),
-              TextWidgetStyle.Barlow(
-                  text: "Enter Your",
-                  color: Colors.white,
-                  size: 22,
-                  fontwight: FontWeight.w700),
-              const SizedBox(
-                height: 10,
-              ),
-              TextWidgetStyle.Barlow(
-                  text: "Phone Number",
-                  color: Colors.white,
-                  size: 22,
-                  fontwight: FontWeight.w700),
-              const SizedBox(
-                height: 20,
-              ),
-              TextWidgetStyle.Barlow(
-                  text: "You will receive a 6 digit code to verify next",
-                  color: Colors.white,
-                  size: 14,
-                  fontwight: FontWeight.w400),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Form(
-                  key: numberAuthFormKey,
-                  child: IntlPhoneField(
-                    // dropdownDecoration: const BoxDecoration(
-                    //   color: Colors.white,
-                    // ),
-                    showDropdownIcon: false,
-                    showCountryFlag: false,
-                    autoValidate: true,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                    ),
-                    onSaved: (phoneNumber) async {
-                      if (phoneNumber != null) {
-                        bool result = validateNumberForm(
-                          phoneNumber.completeNumber,
-                        );
-                        if (result) {
-                          Navigator.of(context).pushReplacementNamed(
-                            VerificationScreen.iD,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context)
-                            ..removeCurrentSnackBar()
-                            ..showSnackBar(
-                              const SnackBar(
-                                duration: Duration(seconds: 3),
-                                content: Text("Phone number is invalid"),
-                              ),
-                            );
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context)
-                          ..removeCurrentSnackBar()
-                          ..showSnackBar(
-                            const SnackBar(
-                              duration: Duration(seconds: 3),
-                              content: Text("Phone number can't be empty"),
-                            ),
-                          );
-                      }
-                    },
-                    initialCountryCode: 'IN',
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: TextWidgetStyle.Barlow(
+                    text: "A Safer way to ride",
+                    size: 19,
+                    color: const Color.fromRGBO(0, 60, 255, 1),
+                    fontwight: FontWeight.w800,
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
-              ConfirmationSlider(
-                foregroundColor: const Color.fromRGBO(84, 71, 189, 1),
-                sliderButtonContent: const Icon(
-                  Icons.chevron_right_outlined,
-                  color: Colors.white,
-                ),
-                text: "Send OTP",
-                textStyle: const TextStyle(color: Colors.white, fontSize: 16),
-                backgroundColor: const Color.fromRGBO(66, 54, 183, 1),
-                iconColor: Colors.transparent,
-                width: 280,
-                height: 60,
-                onConfirmation: () {
-                  numberAuthFormKey.currentState!.save();
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          ]),
+        );
+      }
+    });
   }
 
   bool validateNumberForm(String? number) {
