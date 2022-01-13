@@ -147,14 +147,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-          ),
           backgroundColor: const Color.fromRGBO(82, 71, 197, 1),
+          automaticallyImplyLeading: false,
           title: const Text(
             'Report Accident',
             style: TextStyle(
