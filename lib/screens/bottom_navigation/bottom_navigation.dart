@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,7 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
+  late StreamSubscription homeSubscription;
   final PageController controller = PageController(keepPage: false);
   DateTime _currentBackPressTime = DateTime.now();
   GlobalKey bottomNavigationKey = GlobalKey(debugLabel: 'bottom_nav');
@@ -34,6 +38,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
         fState.setPage(0);
         controller.jumpToPage(0);
       }
+      homeSubscription =
+          context.read<UserProfileController>().goToHome.listen((event) {
+        if (event) {
+          fState.setPage(0);
+          controller.jumpToPage(0);
+        }
+      });
     });
   }
 
@@ -93,6 +104,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   void dispose() {
+    homeSubscription.cancel();
     controller.dispose();
     super.dispose();
   }

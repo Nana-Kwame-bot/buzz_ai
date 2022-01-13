@@ -115,6 +115,11 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+      if (authenticationController.isNewUser) {
+        await Future.delayed(const Duration(seconds: 1), () {
+          userProfileController.navigate();
+        });
+      }
     } on Exception catch (e) {
       final failureSnackBar = SnackBar(
         duration: const Duration(seconds: 3),

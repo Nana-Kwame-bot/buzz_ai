@@ -23,12 +23,11 @@ class UserProfileController extends ChangeNotifier {
   Gender? gender = Gender.male;
   bool formEnabled = false;
 
-  // StreamController<bool> validateController =
-  //     StreamController<bool>.broadcast();
+  StreamController<bool> homeController = StreamController<bool>.broadcast();
 
-  // Sink get updateValidation => validateController.sink;
+  Sink get updateNavigation => homeController.sink;
 
-  // Stream<bool> get validationStream => validateController.stream;
+  Stream<bool> get goToHome => homeController.stream;
 
   bool isBasicDetailValid = false;
   bool isContactDetailValid = false;
@@ -58,13 +57,14 @@ class UserProfileController extends ChangeNotifier {
     gender = value;
     notifyListeners();
   }
+
   //
-  // void validateControllers() {
-  //   updateValidation
-  //     ..add(true)
-  //     ..add(false);
-  //   notifyListeners();
-  // }
+  void navigate() {
+    updateNavigation
+      ..add(true)
+      ..close();
+    notifyListeners();
+  }
 
   Future<bool> validateForms({required BuildContext context}) async {
     // validateControllers();
@@ -191,5 +191,11 @@ class UserProfileController extends ChangeNotifier {
       log('data is null');
     }
     return userProfile;
+  }
+
+  @override
+  void dispose() {
+    homeController.close();
+    super.dispose();
   }
 }
