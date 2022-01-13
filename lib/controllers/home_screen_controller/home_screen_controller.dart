@@ -57,10 +57,11 @@ class HomeScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onMapCreated(GoogleMapController controller) {
+  Future<void> onMapCreated(GoogleMapController controller) async {
     mapController = controller;
     if (!googleMapController.isCompleted) {
       googleMapController.complete(controller);
+      mapController = await googleMapController.future;
       notifyListeners();
     }
   }
@@ -86,6 +87,7 @@ class HomeScreenController extends ChangeNotifier {
   }
 
   Future<void> onAppStarted() async {
+    mapController = await googleMapController.future;
     late Position currentPosition;
 
     try {
@@ -93,7 +95,7 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
-    mapController.animateCamera(
+    await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(currentPosition.latitude, currentPosition.longitude),
         14,
@@ -124,7 +126,7 @@ class HomeScreenController extends ChangeNotifier {
       sourceLongitude: lng,
       sourceLatitude: lat,
     );
-    mapController.animateCamera(
+    await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(
             coordinates.destinationLatitude, coordinates.destinationLongitude),
@@ -148,8 +150,8 @@ class HomeScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getRoute() {
-    mapController.animateCamera(
+  Future<void> getRoute() async {
+    await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(
             coordinates.destinationLatitude, coordinates.destinationLongitude),

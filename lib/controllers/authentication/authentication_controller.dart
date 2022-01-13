@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  bool isNewUser = true;
+  bool isNewUser = false;
   String? _phoneNumber;
   var timeOut = const Duration(seconds: 30);
   int? _resendingToken;
@@ -17,7 +17,7 @@ class AuthenticationController extends ChangeNotifier {
   }
 
   void updateIsNew(bool? value) {
-    isNewUser = value!;
+    isNewUser = value ?? false;
     log(value.toString());
     notifyListeners();
   }
