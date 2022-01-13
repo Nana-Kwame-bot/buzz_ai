@@ -12,21 +12,19 @@ class ContactDetails extends StatefulWidget {
 }
 
 class _ContactDetailsState extends State<ContactDetails> {
-  late StreamSubscription profileSub;
+  Timer? _timer;
   final contactDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'contactDetailsFormKey');
 
   @override
   void initState() {
     super.initState();
-    profileSub =
-        context.read<UserProfileController>().validationStream.listen((event) {
-      if (event) {
-        if (contactDetailsFormKey.currentState!.validate()) {
-          context.read<ContactDetailController>().makeValid();
-        } else {
-          context.read<ContactDetailController>().makeInvalid();
-        }
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (contactDetailsFormKey.currentState!.validate()) {
+        context.read<ContactDetailController>().makeValid();
+      } else {
+        context.read<ContactDetailController>().makeInvalid();
       }
     });
   }
@@ -125,7 +123,8 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   @override
   void dispose() {
-    profileSub.cancel();
+    _timer?.cancel();
+    _timer = null;
     contactDetailsFormKey.currentState?.dispose();
     super.dispose();
   }

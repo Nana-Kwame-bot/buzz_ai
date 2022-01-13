@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/gender/gender.dart';
@@ -15,24 +14,19 @@ class BasicDetails extends StatefulWidget {
 }
 
 class _BasicDetailsState extends State<BasicDetails> {
-  late StreamSubscription profileSub;
+  Timer? _timer;
+
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
 
   @override
   void initState() {
     super.initState();
-    profileSub =
-        context.read<UserProfileController>().validationStream.listen((event) {
-      if (event) {
-        log('validate called');
-        if (basicDetailsFormKey.currentState!.validate()) {
-          context.read<BasicDetailController>().makeValid();
-          log('valid');
-        } else {
-          context.read<BasicDetailController>().makeInvalid();
-          log('invalid');
-        }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (basicDetailsFormKey.currentState!.validate()) {
+        context.read<BasicDetailController>().makeValid();
+      } else {
+        context.read<BasicDetailController>().makeInvalid();
       }
     });
   }
@@ -363,7 +357,8 @@ class _BasicDetailsState extends State<BasicDetails> {
 
   @override
   void dispose() {
-    profileSub.cancel();
+    _timer?.cancel();
+    _timer = null;
     basicDetailsFormKey.currentState?.dispose();
     super.dispose();
   }

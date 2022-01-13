@@ -8,12 +8,12 @@ class BasicDetailController extends ChangeNotifier {
 
   void makeValid() {
     isBasicDetailValid = true;
-    // notifyListeners();
+    notifyListeners();
   }
 
   void makeInvalid() {
     isBasicDetailValid = false;
-    // notifyListeners();
+    notifyListeners();
   }
 
   void setImagePath(String? newValue) {

@@ -65,6 +65,7 @@ class _SubmitFormState extends State<SubmitForm> {
   }
 
   Future<void> onPressed() async {
+    bool areValid = await userProfileController.validateForms(context: context);
     final requiredSnackBar = SnackBar(
       duration: const Duration(seconds: 3),
       content: const Text('Please fill out all the required fields'),
@@ -76,7 +77,7 @@ class _SubmitFormState extends State<SubmitForm> {
       ),
     );
 
-    if (!userProfileController.validateForms(context: context)) {
+    if (!areValid) {
       ScaffoldMessenger.of(context).showSnackBar(requiredSnackBar);
       return;
     }

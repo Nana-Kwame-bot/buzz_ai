@@ -23,12 +23,12 @@ class UserProfileController extends ChangeNotifier {
   Gender? gender = Gender.male;
   bool formEnabled = false;
 
-  StreamController<bool> validateController =
-      StreamController<bool>.broadcast();
+  // StreamController<bool> validateController =
+  //     StreamController<bool>.broadcast();
 
-  Sink get updateValidation => validateController.sink;
+  // Sink get updateValidation => validateController.sink;
 
-  Stream<bool> get validationStream => validateController.stream;
+  // Stream<bool> get validationStream => validateController.stream;
 
   bool isBasicDetailValid = false;
   bool isContactDetailValid = false;
@@ -58,16 +58,16 @@ class UserProfileController extends ChangeNotifier {
     gender = value;
     notifyListeners();
   }
+  //
+  // void validateControllers() {
+  //   updateValidation
+  //     ..add(true)
+  //     ..add(false);
+  //   notifyListeners();
+  // }
 
-  void validateControllers() {
-    updateValidation
-      ..add(true)
-      ..add(false);
-    notifyListeners();
-  }
-
-  bool validateForms({required BuildContext context}) {
-    validateControllers();
+  Future<bool> validateForms({required BuildContext context}) async {
+    // validateControllers();
     if (Provider.of<BasicDetailController>(context, listen: false)
             .isBasicDetailValid &&
         Provider.of<ContactDetailController>(context, listen: false)
@@ -191,11 +191,5 @@ class UserProfileController extends ChangeNotifier {
       log('data is null');
     }
     return userProfile;
-  }
-
-  @override
-  void dispose() {
-    validateController.close();
-    super.dispose();
   }
 }
