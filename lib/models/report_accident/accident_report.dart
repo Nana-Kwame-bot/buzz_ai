@@ -5,7 +5,7 @@ class AccidentReport {
   late DateTime createdAt;
   late String imageURL;
   late String carPlateNumber;
-  late int peopleInjured;
+  late int? peopleInjured;
   late List<double> coordinates;
   late Map location;
   String? reportID;

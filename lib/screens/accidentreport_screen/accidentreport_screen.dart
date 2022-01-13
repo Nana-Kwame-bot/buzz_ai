@@ -34,7 +34,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
   @override
   void initState() {
     carPlateNumber = TextEditingController();
-    numberOfPeopleInjured = TextEditingController(text: '1');
+    numberOfPeopleInjured = TextEditingController();
     super.initState();
   }
 
@@ -79,7 +79,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
       createdAt: DateTime.now(),
       imageURL: url,
       carPlateNumber: carPlateNumber.text,
-      peopleInjured: int.parse(numberOfPeopleInjured.text),
+      peopleInjured: numberOfPeopleInjured.text == ""
+          ? null
+          : int.parse(numberOfPeopleInjured.text),
       coordinates: [position.latitude, position.longitude],
       location: location.toJson(),
     );
@@ -99,7 +101,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
     });
 
     carPlateNumber.text = "";
-    numberOfPeopleInjured.text = "0";
+    numberOfPeopleInjured.text = "";
     imageFile = null;
     showDialog(
       context: context,
@@ -320,16 +322,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
                                     borderSide: BorderSide(
                                         color: Colors.black45, width: 1.0),
                                   ),
-                                  hintText: ' How many people are injured',
+                                  hintText: 'How many people are injured',
                                 ),
                                 controller: numberOfPeopleInjured,
-                                validator: (value) {
-                                  if (int.parse(value ?? "0") == 0)
-                                    return "Injured people must be atleast 1";
-                                },
                                 onChanged: (dynamic value) {
                                   validationService
-                                      .changeNumberOfPeopleInjured(value);
+                                      .changeNumberOfPeopleInjured(value ?? "");
                                 },
                               ),
                               const SizedBox(
