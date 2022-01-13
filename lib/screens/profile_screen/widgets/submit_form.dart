@@ -65,6 +65,7 @@ class _SubmitFormState extends State<SubmitForm> {
   }
 
   Future<void> onPressed() async {
+    bool areValid = await userProfileController.validateForms(context: context);
     final requiredSnackBar = SnackBar(
       duration: const Duration(seconds: 3),
       content: const Text('Please fill out all the required fields'),
@@ -76,7 +77,7 @@ class _SubmitFormState extends State<SubmitForm> {
       ),
     );
 
-    if (!userProfileController.validateForms(context: context)) {
+    if (!areValid) {
       ScaffoldMessenger.of(context).showSnackBar(requiredSnackBar);
       return;
     }
@@ -103,7 +104,7 @@ class _SubmitFormState extends State<SubmitForm> {
     try {
       await _userRef.set(userProfile?.toMap());
       final successSnackBar = SnackBar(
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 2),
         content: const Text('Profile Set'),
         action: SnackBarAction(
           label: 'OK',
@@ -114,6 +115,12 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+
+      await Future.delayed(const Duration(seconds: 2), () {
+        if (authenticationController.isNewUser) {
+          userProfileController.navigate();
+        }
+      });
     } on Exception catch (e) {
       final failureSnackBar = SnackBar(
         duration: const Duration(seconds: 3),

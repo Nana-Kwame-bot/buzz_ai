@@ -22,13 +22,11 @@ class UserProfileController extends ChangeNotifier {
   FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
+  StreamController<bool> homeController = StreamController<bool>.broadcast();
 
-  StreamController<bool> validateController =
-      StreamController<bool>.broadcast();
+  Sink get updateNavigation => homeController.sink;
 
-  Sink get updateValidation => validateController.sink;
-
-  Stream<bool> get validationStream => validateController.stream;
+  Stream<bool> get goToHome => homeController.stream;
 
   bool isBasicDetailValid = false;
   bool isContactDetailValid = false;
@@ -59,15 +57,14 @@ class UserProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void validateControllers() {
-    updateValidation
-      ..add(true)
-      ..add(false);
+  //
+  void navigate() {
+    updateNavigation.add(true);
     notifyListeners();
   }
 
-  bool validateForms({required BuildContext context}) {
-    validateControllers();
+  Future<bool> validateForms({required BuildContext context}) async {
+    // validateControllers();
     if (Provider.of<BasicDetailController>(context, listen: false)
             .isBasicDetailValid &&
         Provider.of<ContactDetailController>(context, listen: false)
@@ -195,7 +192,7 @@ class UserProfileController extends ChangeNotifier {
 
   @override
   void dispose() {
-    validateController.close();
+    homeController.close();
     super.dispose();
   }
 }

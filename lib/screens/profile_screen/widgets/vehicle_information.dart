@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
@@ -13,21 +12,18 @@ class VehicleInformation extends StatefulWidget {
 }
 
 class _VehicleInformationState extends State<VehicleInformation> {
-  late StreamSubscription profileSub;
+  Timer? _timer;
   final vehicleInfoFormKey =
       GlobalKey<FormState>(debugLabel: 'vehicleInfoFormKey');
 
   @override
   void initState() {
     super.initState();
-    profileSub =
-        context.read<UserProfileController>().validationStream.listen((event) {
-      if (event) {
-        if (vehicleInfoFormKey.currentState!.validate()) {
-          context.read<VehicleInfoController>().makeValid();
-        } else {
-          context.read<VehicleInfoController>().makeInvalid();
-        }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (vehicleInfoFormKey.currentState!.validate()) {
+        context.read<VehicleInfoController>().makeValid();
+      } else {
+        context.read<VehicleInfoController>().makeInvalid();
       }
     });
   }
@@ -201,7 +197,8 @@ class _VehicleInformationState extends State<VehicleInformation> {
 
   @override
   void dispose() {
-    profileSub.cancel();
+    _timer?.cancel();
+    _timer = null;
     vehicleInfoFormKey.currentState?.dispose();
     super.dispose();
   }
