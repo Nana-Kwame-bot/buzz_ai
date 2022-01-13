@@ -3,7 +3,6 @@ import 'package:buzz_ai/models/report_accident/validation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SubmitAccidentReport with ChangeNotifier {
-  
   ValidationItem _carNumberPlate = ValidationItem(null, "");
   ValidationItem _numberOfPeopleInjured = ValidationItem(null, "");
 
@@ -18,21 +17,22 @@ class SubmitAccidentReport with ChangeNotifier {
   //   }
   // }
 
-  changeCarNumberPlate(String value) {
+  void changeCarNumberPlate(String value) {
     if (value.length >= 3) {
       _carNumberPlate = ValidationItem(value, "");
     } else {
       Fluttertoast.showToast(
-        msg: "You must input carPlateNumber",
-      );    }
+        msg: "You must input car plate number",
+      );
+    }
     notifyListeners();
   }
-  changeNumberOfPeopleInjured(String value) {
+
+  void changeNumberOfPeopleInjured(String value) {
     if (value.isNotEmpty) {
       _numberOfPeopleInjured = ValidationItem(value, "");
     } else {
       _numberOfPeopleInjured = ValidationItem(null, "");
     }
   }
-
 }
