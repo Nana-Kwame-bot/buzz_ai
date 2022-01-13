@@ -51,6 +51,16 @@ android {
         multiDexEnabled true
     }
 
+    flavorDimensions "app"
+    productFlavors {
+        dev {
+            dimension "app"
+            applicationId "com.piyushlimited.buzzai.dev"
+            versionCode 1
+            versionName "1.0"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
