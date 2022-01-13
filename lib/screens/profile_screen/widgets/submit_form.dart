@@ -104,7 +104,7 @@ class _SubmitFormState extends State<SubmitForm> {
     try {
       await _userRef.set(userProfile?.toMap());
       final successSnackBar = SnackBar(
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 2),
         content: const Text('Profile Set'),
         action: SnackBarAction(
           label: 'OK',
@@ -115,11 +115,12 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-      if (authenticationController.isNewUser) {
-        await Future.delayed(const Duration(seconds: 1), () {
+
+      await Future.delayed(const Duration(seconds: 2), () {
+        if (authenticationController.isNewUser) {
           userProfileController.navigate();
-        });
-      }
+        }
+      });
     } on Exception catch (e) {
       final failureSnackBar = SnackBar(
         duration: const Duration(seconds: 3),

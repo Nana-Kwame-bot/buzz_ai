@@ -22,7 +22,6 @@ class UserProfileController extends ChangeNotifier {
   FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
-
   StreamController<bool> homeController = StreamController<bool>.broadcast();
 
   Sink get updateNavigation => homeController.sink;
@@ -60,9 +59,7 @@ class UserProfileController extends ChangeNotifier {
 
   //
   void navigate() {
-    updateNavigation
-      ..add(true)
-      ..close();
+    updateNavigation.add(true);
     notifyListeners();
   }
 

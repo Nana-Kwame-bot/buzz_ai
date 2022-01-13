@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
@@ -43,6 +42,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         if (event) {
           fState.setPage(0);
           controller.jumpToPage(0);
+          homeSubscription.cancel();
         }
       });
     });
