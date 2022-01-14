@@ -1,3 +1,4 @@
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
@@ -15,16 +16,33 @@ import 'package:firebase_core/firebase_core.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
-void main() async {
+final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
+
+  void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // initState();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    activityRecognitionApp.init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +101,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SubmitAccidentReport>(
           create: (BuildContext context) {
             return SubmitAccidentReport();
+          },
+        ),
+        ChangeNotifierProvider<ActivityRecognitionApp>(
+          create: (BuildContext context) {
+            return ActivityRecognitionApp();
           },
         ),
       ],
