@@ -21,7 +21,7 @@ class SOSScreen extends StatefulWidget {
 class _SOSScreenState extends State<SOSScreen> {
   String _positiveText = "YES";
   Map<String, dynamic>? data;
-  final int timeout = 2;
+  final int timeout = 30;
   late Stream<int> timerStream;
 
   @override
