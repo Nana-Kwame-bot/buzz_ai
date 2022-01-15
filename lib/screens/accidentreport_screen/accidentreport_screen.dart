@@ -88,14 +88,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen> {
 
     FocusScope.of(context).unfocus();
 
-    String reportID =
-        "${Random.secure().nextInt(999).toString()}_${DateTime.now().millisecondsSinceEpoch}";
     await FirebaseFirestore.instance
         .collection('accidentReports')
-        .doc(_uid)
-        .collection("reports")
-        .doc(reportID)
-        .set(accidentReport.toJSON());
+        .add(accidentReport.toJSON());
     setState(() {
       _uploading = false;
     });
