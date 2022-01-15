@@ -2,6 +2,7 @@ import 'package:buzz_ai/controllers/authentication/authentication_controller.dar
 import 'package:buzz_ai/screens/accidentreport_screen/accidentreport_screen.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
+import 'package:buzz_ai/screens/sos/sos_main.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/foundation.dart' show kDebugMode;
