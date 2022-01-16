@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:map_launcher/map_launcher.dart' as mapLauncher;
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -81,6 +82,7 @@ class HomeScreen extends StatelessWidget {
                                   },
                                 );
                                 await value.getDestinationLocation(p);
+                                await value.getRoute();
                               },
                               controller: value.destinationTextController,
                               readOnly: true,
@@ -120,13 +122,26 @@ class HomeScreen extends StatelessWidget {
               );
             },
           ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: accentColor,
-            onPressed: value.getRoute,
-            child: const Icon(
-              Icons.navigation,
-              color: Colors.white,
-              size: 40.0,
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(right: 60),
+            child: FloatingActionButton(
+              backgroundColor: accentColor,
+              onPressed: () async {
+                List<mapLauncher.AvailableMap> availableMaps = await mapLauncher.MapLauncher.installedMaps;
+
+                mapLauncher.Coords from = mapLauncher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+                mapLauncher.Coords to = mapLauncher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
+                
+                await availableMaps.first.showDirections(
+                  origin: from,
+                  destination: to,
+                );
+              },
+              child: const Icon(
+                Icons.navigation,
+                color: Colors.white,
+                size: 40.0,
+              ),
             ),
           ),
         );
