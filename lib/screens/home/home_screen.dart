@@ -28,12 +28,80 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
+          floatingActionButton: Container(
+            margin: const EdgeInsets.only(right: 40.0, bottom: 10.0 ),
+            child: FloatingActionButton(
+              onPressed: () async {
+            String? destinationValid = validateDestination(value.coordinates);
+            if (destinationValid != null) {
+            showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+            title: const Text("Invalide destination"),
+            content: Text(destinationValid),
+            ),
+            );
+            return;
+            }
+
+            List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
+
+            map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+            map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
+
+            await availableMaps.first.showDirections(
+            origin: from,
+            destination: to,
+            );
+            },
+              child: const Icon(
+                Icons.navigation_sharp,
+                size: 30.0,
+              ),
+              backgroundColor: Colors.blueAccent,
+            ),
+          ),
           body: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-              return Column(
+              return Stack(
                 children: [
                   SizedBox(
-                    height: (constraints.maxHeight * 0.2) + 8.0,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 800),
+                      opacity: _mapOpacity,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          WidgetSize(
+                            onChange: (Size size) {
+                              setState(() {
+                                _mapSize = size;
+                              });
+                            },
+                            child: GoogleMap(
+                              padding: EdgeInsets.only(top: _mapSize.height - 150),
+                              mapType: MapType.normal,
+                              initialCameraPosition: value.kGooglePlex,
+                              myLocationEnabled: true,
+                              compassEnabled: true,
+                              tiltGesturesEnabled: false,
+                              scrollGesturesEnabled: true,
+                              zoomGesturesEnabled: true,
+                              markers: Set<Marker>.of(value.markers.values),
+                              polylines: Set<Polyline>.of(value.polylines.values),
+                              onMapCreated: (controller) {
+                                setState(() {
+                                  _mapOpacity = 1;
+                                });
+                                value.onMapCreated(controller);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
                         20.0,
@@ -66,10 +134,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Icons.my_location,
                                 color: defaultColor,
                               ),
+                              fillColor: Colors.white,
+                              filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(10),
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10)
                                 ),
                               ),
                               hintText: 'Your Location',
@@ -78,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             readOnly: true,
                             controller: value.sourceTextController,
                           ),
+                          const SizedBox(height: 10.0),
                           TextFormField(
                             onTap: () async {
                               Prediction? p = await PlacesAutocomplete.show(
@@ -103,91 +176,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Icons.place,
                                 color: Color(0xFFD1403C),
                               ),
+                              filled: true,
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
+                                    bottomRight: Radius.circular(10)
                                 ),
                               ),
                               enabled: true,
                               hintText: 'Destination',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  SizedBox(
-                    height: (constraints.maxHeight * 0.75) + 11.0,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 800),
-                      opacity: _mapOpacity,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          WidgetSize(
-                            onChange: (Size size) {
-                              setState(() {
-                                _mapSize = size;
-                              });
-                            },
-                            child: GoogleMap(
-                              padding: EdgeInsets.only(top: _mapSize.height - 150),
-                              mapType: MapType.normal,
-                              initialCameraPosition: value.kGooglePlex,
-                              myLocationEnabled: true,
-                              compassEnabled: true,
-                              tiltGesturesEnabled: false,
-                              scrollGesturesEnabled: true,
-                              zoomGesturesEnabled: true,
-                              markers: Set<Marker>.of(value.markers.values),
-                              polylines: Set<Polyline>.of(value.polylines.values),
-                              onMapCreated: (controller) {
-                                setState(() {
-                                  _mapOpacity = 1;
-                                });
-                                value.onMapCreated(controller);
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: SizedBox(
-                              height: 50,
-                              width: 130,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  String? destinationValid = validateDestination(value.coordinates);
-                                  if (destinationValid != null) {
-                                    showDialog(
-                                      context: context, 
-                                      builder: (context) => AlertDialog(
-                                        title: const Text("Invalide destination"),
-                                        content: Text(destinationValid),
-                                      ),
-                                    );
-                                    return;
-                                  }
-
-                                  List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
-
-                                  map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
-                                  map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
-                                  
-                                  await availableMaps.first.showDirections(
-                                    origin: from,
-                                    destination: to,
-                                  );
-                                }, 
-                                child: const Text("Start"),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.lightGreen.withOpacity(0.8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                ),
-                              ),
                             ),
                           ),
                         ],
