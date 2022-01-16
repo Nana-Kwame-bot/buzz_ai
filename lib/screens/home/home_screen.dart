@@ -1,11 +1,13 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:map_launcher/map_launcher.dart' as mapLauncher;
+import 'package:map_launcher/map_launcher.dart' as map_launcher;
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
+  Size _mapSize = const Size(0, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -115,24 +118,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  Container(
-                    height: (constraints.maxHeight * 0.72) + 8.0,
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    decoration:  const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 800),
-                        opacity: _mapOpacity,
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            GoogleMap(
+                  SizedBox(
+                    height: (constraints.maxHeight * 0.75) + 11.0,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 800),
+                      opacity: _mapOpacity,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          WidgetSize(
+                            onChange: (Size size) {
+                              setState(() {
+                                _mapSize = size;
+                              });
+                            },
+                            child: GoogleMap(
+                              padding: EdgeInsets.only(top: _mapSize.height - 150),
                               mapType: MapType.normal,
                               initialCameraPosition: value.kGooglePlex,
                               myLocationEnabled: true,
@@ -149,47 +150,47 @@ class _HomeScreenState extends State<HomeScreen> {
                                 value.onMapCreated(controller);
                               },
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: SizedBox(
-                                height: 50,
-                                width: 130,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    String? destinationValid = validateDestination(value.coordinates);
-                                    if (destinationValid != null) {
-                                      showDialog(
-                                        context: context, 
-                                        builder: (context) => AlertDialog(
-                                          title: const Text("Invalide destination"),
-                                          content: Text(destinationValid),
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    List<mapLauncher.AvailableMap> availableMaps = await mapLauncher.MapLauncher.installedMaps;
-
-                                    mapLauncher.Coords from = mapLauncher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
-                                    mapLauncher.Coords to = mapLauncher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
-                                    
-                                    await availableMaps.first.showDirections(
-                                      origin: from,
-                                      destination: to,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: SizedBox(
+                              height: 50,
+                              width: 130,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  String? destinationValid = validateDestination(value.coordinates);
+                                  if (destinationValid != null) {
+                                    showDialog(
+                                      context: context, 
+                                      builder: (context) => AlertDialog(
+                                        title: const Text("Invalide destination"),
+                                        content: Text(destinationValid),
+                                      ),
                                     );
-                                  }, 
-                                  child: const Text("Start"),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.lightGreen.withOpacity(0.8),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
+                                    return;
+                                  }
+
+                                  List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
+
+                                  map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+                                  map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
+                                  
+                                  await availableMaps.first.showDirections(
+                                    origin: from,
+                                    destination: to,
+                                  );
+                                }, 
+                                child: const Text("Start"),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.lightGreen.withOpacity(0.8),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
