@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:buzz_ai/services/activity_recognition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
+// ActivityRecognitionService activityRecognitionService =
+//     ActivityRecognitionService();
+
 void onIosBackground() {
   WidgetsFlutterBinding.ensureInitialized();
-  print('FLUTTER BACKGROUND FETCH');
+  log('FLUTTER BACKGROUND FETCH');
 }
 
 void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
+
   service.onDataReceived.listen((event) {
     if (event!["action"] == "setAsForeground") {
       service.setForegroundMode(true);
@@ -39,4 +45,7 @@ void onStart() {
       {"current_date": DateTime.now().toIso8601String()},
     );
   });
+
+  // Timer.periodic(const Duration(seconds: 1),
+  //     (timer) async => activityRecognitionService.monitorActivity());
 }

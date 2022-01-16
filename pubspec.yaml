@@ -60,6 +60,7 @@ dependencies:
       url: https://github.com/otonielduarte/gradient-progress-indicator.git
   font_awesome_flutter: ^9.2.0
   map_launcher: ^2.1.2
+  sensors_plus: ^1.2.1
 
 dev_dependencies:
   change_app_package_name: ^1.0.0

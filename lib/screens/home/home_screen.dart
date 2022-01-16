@@ -1,6 +1,8 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
+import 'package:buzz_ai/services/activity_recognition.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -20,6 +22,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
+  ActivityRecognitionService activityRecognitionService = ActivityRecognitionService();
+
+  @override
+  void initState() {
+    requestAllPermission();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    activityRecognitionService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16.0),
                   SizedBox(
-                    height: (constraints.maxHeight * 0.75) + 11.0,
+                    height: (constraints.maxHeight * 0.73) + 11.0,
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 800),
                       opacity: _mapOpacity,

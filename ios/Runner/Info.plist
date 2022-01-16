@@ -58,5 +58,7 @@
 		<string>qqmap</string>
 		<string>here-location</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>Detects human activity</string>
 </dict>
 </plist>
