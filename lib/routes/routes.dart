@@ -6,7 +6,6 @@ import 'package:buzz_ai/screens/verification_screen/verification_screen.dart';
 import 'package:buzz_ai/screens/accidentreport_screen/accidentreport_screen.dart';
 import 'package:flutter/material.dart';
 
-
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -29,7 +28,7 @@ class AppRouter {
 
       case AccidentReportScreen.iD:
         return MaterialPageRoute(builder: (context) {
-          return AccidentReportScreen();
+          return const AccidentReportScreen();
         });
       case BottomNavigation.iD:
         return MaterialPageRoute(builder: (context) {

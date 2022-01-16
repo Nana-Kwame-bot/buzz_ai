@@ -6,6 +6,7 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
@@ -118,7 +119,8 @@ class _SubmitFormState extends State<SubmitForm> {
 
       await Future.delayed(const Duration(seconds: 2), () {
         if (authenticationController.isNewUser) {
-          userProfileController.navigate();
+          // userProfileController.navigate();
+          Navigator.of(context).pushNamed(BottomNavigation.iD);
         }
       });
     } on Exception catch (e) {

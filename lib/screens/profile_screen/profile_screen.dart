@@ -41,14 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listen: false,
     );
     userId = _authenticationController.auth.currentUser!.uid;
-
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      // userId = _authenticationController.auth.currentUser!.uid;
-      // await userProfileController.readProfileData(
-      //   userId: _authenticationController.auth.currentUser!.uid,
-      //   context: context,
-      // );
-    });
   }
 
   @override

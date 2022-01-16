@@ -1,5 +1,7 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +91,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
                           if (_result) {
+                            if (Provider.of<AuthenticationController>(context,
+                                    listen: false)
+                                .isNewUser) {
+                              Navigator.of(context).pushReplacementNamed(
+                                ProfileScreen.iD,
+                              );
+                            }
                             Navigator.of(context).pushReplacementNamed(
                               BottomNavigation.iD,
                             );
@@ -181,6 +190,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    verificationFormKey.currentState?.dispose();
+    super.dispose();
   }
 
   void validateVerificationForms() {
