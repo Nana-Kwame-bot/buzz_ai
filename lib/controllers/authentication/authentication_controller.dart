@@ -18,7 +18,6 @@ class AuthenticationController extends ChangeNotifier {
 
   void updateIsNew(bool? value) {
     isNewUser = value ?? false;
-    log(value.toString());
     notifyListeners();
   }
 

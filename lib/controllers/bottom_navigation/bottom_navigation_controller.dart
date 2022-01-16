@@ -1,10 +1,8 @@
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/accidentreport_screen/accidentreport_screen.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/foundation.dart' show kDebugMode;
 
 class BottomNavigationController extends ChangeNotifier {
   int currentPage = 0;
@@ -22,16 +20,13 @@ class BottomNavigationController extends ChangeNotifier {
   }
 
   List<Widget> pages = [
-    // kDebugMode
-    //     ? Container(
-    //         color: Colors.yellowAccent,
-    //       )
-    //     :
     const HomeScreen(),
     Container(
       color: Colors.greenAccent,
     ),
     const AccidentReportScreen(),
-    const ProfileScreen(),
+    const ProfileScreen(
+      isFromSignUp: false,
+    ),
   ];
 }

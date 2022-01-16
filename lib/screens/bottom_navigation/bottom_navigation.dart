@@ -22,6 +22,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   // late StreamSubscription homeSubscription;
   final PageController controller = PageController(keepPage: false);
   DateTime _currentBackPressTime = DateTime.now();
+
   // GlobalKey bottomNavigationKey = GlobalKey(debugLabel: 'bottom_nav');
 
   @override

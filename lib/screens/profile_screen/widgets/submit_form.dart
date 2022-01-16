@@ -12,7 +12,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
 
 class SubmitForm extends StatefulWidget {
-  const SubmitForm({Key? key}) : super(key: key);
+  final bool isFromSIgnUp;
+  const SubmitForm({Key? key, required this.isFromSIgnUp}) : super(key: key);
 
   @override
   State<SubmitForm> createState() => _SubmitFormState();
@@ -118,8 +119,7 @@ class _SubmitFormState extends State<SubmitForm> {
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       await Future.delayed(const Duration(seconds: 2), () {
-        if (authenticationController.isNewUser) {
-          // userProfileController.navigate();
+        if (widget.isFromSIgnUp) {
           Navigator.of(context).pushNamed(BottomNavigation.iD);
         }
       });

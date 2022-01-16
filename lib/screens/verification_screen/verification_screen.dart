@@ -1,5 +1,5 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/routes/screen_arguments/profile_screen_arguments.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
@@ -96,11 +96,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 .isNewUser) {
                               Navigator.of(context).pushReplacementNamed(
                                 ProfileScreen.iD,
+                                arguments: ProfileScreenArguments(
+                                  isFromSignUp: true,
+                                ),
+                              );
+                            } else {
+                              Navigator.of(context).pushReplacementNamed(
+                                BottomNavigation.iD,
                               );
                             }
-                            Navigator.of(context).pushReplacementNamed(
-                              BottomNavigation.iD,
-                            );
                           } else {
                             final snackBar = SnackBar(
                               duration: const Duration(seconds: 3),
