@@ -110,6 +110,8 @@ class HomeScreenController extends ChangeNotifier {
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
+      destinationLatitude: currentPosition.latitude,
+      destinationLongitude: currentPosition.longitude,
     );
 
     notifyListeners();
@@ -123,8 +125,10 @@ class HomeScreenController extends ChangeNotifier {
     var lat = detail?.result.geometry?.location.lat;
 
     coordinates = coordinates.copyWith(
-      sourceLongitude: lng,
       sourceLatitude: lat,
+      sourceLongitude: lng,
+      destinationLatitude: lat,
+      destinationLongitude: lng,
     );
     await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
