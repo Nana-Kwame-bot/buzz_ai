@@ -2,7 +2,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 Future<Map<String, dynamic>> getLocation() async {
-  bool serviceEnabled;
   LocationPermission permission;
 
   permission = await Geolocator.checkPermission();

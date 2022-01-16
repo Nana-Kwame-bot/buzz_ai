@@ -115,7 +115,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                                 color: Colors.white,
                               ),
                             ),
-                            foregroundColor: Color(0xAA6055e8),
+                            foregroundColor: const Color(0xAA6055e8),
                             backgroundColor: Colors.white.withOpacity(0.3),
                           ),
                           const SizedBox(height: 20),

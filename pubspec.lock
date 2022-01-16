@@ -244,13 +244,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-  flutter_mapbox_navigation:
-    dependency: "direct main"
-    description:
-      name: flutter_mapbox_navigation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.26"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -472,7 +465,7 @@ packages:
       name: map_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   map_picker:
     dependency: "direct main"
     description:
