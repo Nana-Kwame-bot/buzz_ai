@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
+import 'package:buzz_ai/screens/misc/error_screen.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
@@ -17,6 +19,7 @@ import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
@@ -24,6 +27,7 @@ import 'firebase_options.dart';
 
 final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
 
+bool _deviceHasCapableAccelerometer = true;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -56,7 +60,9 @@ Future<void> initialize() async {
 
   if ((accelerometerMaxRange / 9.5) < 4) {
     log("In-compatible device. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
+    _deviceHasCapableAccelerometer = false;
   }
+
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
 }
 
@@ -76,70 +82,94 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<UserProfileController>(
-          create: (BuildContext context) {
-            return UserProfileController()..setPersistence();
-          },
-        ),
-        ChangeNotifierProvider<BasicDetailController>(
-          create: (BuildContext context) {
-            return BasicDetailController();
-          },
-        ),
-        ChangeNotifierProvider<ContactDetailController>(
-          create: (BuildContext context) {
-            return ContactDetailController();
-          },
-        ),
-        ChangeNotifierProvider<EmergencyContactController>(
-          create: (BuildContext context) {
-            return EmergencyContactController()..onStart();
-          },
-        ),
-        ChangeNotifierProvider<MultipleVehicleController>(
-          create: (BuildContext context) {
-            return MultipleVehicleController()..onStart();
-          },
-        ),
-        ChangeNotifierProvider<AuthenticationController>(
-          create: (BuildContext context) {
-            return AuthenticationController();
-          },
-        ),
-        ChangeNotifierProvider<VehicleInfoController>(
-          create: (BuildContext context) {
-            return VehicleInfoController();
-          },
-        ),
-        ChangeNotifierProvider<BottomNavigationController>(
-          create: (BuildContext context) {
-            return BottomNavigationController();
-          },
-        ),
-        ChangeNotifierProvider<HomeScreenController>(
-          create: (BuildContext context) {
-            return HomeScreenController()..onAppStarted();
-          },
-        ),
-        ChangeNotifierProvider<ImagePickController>(
-          create: (BuildContext context) {
-            return ImagePickController();
-          },
-        ),
-        ChangeNotifierProvider<SubmitAccidentReport>(
-          create: (BuildContext context) {
-            return SubmitAccidentReport();
-          },
-        ),
-        ChangeNotifierProvider<ActivityRecognitionApp>(
-          create: (BuildContext context) {
-            return ActivityRecognitionApp();
-          },
-        ),
-      ],
-      child: const BuzzaiApp(),
-    );
+    return _deviceHasCapableAccelerometer
+        ? MultiProvider(
+            providers: [
+              ChangeNotifierProvider<UserProfileController>(
+                create: (BuildContext context) {
+                  return UserProfileController()..setPersistence();
+                },
+              ),
+              ChangeNotifierProvider<BasicDetailController>(
+                create: (BuildContext context) {
+                  return BasicDetailController();
+                },
+              ),
+              ChangeNotifierProvider<ContactDetailController>(
+                create: (BuildContext context) {
+                  return ContactDetailController();
+                },
+              ),
+              ChangeNotifierProvider<EmergencyContactController>(
+                create: (BuildContext context) {
+                  return EmergencyContactController()..onStart();
+                },
+              ),
+              ChangeNotifierProvider<MultipleVehicleController>(
+                create: (BuildContext context) {
+                  return MultipleVehicleController()..onStart();
+                },
+              ),
+              ChangeNotifierProvider<AuthenticationController>(
+                create: (BuildContext context) {
+                  return AuthenticationController();
+                },
+              ),
+              ChangeNotifierProvider<VehicleInfoController>(
+                create: (BuildContext context) {
+                  return VehicleInfoController();
+                },
+              ),
+              ChangeNotifierProvider<BottomNavigationController>(
+                create: (BuildContext context) {
+                  return BottomNavigationController();
+                },
+              ),
+              ChangeNotifierProvider<HomeScreenController>(
+                create: (BuildContext context) {
+                  return HomeScreenController()..onAppStarted();
+                },
+              ),
+              ChangeNotifierProvider<ImagePickController>(
+                create: (BuildContext context) {
+                  return ImagePickController();
+                },
+              ),
+              ChangeNotifierProvider<SubmitAccidentReport>(
+                create: (BuildContext context) {
+                  return SubmitAccidentReport();
+                },
+              ),
+              ChangeNotifierProvider<ActivityRecognitionApp>(
+                create: (BuildContext context) {
+                  return ActivityRecognitionApp();
+                },
+              ),
+            ],
+            child: const BuzzaiApp(),
+          )
+        : MaterialApp(
+            home: ErrorScreen(
+              errorHeroWidget: SvgPicture.asset(
+                "assets/img/undraw_warning_cyit.svg",
+                height: 200,
+              ),
+              title: "Accelerometer Error",
+              description:
+                  "Your device's accelerometer is not capable of recording more than 4 G-force!",
+              action: ElevatedButton(
+                onPressed: () {
+                  FlutterBackgroundService()
+                      .sendData({"action": "stopService"});
+                  exit(-1);
+                },
+                child: const Text("Undestood & Exit"),
+              ),
+            ),
+          );
   }
 }
+
+
+// Error codes:
+// -1 => Accelerometer not capable
