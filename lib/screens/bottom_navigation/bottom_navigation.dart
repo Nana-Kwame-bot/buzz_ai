@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/screens/sos/sos_main.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
@@ -60,26 +62,35 @@ class _BottomNavigationState extends State<BottomNavigation> {
         child: Consumer(
           builder: (BuildContext context, BottomNavigationController value,
               Widget? child) {
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: controller,
-                children: value.pages,
-              ),
-              bottomNavigationBar: FancyBottomNavigation(
-                // key: bottomNavigationKey,
-                circleColor: defaultColor,
-                inactiveIconColor: Colors.black54,
-                initialSelection: 0,
-                textColor: defaultColor,
-                onTabChangedListener: (int index) {
-                  value.changePage(index);
-                  controller.jumpToPage(index);
-                },
-                tabs: value.tabs,
-              ),
-            );
+            return Consumer<ActivityRecognitionApp>(builder:
+                (context, ActivityRecognitionApp activity, Widget? child) {
+              if (activity.gForceExceeded && !activity.accidentReported) {
+                return const SOSScreen(
+                  timeout: 3,
+                );
+              }
+
+              return Scaffold(
+                backgroundColor: Colors.white,
+                body: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: controller,
+                  children: value.pages,
+                ),
+                bottomNavigationBar: FancyBottomNavigation(
+                  // key: bottomNavigationKey,
+                  circleColor: defaultColor,
+                  inactiveIconColor: Colors.black54,
+                  initialSelection: 0,
+                  textColor: defaultColor,
+                  onTabChangedListener: (int index) {
+                    value.changePage(index);
+                    controller.jumpToPage(index);
+                  },
+                  tabs: value.tabs,
+                ),
+              );
+            });
           },
         ),
       ),

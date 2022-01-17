@@ -1,10 +1,12 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:async';
-import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:io';
+import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +19,9 @@ class ActivityRecognitionApp with ChangeNotifier {
   ActivityRecognition activityRecognition = ActivityRecognition();
   ActivityEvent? currentActivityEvent;
   ActivityEvent? _lastActivityEvent;
+
+  bool gForceExceeded = false;
+  bool accidentReported = false;
 
   // Sensor variables
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
@@ -41,6 +46,12 @@ class ActivityRecognitionApp with ChangeNotifier {
       [
         accelerometerEvents.listen(
           (AccelerometerEvent event) {
+            if (checkGForce(event) > (kDebugMode ? 2 : 4)) {
+              if (!gForceExceeded) {
+                gForceExceeded = true;
+                notifyListeners();
+              }
+            }
             updateSensorValues("acc", <double>[event.x, event.y, event.z]);
           },
         ),
@@ -75,12 +86,19 @@ class ActivityRecognitionApp with ChangeNotifier {
     _lastActivityEvent = currentActivityEvent;
     currentActivityEvent = activityEvent;
 
-    print(activityEvent);
     _events.add(activityEvent);
   }
 
   void onError(Object error) {
     print('ERROR - $error');
+  }
+
+  double checkGForce(AccelerometerEvent event) {
+    // sqrt(x^2 + y^2 + z^2)
+
+    double gForce = sqrt(pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2)) / 9.81;
+
+    return gForce;
   }
 
   void updateSensorValues(String event, List<double> data) async {
@@ -95,12 +113,12 @@ class ActivityRecognitionApp with ChangeNotifier {
         _gyroscopeValues.add(data);
       }
 
-      log(data.toString());
+      dev.log(data.toString());
     } else if (currentActivityEvent!.type == ActivityType.STILL) {
       if (_lastActivityEvent!.type != ActivityType.STILL) {
         _lastActivityEvent = null;
         writeToBox();
-        log("Writing sensor data to box");
+        dev.log("Writing sensor data to box");
       }
     }
   }

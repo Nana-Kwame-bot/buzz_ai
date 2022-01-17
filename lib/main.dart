@@ -25,7 +25,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
-final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
+// final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
 
 bool _deviceHasCapableAccelerometer = true;
 void main() async {
@@ -76,7 +76,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    activityRecognitionApp.init();
+    // activityRecognitionApp.init();
     super.initState();
   }
 
@@ -142,7 +142,7 @@ class _MyAppState extends State<MyApp> {
               ),
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
-                  return ActivityRecognitionApp();
+                  return ActivityRecognitionApp()..init();
                 },
               ),
             ],
