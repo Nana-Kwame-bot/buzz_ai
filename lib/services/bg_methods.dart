@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:buzz_ai/services/activity_recognition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
-// ActivityRecognitionService activityRecognitionService =
-//     ActivityRecognitionService();
 
 void onIosBackground() {
   WidgetsFlutterBinding.ensureInitialized();

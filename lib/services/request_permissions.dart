@@ -7,6 +7,7 @@ List<Permission> allRequiredPermissions = [
   Permission.manageExternalStorage,
   Permission.storage,
   Permission.camera,
+  Permission.sensors,
 ];
 
 Future<void> requestAllPermission() async {

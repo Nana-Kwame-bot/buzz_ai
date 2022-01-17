@@ -1,6 +1,5 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
-import 'package:buzz_ai/services/activity_recognition.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
@@ -22,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
-  ActivityRecognitionService activityRecognitionService = ActivityRecognitionService();
+  // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
 
   @override
   void initState() {
@@ -32,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    activityRecognitionService.dispose();
+    // activityRecognitionService.dispose();
     super.dispose();
   }
 
