@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ErrorScreen extends StatefulWidget {
-  ErrorScreen({
+  /// Simple [Scaffold] widget to show interuppting errors.
+  /// This is a stateful widget which returns a column with the provided elements with even spacing.
+  /// Elements order:
+  /// * `errorHeroWidget`
+  /// * `title`
+  /// * `description`
+  /// * `action`
+  const ErrorScreen({
     Key? key,
     required this.title,
     required this.description,

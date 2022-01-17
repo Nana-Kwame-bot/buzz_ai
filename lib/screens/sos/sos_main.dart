@@ -28,6 +28,7 @@ class _SOSScreenState extends State<SOSScreen> {
   Map<String, dynamic>? data;
   late Stream<int> timerStream;
   bool _uploadStarted = false;
+  bool _userConfirmsNoCrash = false;
 
   @override
   void initState() {
@@ -157,11 +158,14 @@ class _SOSScreenState extends State<SOSScreen> {
                   ),
                   const SizedBox(height: 30),
                   ConfirmationSlider(
-                    onConfirmation: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SOSSecondPage(data: data),
-                      ),
-                    ),
+                    onConfirmation: () {
+                      _userConfirmsNoCrash = true;
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => SOSSecondPage(data: data),
+                        ),
+                      );
+                    },
                     text: "NO",
                     textStyle: GoogleFonts.barlow(
                       color: Colors.white,
@@ -199,6 +203,14 @@ class _SOSScreenState extends State<SOSScreen> {
     setState(() {
       _positiveText = "Uploading...";
     });
+
+    if (_userConfirmsNoCrash) {
+      setState(() {
+        _positiveText = "Not a Crash";
+      });
+      return;
+    }
+
     if (data == null) {
       await getData();
     }
