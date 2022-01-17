@@ -16,8 +16,9 @@ import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String iD = '/profile';
+  final bool isFromSignUp;
 
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({Key? key, required this.isFromSignUp}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -41,113 +42,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listen: false,
     );
     userId = _authenticationController.auth.currentUser!.uid;
-
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      // userId = _authenticationController.auth.currentUser!.uid;
-      // await userProfileController.readProfileData(
-      //   userId: _authenticationController.auth.currentUser!.uid,
-      //   context: context,
-      // );
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () async {
-              await showModal<void>(
-                configuration: const FadeScaleTransitionConfiguration(
-                  transitionDuration: Duration(milliseconds: 500),
-                ),
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Sign Out?'),
-                    content: const Text('Are you sure you want to sign out?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () async {
-                          await Provider.of<AuthenticationController>(
-                            context,
-                            listen: false,
-                          ).signOut().whenComplete(() {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                LoginScreen.iD, (route) {
-                              return false;
+    return WillPopScope(
+      onWillPop: () {
+        if (widget.isFromSignUp) {
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () async {
+                if (widget.isFromSignUp) {
+                  return;
+                }
+                await showModal<void>(
+                  configuration: const FadeScaleTransitionConfiguration(
+                    transitionDuration: Duration(milliseconds: 500),
+                  ),
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Sign Out?'),
+                      content: const Text('Are you sure you want to sign out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () async {
+                            await Provider.of<AuthenticationController>(
+                              context,
+                              listen: false,
+                            ).signOut().whenComplete(() {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  LoginScreen.iD, (route) {
+                                return false;
+                              });
                             });
-                          });
-                        },
-                        child: const Text(
-                          'Yes',
-                          style: TextStyle(
-                            color: defaultColor,
+                          },
+                          child: const Text(
+                            'Yes',
+                            style: TextStyle(
+                              color: defaultColor,
+                            ),
                           ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: defaultColor,
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: defaultColor,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  );
-                },
-                context: context,
-              );
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
+                        )
+                      ],
+                    );
+                  },
+                  context: context,
+                );
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
             ),
+            backgroundColor: Colors.white,
+            title: const Text(
+              'Profile',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+              ),
+            ),
+            centerTitle: true,
           ),
           backgroundColor: Colors.white,
-          title: const Text(
-            'Profile',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16.0,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: FutureBuilder<UserProfile>(
-            future: userProfileController.readProfileData(
-              userId: userId,
-              context: context,
-            ),
-            builder:
-                (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData) {
-                return Column(
-                  children: const [
-                    ImagePick(),
-                    BasicDetails(),
-                    ContactDetails(),
-                    Emergency(),
-                    VehicleInformation(),
-                    MultipleCar(),
-                    SubmitForm(),
-                  ],
+          body: SingleChildScrollView(
+            child: FutureBuilder<UserProfile>(
+              future: userProfileController.readProfileData(
+                userId: userId,
+                context: context,
+              ),
+              builder:
+                  (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return Column(
+                    children: [
+                      const ImagePick(),
+                      const BasicDetails(),
+                      const ContactDetails(),
+                      const Emergency(),
+                      const VehicleInformation(),
+                      const MultipleCar(),
+                      SubmitForm(
+                        isFromSIgnUp: widget.isFromSignUp,
+                      ),
+                    ],
+                  );
+                }
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.3,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 );
-              }
-              return SizedBox(
-                height: MediaQuery.of(context).size.height / 1.3,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),

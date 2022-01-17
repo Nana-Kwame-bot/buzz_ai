@@ -19,33 +19,34 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  late StreamSubscription homeSubscription;
+  // late StreamSubscription homeSubscription;
   final PageController controller = PageController(keepPage: false);
   DateTime _currentBackPressTime = DateTime.now();
-  GlobalKey bottomNavigationKey = GlobalKey(debugLabel: 'bottom_nav');
+
+  // GlobalKey bottomNavigationKey = GlobalKey(debugLabel: 'bottom_nav');
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final FancyBottomNavigationState fState =
-          bottomNavigationKey.currentState as FancyBottomNavigationState;
-      if (context.read<AuthenticationController>().isNewUser) {
-        fState.setPage(3);
-        controller.jumpToPage(3);
-      } else {
-        fState.setPage(0);
-        controller.jumpToPage(0);
-      }
-      homeSubscription =
-          context.read<UserProfileController>().goToHome.listen((event) {
-        if (event) {
-          fState.setPage(0);
-          controller.jumpToPage(0);
-          homeSubscription.cancel();
-        }
-      });
-    });
+    // WidgetsBinding.instance?.addPostFrameCallback((_) {
+    //   final FancyBottomNavigationState fState =
+    //       bottomNavigationKey.currentState as FancyBottomNavigationState;
+    //   if (context.read<AuthenticationController>().isNewUser) {
+    //     fState.setPage(3);
+    //     controller.jumpToPage(3);
+    //   } else {
+    //     fState.setPage(0);
+    //     controller.jumpToPage(0);
+    //   }
+    //   homeSubscription =
+    //       context.read<UserProfileController>().goToHome.listen((event) {
+    //     if (event) {
+    //       fState.setPage(0);
+    //       controller.jumpToPage(0);
+    //       homeSubscription.cancel();
+    //     }
+    //   });
+    // });
   }
 
   @override
@@ -67,7 +68,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 children: value.pages,
               ),
               bottomNavigationBar: FancyBottomNavigation(
-                key: bottomNavigationKey,
+                // key: bottomNavigationKey,
                 circleColor: defaultColor,
                 inactiveIconColor: Colors.black54,
                 initialSelection: 0,
@@ -104,7 +105,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   void dispose() {
-    homeSubscription.cancel();
+    // homeSubscription.cancel();
     controller.dispose();
     super.dispose();
   }

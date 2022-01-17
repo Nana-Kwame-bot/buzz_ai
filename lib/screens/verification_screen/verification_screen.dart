@@ -1,5 +1,7 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/routes/screen_arguments/profile_screen_arguments.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -89,9 +91,20 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
                           if (_result) {
-                            Navigator.of(context).pushReplacementNamed(
-                              BottomNavigation.iD,
-                            );
+                            if (Provider.of<AuthenticationController>(context,
+                                    listen: false)
+                                .isNewUser) {
+                              Navigator.of(context).pushReplacementNamed(
+                                ProfileScreen.iD,
+                                arguments: ProfileScreenArguments(
+                                  isFromSignUp: true,
+                                ),
+                              );
+                            } else {
+                              Navigator.of(context).pushReplacementNamed(
+                                BottomNavigation.iD,
+                              );
+                            }
                           } else {
                             final snackBar = SnackBar(
                               duration: const Duration(seconds: 3),
@@ -181,6 +194,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    verificationFormKey.currentState?.dispose();
+    super.dispose();
   }
 
   void validateVerificationForms() {
