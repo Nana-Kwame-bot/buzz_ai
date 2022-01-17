@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/buzzai_app.dart';
@@ -12,10 +15,10 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
@@ -46,6 +49,15 @@ Future<void> initialize() async {
       isForegroundMode: true,
     ),
   );
+
+  const sensorListChannel = MethodChannel("buzzai/sensor_data");
+  double accelerometerMaxRange =
+      await sensorListChannel.invokeMethod("accelerometer_max_range");
+
+  if ((accelerometerMaxRange / 9.5) < 4) {
+    log("In-compatible device. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
+  }
+  log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
 }
 
 class MyApp extends StatefulWidget {
