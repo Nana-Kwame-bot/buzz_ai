@@ -6,12 +6,18 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/models/sensors/sensor_data.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 class ActivityRecognitionApp with ChangeNotifier {
@@ -81,6 +87,14 @@ class ActivityRecognitionApp with ChangeNotifier {
     else {
       startTracking();
     }
+
+    Timer.periodic(const Duration(minutes: 30), (timer) async {
+      DateTime now = DateTime.now();
+      if (now.hour == 2 && now.minute >= 30) {
+        await uploadSensorData();
+      } else
+        print('not 2:30');
+    });
   }
 
   void startTracking() {
@@ -113,7 +127,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
+    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
       if (event == "acc") {
         _accelerometerValues.add(data);
       }
@@ -161,13 +175,45 @@ class ActivityRecognitionApp with ChangeNotifier {
     _lastWritten = DateTime.now();
   }
 
-  void readFromBox() async {
+  Future<SensorModel?> readFromBox() async {
     DateTime today = DateTime.now();
     String date = "${today.day}-${today.month}-${today.year}";
 
     SensorModel? sensorModel = sensorBox.get(date);
 
-    if (sensorModel == null) return;
+    if (sensorModel == null) return null;
+
+    return sensorModel;
+  }
+
+  bool _sensorDataUploaded = false;
+  Future<void> uploadSensorData() async {
+    if (_sensorDataUploaded) return;
+    _sensorDataUploaded = true;
+
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+
+    SensorModel? data = await readFromBox();
+    if (data == null) return;
+
+    TaskSnapshot sensorDataUploadTask = await FirebaseStorage.instance
+        .ref(uid)
+        .child("sensor_data")
+        .child(DateTime.now().toString())
+        .putString(data.toJson(), format: PutStringFormat.raw);
+
+    await FirebaseFirestore.instance
+        .collection("userDatabase")
+        .doc(uid)
+        .update({
+      "historyData": [],
+      "sensorData": FieldValue.arrayUnion([
+        {
+          "timestamp": DateTime.now(),
+          "filePath": await sensorDataUploadTask.ref.getDownloadURL()
+        }
+      ])
+    });
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive_flutter/adapters.dart';
 
 part 'sensor_data.g.dart';
@@ -20,4 +22,24 @@ class SensorModel {
     required this.accelerometerData,
     required this.gyroscopeData,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'at': at,
+      'accelerometerData': accelerometerData,
+      'gyroscopeData': gyroscopeData,
+    };
+  }
+
+  factory SensorModel.fromMap(Map<String, dynamic> map) {
+    return SensorModel(
+      at: map['at'] ?? '',
+      accelerometerData: List<List<double>>.from(map['accelerometerData']?.map((x) => List<double>.from(x))),
+      gyroscopeData: List<List<double>>.from(map['gyroscopeData']?.map((x) => List<double>.from(x))),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory SensorModel.fromJson(String source) => SensorModel.fromMap(json.decode(source));
 }

@@ -1,4 +1,3 @@
-import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/config.dart';
@@ -125,12 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Column(
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Provider.of<ActivityRecognitionApp>(context, listen: false).readFromBox();
-                            }, 
-                            child: Text("test"),
-                          ),
                           TextFormField(
                             onTap: () async {
                               Prediction? p = await PlacesAutocomplete.show(
