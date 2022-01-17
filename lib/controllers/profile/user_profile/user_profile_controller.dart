@@ -22,12 +22,6 @@ class UserProfileController extends ChangeNotifier {
   FirebaseDatabase database = FirebaseDatabase.instance;
   Gender? gender = Gender.male;
   bool formEnabled = false;
-  StreamController<bool> homeController = StreamController<bool>.broadcast();
-
-  Sink get updateNavigation => homeController.sink;
-
-  Stream<bool> get goToHome => homeController.stream;
-
   bool isBasicDetailValid = false;
   bool isContactDetailValid = false;
   bool isVehicleFormValid = false;
@@ -54,12 +48,6 @@ class UserProfileController extends ChangeNotifier {
 
   void setGender(Gender? value) {
     gender = value;
-    notifyListeners();
-  }
-
-  //
-  void navigate() {
-    updateNavigation.add(true);
     notifyListeners();
   }
 
@@ -188,11 +176,5 @@ class UserProfileController extends ChangeNotifier {
       log('data is null');
     }
     return userProfile;
-  }
-
-  @override
-  void dispose() {
-    homeController.close();
-    super.dispose();
   }
 }

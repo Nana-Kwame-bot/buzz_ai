@@ -2,7 +2,6 @@ import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
 import 'package:flutter/material.dart';
 
-
 class BuzzaiApp extends StatelessWidget {
   const BuzzaiApp({Key? key}) : super(key: key);
 

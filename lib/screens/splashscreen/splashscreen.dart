@@ -1,7 +1,6 @@
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String iD = '/';
@@ -14,8 +13,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  // static const double _iconSize = 50;
-
   late AnimationController _animationController;
 
   late Animation _animation;
