@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/models/sensors/sensor_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,6 +60,7 @@ class ActivityRecognitionApp with ChangeNotifier {
             if (checkGForce(event) > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
+                Bringtoforeground.bringAppToForeground();
                 notifyListeners();
               }
             }
@@ -101,7 +103,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount) return;
 
     callback(sensor, event);
-    dev.log("$callback after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}]");
+    // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
     lastUpdate = DateTime.now();
   }
 
