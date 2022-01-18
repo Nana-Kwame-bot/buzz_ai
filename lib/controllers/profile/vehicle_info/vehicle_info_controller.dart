@@ -16,7 +16,6 @@ class VehicleInfoController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void setOwnerName(String? newValue) {
     vehicleInfo = vehicleInfo.copyWith(ownerName: newValue);
     notifyListeners();

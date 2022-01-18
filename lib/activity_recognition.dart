@@ -9,6 +9,7 @@ import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/models/sensors/sensor_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,6 +38,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   DateTime _lastWritten = DateTime.now();
 
   late Box<SensorModel> sensorBox;
+  int throttleAmount = 500;  // In milliseconds.
 
   void initState() {
     init();
@@ -65,12 +67,14 @@ class ActivityRecognitionApp with ChangeNotifier {
                 notifyListeners();
               }
             }
-            updateSensorValues("acc", <double>[event.x, event.y, event.z]);
+            _throttle(
+                updateSensorValues, "acc", <double>[event.x, event.y, event.z]);
           },
         ),
         gyroscopeEvents.listen(
           (GyroscopeEvent event) {
-            updateSensorValues("gyro", <double>[event.x, event.y, event.z]);
+            _throttle(updateSensorValues, "gyro",
+                <double>[event.x, event.y, event.z]);
           },
         ),
       ],
@@ -95,6 +99,14 @@ class ActivityRecognitionApp with ChangeNotifier {
       } else
         print('not 2:30');
     });
+  }
+
+  DateTime lastUpdate = DateTime.now();
+  _throttle(Function callback, String sensor, List<double> event) async {
+    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount) return;
+
+    callback(sensor, event);
+    lastUpdate = DateTime.now();
   }
 
   void startTracking() {

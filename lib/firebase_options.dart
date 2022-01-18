@@ -45,7 +45,8 @@ class DefaultFirebaseOptions {
     appId: '1:612470815334:android:bb5787f58bacc1e87c4ba7',
     messagingSenderId: '612470815334',
     projectId: 'buzz-ai-f6841',
-    databaseURL: 'https://buzz-ai-f6841-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://buzz-ai-f6841-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'buzz-ai-f6841.appspot.com',
   );
 
@@ -54,9 +55,11 @@ class DefaultFirebaseOptions {
     appId: '1:612470815334:ios:1dbd3dc5dae67c047c4ba7',
     messagingSenderId: '612470815334',
     projectId: 'buzz-ai-f6841',
-    databaseURL: 'https://buzz-ai-f6841-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://buzz-ai-f6841-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'buzz-ai-f6841.appspot.com',
-    iosClientId: '612470815334-vmt6d6sq913ss5hjfov0bm3c57tm0f6t.apps.googleusercontent.com',
+    iosClientId:
+        '612470815334-vmt6d6sq913ss5hjfov0bm3c57tm0f6t.apps.googleusercontent.com',
     iosBundleId: 'com.piyushlimited.buzzai',
   );
 }

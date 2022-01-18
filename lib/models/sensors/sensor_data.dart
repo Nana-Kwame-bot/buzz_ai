@@ -34,12 +34,15 @@ class SensorModel {
   factory SensorModel.fromMap(Map<String, dynamic> map) {
     return SensorModel(
       at: map['at'] ?? '',
-      accelerometerData: List<List<double>>.from(map['accelerometerData']?.map((x) => List<double>.from(x))),
-      gyroscopeData: List<List<double>>.from(map['gyroscopeData']?.map((x) => List<double>.from(x))),
+      accelerometerData: List<List<double>>.from(
+          map['accelerometerData']?.map((x) => List<double>.from(x))),
+      gyroscopeData: List<List<double>>.from(
+          map['gyroscopeData']?.map((x) => List<double>.from(x))),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory SensorModel.fromJson(String source) => SensorModel.fromMap(json.decode(source));
+  factory SensorModel.fromJson(String source) =>
+      SensorModel.fromMap(json.decode(source));
 }

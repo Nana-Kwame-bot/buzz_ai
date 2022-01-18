@@ -70,7 +70,8 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                         return null;
                       },
                       initialValue:
-                          emergencyContactController.emergencyContact.name ?? '',
+                          emergencyContactController.emergencyContact.name ??
+                              '',
                       onSaved: emergencyContactController.setName,
                       keyboardType: TextInputType.name,
                     ),
@@ -126,7 +127,8 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                         return null;
                       },
                       initialValue: emergencyContactController
-                          .emergencyContact.contactNumber ?? '',
+                              .emergencyContact.contactNumber ??
+                          '',
                       onSaved: emergencyContactController.setEmergencyContact,
                       keyboardType: TextInputType.phone,
                     ),

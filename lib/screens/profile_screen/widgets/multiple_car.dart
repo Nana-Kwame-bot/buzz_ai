@@ -69,7 +69,8 @@ class MultipleCar extends StatelessWidget {
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                     ),
-                                    initialValue: multi.multipleVehicle.model ?? '',
+                                    initialValue:
+                                        multi.multipleVehicle.model ?? '',
                                     readOnly: true,
                                     enabled: false,
                                   ),
@@ -98,7 +99,8 @@ class MultipleCar extends StatelessWidget {
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                     ),
-                                    initialValue: multi.multipleVehicle.year ?? '',
+                                    initialValue:
+                                        multi.multipleVehicle.year ?? '',
                                     readOnly: true,
                                     enabled: false,
                                   ),

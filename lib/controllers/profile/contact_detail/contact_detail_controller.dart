@@ -25,6 +25,4 @@ class ContactDetailController extends ChangeNotifier {
     contactDetail = contactDetail.copyWith(phoneNumber: newValue);
     notifyListeners();
   }
-
-
 }

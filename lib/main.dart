@@ -170,6 +170,5 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 // Error codes:
 // -1 => Accelerometer not capable
