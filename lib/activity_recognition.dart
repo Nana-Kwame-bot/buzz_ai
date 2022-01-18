@@ -13,7 +13,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -28,19 +27,19 @@ class ActivityRecognitionApp with ChangeNotifier {
   int initialRetryTimeout = 1;
 
   bool gForceExceeded = false;
-  double? excedeedGForce = null;
+  double? excedeedGForce;
   bool accidentReported = false;
 
   // Sensor variables
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-  List<List<double>> _accelerometerValues = [];
-  List<List<double>> _gyroscopeValues = [];
+  final List<List<double>> _accelerometerValues = [];
+  final List<List<double>> _gyroscopeValues = [];
   DateTime _lastWritten = DateTime.now();
   late SharedPreferences prefs;
   List<double> last30GForce = [];
   double lastGForce = 0;
 
-  int throttleAmount = 500; // In milliseconds.
+  int throttleAmount = 66; // In milliseconds.
 
   void initState() {
     init();
@@ -55,14 +54,16 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   void init() async {
     prefs = await SharedPreferences.getInstance();
-    Timer.periodic(const Duration(seconds: 30), (timer) => last30GForce = []);
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      print(last30GForce);
+      last30GForce = [];
+    });
 
     _streamSubscriptions.addAll(
       [
         accelerometerEvents.listen(
           (AccelerometerEvent event) {
             lastGForce = checkGForce(event);
-            last30GForce.add(lastGForce);
 
             if (lastGForce > 4) {
               if (!gForceExceeded) {
@@ -177,8 +178,11 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void updateSensorValues(String event, List<double> data) async {
+    last30GForce.add(lastGForce);
+    
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
+
 
     if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
       if (event == "acc") {
