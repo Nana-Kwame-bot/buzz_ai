@@ -66,7 +66,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 (context, ActivityRecognitionApp activity, Widget? child) {
               if (activity.gForceExceeded && !activity.accidentReported) {
                 return const SOSScreen(
-                  timeout: 3,
+                  timeout: 30,
                 );
               }
 

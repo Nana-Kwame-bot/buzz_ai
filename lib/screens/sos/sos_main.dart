@@ -29,9 +29,12 @@ class _SOSScreenState extends State<SOSScreen> {
   late Stream<int> timerStream;
   bool _uploadStarted = false;
   bool _userConfirmsNoCrash = false;
+  late ActivityRecognitionApp _activityProvider;
 
   @override
   void initState() {
+    _activityProvider =
+        Provider.of<ActivityRecognitionApp>(context, listen: false);
     timerStream = timer(widget.timeout);
     getData();
     super.initState();
@@ -93,10 +96,35 @@ class _SOSScreenState extends State<SOSScreen> {
                 ),
               ),
             ),
+            RichText(
+                text: TextSpan(children: [
+              TextSpan(
+                text: "Detected ",
+                style: GoogleFonts.barlow(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: _activityProvider.excedeedGForce == null
+                    ? "0"
+                    : _activityProvider.excedeedGForce!.toStringAsFixed(1),
+                style: GoogleFonts.barlow(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: " G's",
+                style: GoogleFonts.barlow(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ])),
             StreamBuilder<int>(
                 stream: timerStream,
                 builder: (context, snapshot) {
-                  log(snapshot.connectionState.toString());
                   if (snapshot.connectionState == ConnectionState.active) {
                     return GradientProgressIndicator(
                       child: Text(
@@ -214,6 +242,7 @@ class _SOSScreenState extends State<SOSScreen> {
     if (data == null) {
       await getData();
     }
+    data!["gForce"] = _activityProvider.excedeedGForce;
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
 

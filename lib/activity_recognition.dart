@@ -9,6 +9,7 @@ import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/models/sensors/sensor_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ActivityRecognitionApp with ChangeNotifier {
   StreamSubscription<ActivityEvent>? activityStreamSubscription;
@@ -23,8 +25,10 @@ class ActivityRecognitionApp with ChangeNotifier {
   ActivityRecognition activityRecognition = ActivityRecognition();
   ActivityEvent? currentActivityEvent;
   ActivityEvent? _lastActivityEvent;
+  int initialRetryTimeout = 1;
 
   bool gForceExceeded = false;
+  double? excedeedGForce = null;
   bool accidentReported = false;
 
   // Sensor variables
@@ -32,9 +36,10 @@ class ActivityRecognitionApp with ChangeNotifier {
   List<List<double>> _accelerometerValues = [];
   List<List<double>> _gyroscopeValues = [];
   DateTime _lastWritten = DateTime.now();
+  late SharedPreferences prefs;
 
   late Box<SensorModel> sensorBox;
-  int throttleAmount = 500;  // In milliseconds.
+  int throttleAmount = 500; // In milliseconds.
 
   void initState() {
     init();
@@ -48,6 +53,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void init() async {
+    prefs = await SharedPreferences.getInstance();
     String path = (await getApplicationDocumentsDirectory()).path;
     Hive.init(path);
     Hive.registerAdapter(SensorModelAdapter());
@@ -57,9 +63,11 @@ class ActivityRecognitionApp with ChangeNotifier {
       [
         accelerometerEvents.listen(
           (AccelerometerEvent event) {
-            if (checkGForce(event) > 4) {
+            double gforce = checkGForce(event);
+            if (gforce > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
+                excedeedGForce = gforce;
                 Bringtoforeground.bringAppToForeground();
                 notifyListeners();
               }
@@ -89,18 +97,53 @@ class ActivityRecognitionApp with ChangeNotifier {
       startTracking();
     }
 
-    Timer.periodic(const Duration(minutes: 30), (timer) async {
+    Timer.periodic(const Duration(seconds: 3), (timer) async {
       DateTime now = DateTime.now();
+
       if (now.hour == 2 && now.minute >= 30) {
-        await uploadSensorData();
-      } else
-        print('not 2:30');
+        Connectivity()
+            .onConnectivityChanged
+            .listen((ConnectivityResult result) async {
+          if ([ConnectivityResult.mobile, ConnectivityResult.wifi]
+              .contains(result)) {
+            String path = (await getApplicationDocumentsDirectory()).path;
+
+            if (prefs.getBool("sensorUploadPending") ?? false) {
+              List<String> allPendingUploads =
+                  prefs.getStringList("sensorDataPendingUploads") ?? [];
+
+              for (var pendingFile in allPendingUploads) {
+                File file = File("$path/$pendingFile");
+                await uploadSensorData(file);
+              }
+              prefs.setStringList("sensorDataPendingUploads", []);
+            }
+            await uploadSensorData();
+          } else {
+            // Queue all pending files
+            DateTime today = DateTime.now();
+            await prefs.setBool("sensorUploadPending", true);
+            List<String> allPendingUploads = [
+              "sensordata-${today.day}-${today.month}-${today.year}.csv",
+            ];
+
+            allPendingUploads
+                .addAll(prefs.getStringList("sensorDataPendingUploads") ?? []);
+
+            await prefs.setStringList(
+              "sensorDataPendingUploads",
+              allPendingUploads,
+            );
+          }
+        });
+      }
     });
   }
 
   DateTime lastUpdate = DateTime.now();
   _throttle(Function callback, String sensor, List<double> event) async {
-    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount) return;
+    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
+      return;
 
     callback(sensor, event);
     // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
@@ -137,7 +180,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
+    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
       if (event == "acc") {
         _accelerometerValues.add(data);
       }
@@ -152,7 +195,7 @@ class ActivityRecognitionApp with ChangeNotifier {
         _lastActivityEvent = currentActivityEvent;
 
         if (_lastWritten.difference(DateTime.now()).inSeconds < 4) {
-          await writeToBox();
+          await writeSensorData();
         }
 
         dev.log("Writing sensor data to box");
@@ -160,57 +203,57 @@ class ActivityRecognitionApp with ChangeNotifier {
     }
   }
 
-  Future<void> writeToBox() async {
-    // await sensorBox.clear();
+  Future<void> writeSensorData() async {
+    Directory dir = await getApplicationDocumentsDirectory();
     DateTime today = DateTime.now();
-    String date = "${today.day}-${today.month}-${today.year}";
+    File file = File(
+        "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv");
 
-    // read old data to prevent overwrite
-    SensorModel? oldSensorModel = sensorBox.get(date);
-    if (oldSensorModel != null) {
-      List<List<double>> temp = _accelerometerValues;
-      _accelerometerValues = [...oldSensorModel.accelerometerData, ...temp];
-
-      temp = _gyroscopeValues;
-      _gyroscopeValues = [...oldSensorModel.gyroscopeData, ...temp];
+    String data = "";
+    if (!(await file.exists())) {
+      data = "Accx, Accy, Accz, Gyrox, Gyroy, Gyroz\n";
     }
 
-    SensorModel sensorModel = SensorModel(
-      at: date,
-      accelerometerData: _accelerometerValues,
-      gyroscopeData: _gyroscopeValues,
-    );
+    for (int i = 0, j = 0; i < _accelerometerValues.length; i++, j++) {
+      data +=
+          "${_accelerometerValues[i][0]}, ${_accelerometerValues[i][1]}, ${_accelerometerValues[i][2]}, ";
 
-    await sensorBox.put(date, sensorModel);
+      if (j < _gyroscopeValues.length) {
+        data +=
+            "${_gyroscopeValues[j][0]}, ${_gyroscopeValues[j][1]}, ${_gyroscopeValues[j][2]}\n";
+      } else {
+        data += "0, 0, 0\n";
+      }
+    }
+
+    await file.writeAsString(data.toString(), mode: FileMode.append);
     _lastWritten = DateTime.now();
   }
 
-  Future<SensorModel?> readFromBox() async {
+  Future<String> readSensorData([File? infile]) async {
+    Directory dir = await getApplicationDocumentsDirectory();
     DateTime today = DateTime.now();
-    String date = "${today.day}-${today.month}-${today.year}";
+    File file = infile ??
+        File(
+            "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv");
 
-    SensorModel? sensorModel = sensorBox.get(date);
-
-    if (sensorModel == null) return null;
-
-    return sensorModel;
+    return await file.readAsString();
   }
 
   bool _sensorDataUploaded = false;
-  Future<void> uploadSensorData() async {
+  Future<void> uploadSensorData([File? file]) async {
     if (_sensorDataUploaded) return;
-    _sensorDataUploaded = true;
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
-    SensorModel? data = await readFromBox();
-    if (data == null) return;
+    String data = await readSensorData();
+    DateTime today = DateTime.now();
 
     TaskSnapshot sensorDataUploadTask = await FirebaseStorage.instance
         .ref(uid)
         .child("sensor_data")
-        .child(DateTime.now().toString())
-        .putString(data.toJson(), format: PutStringFormat.raw);
+        .child("${today.day}-${today.month}-${today.year}.csv")
+        .putString(data, format: PutStringFormat.raw);
 
     await FirebaseFirestore.instance
         .collection("userDatabase")
@@ -224,6 +267,7 @@ class ActivityRecognitionApp with ChangeNotifier {
         }
       ])
     });
+    _sensorDataUploaded = true;
   }
 
   @override

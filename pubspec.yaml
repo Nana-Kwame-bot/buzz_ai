@@ -66,6 +66,8 @@ dependencies:
   bringtoforeground:
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
+  connectivity_plus: ^2.2.0
+  shared_preferences: ^2.0.12
 
 dev_dependencies:
   change_app_package_name: ^1.0.0
