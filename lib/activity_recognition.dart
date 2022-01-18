@@ -37,8 +37,9 @@ class ActivityRecognitionApp with ChangeNotifier {
   List<List<double>> _gyroscopeValues = [];
   DateTime _lastWritten = DateTime.now();
   late SharedPreferences prefs;
+  List<double> last30GForce = [];
+  double lastGForce = 0;
 
-  late Box<SensorModel> sensorBox;
   int throttleAmount = 500; // In milliseconds.
 
   void initState() {
@@ -54,20 +55,19 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   void init() async {
     prefs = await SharedPreferences.getInstance();
-    String path = (await getApplicationDocumentsDirectory()).path;
-    Hive.init(path);
-    Hive.registerAdapter(SensorModelAdapter());
-    sensorBox = await Hive.openBox("sensor_data");
+    Timer.periodic(const Duration(seconds: 30), (timer) => last30GForce = []);
 
     _streamSubscriptions.addAll(
       [
         accelerometerEvents.listen(
           (AccelerometerEvent event) {
-            double gforce = checkGForce(event);
-            if (gforce > 4) {
+            lastGForce = checkGForce(event);
+            last30GForce.add(lastGForce);
+
+            if (lastGForce > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
-                excedeedGForce = gforce;
+                excedeedGForce = lastGForce;
                 Bringtoforeground.bringAppToForeground();
                 notifyListeners();
               }

@@ -54,6 +54,7 @@ class _SOSScreenState extends State<SOSScreen> {
         .auth
         .currentUser!
         .uid;
+    List<double> last30sG = Provider.of<ActivityRecognitionApp>(context, listen: false).last30GForce;
 
     data = {
       "coordinates": locationData == null
@@ -67,6 +68,7 @@ class _SOSScreenState extends State<SOSScreen> {
           locationData == null ? null : locationData["placemark"].toJson(),
       "uid": uid,
       "crashStatus": "Crash",
+      "last30sG": last30sG,
     };
   }
 
