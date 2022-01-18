@@ -268,6 +268,10 @@ class ActivityRecognitionApp with ChangeNotifier {
       ])
     });
     _sensorDataUploaded = true;
+    Directory dir = await getApplicationDocumentsDirectory();
+    await File(
+            "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv")
+        .delete();
   }
 
   @override
