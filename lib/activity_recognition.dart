@@ -6,19 +6,14 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/models/sensors/sensor_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_debounce/easy_debounce.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 class ActivityRecognitionApp with ChangeNotifier {
@@ -106,6 +101,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount) return;
 
     callback(sensor, event);
+    dev.log("$callback after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}]");
     lastUpdate = DateTime.now();
   }
 
