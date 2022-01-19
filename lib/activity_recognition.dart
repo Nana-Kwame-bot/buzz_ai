@@ -58,10 +58,9 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     _streamSubscriptions.addAll(
       [
-        accelerometerEvents.listen(
-          (AccelerometerEvent event) {
+        userAccelerometerEvents.listen(
+          (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
-            print(lastGForce);
             if (lastGForce > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
@@ -166,7 +165,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     print('ERROR - $error');
   }
 
-  double checkGForce(AccelerometerEvent event) {
+  double checkGForce(UserAccelerometerEvent event) {
     // sqrt(x^2 + y^2 + z^2)
 
     double gForce =
