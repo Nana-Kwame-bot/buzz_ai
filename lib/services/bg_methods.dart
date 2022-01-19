@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
@@ -9,6 +10,7 @@ void onIosBackground() {
   log('FLUTTER BACKGROUND FETCH');
 }
 
+final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
 void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
@@ -33,7 +35,7 @@ void onStart() {
   Timer.periodic(const Duration(minutes: 15), (timer) async {
     if (!(await service.isServiceRunning())) timer.cancel();
     service.setNotificationInfo(
-      title: "My App Service",
+      title: "Buzz.AI is running",
       content: "Updated at ${DateTime.now()}",
     );
 
@@ -42,6 +44,5 @@ void onStart() {
     );
   });
 
-  // Timer.periodic(const Duration(seconds: 1),
-  //     (timer) async => activityRecognitionService.monitorActivity());
+  activityRecognitionApp.init();
 }

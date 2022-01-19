@@ -54,10 +54,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   void init() async {
     prefs = await SharedPreferences.getInstance();
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      print(last30GForce);
-      last30GForce = [];
-    });
+    Timer.periodic(const Duration(seconds: 1), (timer) => last30GForce = []);
 
     _streamSubscriptions.addAll(
       [
@@ -73,6 +70,7 @@ class ActivityRecognitionApp with ChangeNotifier {
                 notifyListeners();
               }
             }
+
             _throttle(
                 updateSensorValues, "acc", <double>[event.x, event.y, event.z]);
           },
@@ -179,10 +177,9 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   void updateSensorValues(String event, List<double> data) async {
     last30GForce.add(lastGForce);
-    
+
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
-
 
     if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
       if (event == "acc") {
