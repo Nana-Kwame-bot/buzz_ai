@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/screens/misc/error_screen.dart';
-import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
@@ -38,19 +37,6 @@ void main() async {
 
 Future<void> initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FlutterBackgroundService bgService = FlutterBackgroundService();
-  await bgService.configure(
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-      onForeground: onStart,
-      onBackground: onIosBackground,
-    ),
-    androidConfiguration: AndroidConfiguration(
-      autoStart: true,
-      onStart: onStart,
-      isForegroundMode: true,
-    ),
-  );
 
   const sensorListChannel = MethodChannel("buzzai/sensor_data");
   double accelerometerMaxRange =
@@ -140,7 +126,7 @@ class _MyAppState extends State<MyApp> {
               ),
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
-                  return activityRecognitionApp;
+                  return ActivityRecognitionApp()..init();
                 },
               ),
             ],
