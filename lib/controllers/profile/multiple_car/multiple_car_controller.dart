@@ -1,8 +1,7 @@
 import 'package:buzz_ai/models/profile/multiple_vehicle/multiple_vehicle.dart';
 import 'package:flutter/cupertino.dart';
 
-class MultipleVehicleController extends ChangeNotifier{
-
+class MultipleVehicleController extends ChangeNotifier {
   var multipleVehicle = const MultipleVehicle();
 
   void onStart() {

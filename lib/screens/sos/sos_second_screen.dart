@@ -1,4 +1,6 @@
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/services/get_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,6 +63,14 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
       setState(() {
         _uploading = false;
       });
+
+      Provider.of<ActivityRecognitionApp>(context, listen: false)
+          .accidentReported = true;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const BottomNavigation(),
+        ),
+      );
     }
 
     return Scaffold(

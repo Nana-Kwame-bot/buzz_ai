@@ -171,7 +171,9 @@ class _MultipleCarDialogState extends State<MultipleCarDialog> {
                         labelText: 'Vehicle plate number',
                         hintText: 'Enter the Vehicle plate number',
                       ),
-                      initialValue: multipleVehicleController.multipleVehicle.plateNumber ?? '',
+                      initialValue: multipleVehicleController
+                              .multipleVehicle.plateNumber ??
+                          '',
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return 'Enter the Vehicle plate number';

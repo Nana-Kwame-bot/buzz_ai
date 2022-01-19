@@ -50,6 +50,7 @@ dependencies:
   google_fonts:
   hive:
   hive_flutter:
+  hive_generator: ^1.1.2
   intl_phone_field: ^2.1.0
   map_picker:
   provider: ^6.0.1
@@ -60,10 +61,18 @@ dependencies:
       url: https://github.com/otonielduarte/gradient-progress-indicator.git
   font_awesome_flutter: ^9.2.0
   map_launcher: ^2.1.2
+  sensors_plus: ^1.2.1
+  flutter_svg: ^1.0.1
+  bringtoforeground:
+    git:
+      url: https://github.com/Tatunchamon/bring_to_foreground.git
+  connectivity_plus: ^2.2.0
+  shared_preferences: ^2.0.12
 
 dev_dependencies:
   change_app_package_name: ^1.0.0
   flutter_lints: ^1.0.0
+  build_runner: ^2.1.7
   flutter_test:
     sdk: flutter
 

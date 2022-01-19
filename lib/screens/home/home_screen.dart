@@ -1,9 +1,9 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -20,6 +20,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
+  // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
+
+  @override
+  void initState() {
+    requestAllPermission();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // activityRecognitionService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

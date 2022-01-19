@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
 import 'package:buzz_ai/services/get_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +15,9 @@ import 'package:slide_to_confirm/slide_to_confirm.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SOSScreen extends StatefulWidget {
-  const SOSScreen({Key? key}) : super(key: key);
+  const SOSScreen({Key? key, this.timeout = 30}) : super(key: key);
+
+  final int timeout;
 
   @override
   _SOSScreenState createState() => _SOSScreenState();
@@ -21,32 +26,49 @@ class SOSScreen extends StatefulWidget {
 class _SOSScreenState extends State<SOSScreen> {
   String _positiveText = "YES";
   Map<String, dynamic>? data;
-  final int timeout = 30;
   late Stream<int> timerStream;
+  bool _uploadStarted = false;
+  bool _userConfirmsNoCrash = false;
+  late ActivityRecognitionApp _activityProvider;
 
   @override
   void initState() {
-    timerStream = timer(timeout);
+    _activityProvider =
+        Provider.of<ActivityRecognitionApp>(context, listen: false);
+    timerStream = timer(widget.timeout);
     getData();
     super.initState();
   }
 
   Future<void> getData() async {
-    Map locationData = await getLocation();
+    Map? locationData;
+
+    try {
+      locationData = await getLocation();
+    } catch (e) {
+      locationData = null;
+      // rethrow;
+    }
+
     String uid = Provider.of<AuthenticationController>(context, listen: false)
         .auth
         .currentUser!
         .uid;
+    List<double> last30sG = Provider.of<ActivityRecognitionApp>(context, listen: false).last30GForce;
 
     data = {
-      "coordinates": [
-        locationData["position"].latitude,
-        locationData["position"].longitude
-      ],
+      "coordinates": locationData == null
+          ? null
+          : [
+              locationData["position"].latitude,
+              locationData["position"].longitude
+            ],
       "createdAt": DateTime.now(),
-      "location": locationData["placemark"].toJson(),
+      "location":
+          locationData == null ? null : locationData["placemark"].toJson(),
       "uid": uid,
       "crashStatus": "Crash",
+      "last30sG": last30sG,
     };
   }
 
@@ -76,12 +98,36 @@ class _SOSScreenState extends State<SOSScreen> {
                 ),
               ),
             ),
+            RichText(
+                text: TextSpan(children: [
+              TextSpan(
+                text: "Detected ",
+                style: GoogleFonts.barlow(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: _activityProvider.excedeedGForce == null
+                    ? "0"
+                    : _activityProvider.excedeedGForce!.toStringAsFixed(1),
+                style: GoogleFonts.barlow(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: " G's",
+                style: GoogleFonts.barlow(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ])),
             StreamBuilder<int>(
                 stream: timerStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
-                    if (snapshot.data == 0) uploadReport();
-
                     return GradientProgressIndicator(
                       child: Text(
                         snapshot.data!.toString(),
@@ -96,6 +142,15 @@ class _SOSScreenState extends State<SOSScreen> {
                       gradientColors: const [Colors.transparent, Colors.white],
                       duration: 2,
                     );
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Text("...",
+                        style: TextStyle(fontSize: 50, color: Colors.white));
+                  } else if (snapshot.data == 0 &&
+                      snapshot.connectionState == ConnectionState.done) {
+                    if (_uploadStarted) return Container();
+                    WidgetsBinding.instance!
+                        .addPostFrameCallback((timeStamp) => uploadReport());
                   }
 
                   return GradientProgressIndicator(
@@ -133,11 +188,14 @@ class _SOSScreenState extends State<SOSScreen> {
                   ),
                   const SizedBox(height: 30),
                   ConfirmationSlider(
-                    onConfirmation: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SOSSecondPage(data: data),
-                      ),
-                    ),
+                    onConfirmation: () {
+                      _userConfirmsNoCrash = true;
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => SOSSecondPage(data: data),
+                        ),
+                      );
+                    },
                     text: "NO",
                     textStyle: GoogleFonts.barlow(
                       color: Colors.white,
@@ -171,10 +229,47 @@ class _SOSScreenState extends State<SOSScreen> {
   }
 
   Future<void> uploadReport() async {
+    _uploadStarted = true;
+    setState(() {
+      _positiveText = "Uploading...";
+    });
+
+    if (_userConfirmsNoCrash) {
+      setState(() {
+        _positiveText = "Not a Crash";
+      });
+      return;
+    }
+
     if (data == null) {
       await getData();
     }
+    data!["gForce"] = _activityProvider.excedeedGForce;
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
+
+    setState(() {
+      _positiveText = "Done.";
+    });
+
+    Provider.of<ActivityRecognitionApp>(context, listen: false)
+        .accidentReported = true;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Report uploaded!"),
+        content: const Text(
+            "We have detected a abnormal increase in G-force and we suspect this is a accident. We have upload your current location with a 3 second audio clip."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).popAndPushNamed(BottomNavigation.iD);
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 }
