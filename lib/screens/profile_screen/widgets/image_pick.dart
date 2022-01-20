@@ -5,6 +5,7 @@ import 'package:buzz_ai/controllers/profile/image_pick/image_pick_controller.dar
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ImagePick extends StatelessWidget {
@@ -83,12 +84,21 @@ class ImagePick extends StatelessWidget {
                   builder: (BuildContext context, value, Widget? child) {
                     return CircleAvatar(
                       radius: 50.0,
-                      backgroundColor: Colors.brown,
+                      backgroundColor: Colors.white,
                       backgroundImage: (value.basicDetail.imageURL == null ||
                               value.basicDetail.imageURL == '')
                           ? null
-                          : FileImage(
-                              File(value.basicDetail.imageURL!),
+                          : controller.formEnabled
+                              ? FileImage(
+                                  File(value.basicDetail.imageURL!),
+                                )
+                              : null,
+                      child: !(value.basicDetail.imageURL == null ||
+                              value.basicDetail.imageURL == '' ||
+                              !controller.formEnabled)
+                          ? null
+                          : Lottie.asset(
+                              'assets/lottie/profile.json',
                             ),
                     );
                   },

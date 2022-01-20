@@ -16,7 +16,7 @@ class AuthenticationController extends ChangeNotifier {
     return auth.authStateChanges();
   }
 
-  void updateIsNew(bool? value) {
+  void _updateIsNew(bool? value) {
     isNewUser = value ?? false;
     notifyListeners();
   }
@@ -104,7 +104,7 @@ class AuthenticationController extends ChangeNotifier {
       );
       final User user =
           await auth.signInWithCredential(credential).then((value) {
-        updateIsNew(value.additionalUserInfo?.isNewUser);
+        _updateIsNew(value.additionalUserInfo?.isNewUser);
         return value.user!;
       });
       log('Successfully signed in UID: ${user.uid}');

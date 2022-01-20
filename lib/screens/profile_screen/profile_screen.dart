@@ -12,6 +12,8 @@ import 'package:buzz_ai/screens/profile_screen/widgets/submit_form.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/vehicle_information.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -27,6 +29,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late UserProfileController userProfileController;
   late AuthenticationController _authenticationController;
+  DateTime _currentBackPressTime = DateTime.now();
   late String userId;
 
   @override
@@ -47,8 +50,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         if (widget.isFromSignUp) {
+          _onWillPop();
           return Future.value(false);
         }
         return Future.value(true);
@@ -56,61 +60,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              onPressed: () async {
-                if (widget.isFromSignUp) {
-                  return;
-                }
-                await showModal<void>(
-                  configuration: const FadeScaleTransitionConfiguration(
-                    transitionDuration: Duration(milliseconds: 500),
-                  ),
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Sign Out?'),
-                      content: const Text('Are you sure you want to sign out?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () async {
-                            await Provider.of<AuthenticationController>(
-                              context,
-                              listen: false,
-                            ).signOut().whenComplete(() {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  LoginScreen.iD, (route) {
-                                return false;
-                              });
-                            });
-                          },
-                          child: const Text(
-                            'Yes',
-                            style: TextStyle(
-                              color: defaultColor,
-                            ),
-                          ),
+            automaticallyImplyLeading: false,
+            leading: widget.isFromSignUp
+                ? null
+                : IconButton(
+                    onPressed: () async {
+                      await showModal<void>(
+                        configuration: const FadeScaleTransitionConfiguration(
+                          transitionDuration: Duration(milliseconds: 500),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(
-                              color: defaultColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    );
-                  },
-                  context: context,
-                );
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ),
-            ),
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Sign Out?'),
+                            content: const Text(
+                                'Are you sure you want to sign out?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () async {
+                                  await Provider.of<AuthenticationController>(
+                                    context,
+                                    listen: false,
+                                  ).signOut().whenComplete(() {
+                                    userProfileController.disableForms();
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(LoginScreen.iD,
+                                            (route) {
+                                      return false;
+                                    });
+                                  });
+                                },
+                                child: const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                    color: defaultColor,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: defaultColor,
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                        context: context,
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    ),
+                  ),
             backgroundColor: Colors.white,
             title: const Text(
               'Profile',
@@ -158,5 +165,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  void _onWillPop() {
+    final now = DateTime.now();
+    if (now.difference(_currentBackPressTime) > const Duration(seconds: 2)) {
+      _currentBackPressTime = now;
+      Fluttertoast.showToast(
+        msg: 'Press back again to Exit',
+        fontSize: 16,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black45,
+      );
+      return;
+    }
+    SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+    return;
   }
 }

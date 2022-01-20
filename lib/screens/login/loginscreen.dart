@@ -193,9 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             );
-          } else {
-            return const BottomNavigation();
           }
+          return const BottomNavigation();
         } else {
           return Container(
             color: const Color.fromRGBO(82, 71, 197, 1),
