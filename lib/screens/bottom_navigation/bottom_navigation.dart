@@ -40,7 +40,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return ValueListenableBuilder<Box>(
       valueListenable: profileBox.listenable(),
       builder: (BuildContext context, Box profileBox, Widget? child) {
-        if (profileBox.get('profile', defaultValue: false)) {
+        if (!profileBox.get('profile', defaultValue: false)) {
           return const ProfileScreen(isFromSignUp: true);
         }
         return WillPopScope(

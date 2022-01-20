@@ -48,7 +48,8 @@ class UserProfileController extends ChangeNotifier {
 
   Future<bool> validateEmergency({required BuildContext context}) async {
     if (Provider.of<FirstEmergencyContactController>(context, listen: false)
-        .isEmergencyContactValid) {
+        .firstEmergencyContact
+        .contactAdded!) {
       return true;
     }
     return false;
