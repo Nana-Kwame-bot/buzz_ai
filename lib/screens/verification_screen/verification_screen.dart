@@ -5,6 +5,7 @@ import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -18,6 +19,13 @@ class VerificationScreen extends StatefulWidget {
 
 class _VerificationScreenState extends State<VerificationScreen> {
   var verificationFormKey = GlobalKey<FormState>();
+  late Box<bool> profileBox;
+
+  @override
+  void initState() {
+    super.initState();
+    profileBox = Hive.box<bool>('profileBox');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,12 +96,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           return null;
                         },
                         onSaved: (String? value) async {
+                          bool isProfileSet =
+                              profileBox.get('profile', defaultValue: false) ??
+                                  false;
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
                           if (_result) {
-                            if (Provider.of<AuthenticationController>(context,
-                                    listen: false)
-                                .isNewUser) {
+                            if (!isProfileSet) {
                               Navigator.of(context).pushReplacementNamed(
                                 ProfileScreen.iD,
                                 arguments: ProfileScreenArguments(

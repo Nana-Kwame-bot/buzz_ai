@@ -1,7 +1,11 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
-import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
@@ -9,10 +13,12 @@ import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SubmitForm extends StatefulWidget {
   final bool isFromSIgnUp;
+
   const SubmitForm({Key? key, required this.isFromSIgnUp}) : super(key: key);
 
   @override
@@ -22,7 +28,7 @@ class SubmitForm extends StatefulWidget {
 class _SubmitFormState extends State<SubmitForm> {
   late UserProfileController userProfileController;
   late AuthenticationController authenticationController;
-
+  late Box<bool> profileBox;
   late DatabaseReference _userRef;
   UserProfile? userProfile;
   late String userId;
@@ -40,6 +46,7 @@ class _SubmitFormState extends State<SubmitForm> {
     );
     userId = authenticationController.auth.currentUser!.uid;
     _userRef = userProfileController.database.ref('users/$userId');
+    profileBox = Hive.box<bool>('profileBox');
   }
 
   @override
@@ -68,6 +75,9 @@ class _SubmitFormState extends State<SubmitForm> {
 
   Future<void> onPressed() async {
     bool areValid = await userProfileController.validateForms(context: context);
+    bool isEmergencyValid =
+        await userProfileController.validateEmergency(context: context);
+
     final requiredSnackBar = SnackBar(
       duration: const Duration(seconds: 3),
       content: const Text('Please fill out all the required fields'),
@@ -78,6 +88,21 @@ class _SubmitFormState extends State<SubmitForm> {
         },
       ),
     );
+    final emergencySnackBar = SnackBar(
+      duration: const Duration(seconds: 3),
+      content: const Text('Emergency contact information not set'),
+      action: SnackBarAction(
+        label: 'Dismiss',
+        onPressed: () {
+          ScaffoldMessenger.of(context).clearSnackBars();
+        },
+      ),
+    );
+
+    if (!isEmergencyValid) {
+      ScaffoldMessenger.of(context).showSnackBar(emergencySnackBar);
+      return;
+    }
 
     if (!areValid) {
       ScaffoldMessenger.of(context).showSnackBar(requiredSnackBar);
@@ -91,9 +116,21 @@ class _SubmitFormState extends State<SubmitForm> {
       contactDetail:
           Provider.of<ContactDetailController>(context, listen: false)
               .contactDetail,
-      emergencyContact:
-          Provider.of<EmergencyContactController>(context, listen: false)
-              .emergencyContact,
+      firstEmergencyContact:
+          Provider.of<FirstEmergencyContactController>(context, listen: false)
+              .firstEmergencyContact,
+      secondEmergencyContact:
+          Provider.of<SecondEmergencyContactController>(context, listen: false)
+              .secondEmergencyContact,
+      thirdEmergencyContact:
+          Provider.of<ThirdEmergencyContactController>(context, listen: false)
+              .thirdEmergencyContact,
+      fourthEmergencyContact:
+          Provider.of<FourthEmergencyContactController>(context, listen: false)
+              .fourthEmergencyContact,
+      fifthEmergencyContact:
+          Provider.of<FifthEmergencyContactController>(context, listen: false)
+              .fifthEmergencyContact,
       gender:
           Provider.of<UserProfileController>(context, listen: false).gender!,
       multipleVehicle:
@@ -105,6 +142,7 @@ class _SubmitFormState extends State<SubmitForm> {
 
     try {
       await _userRef.set(userProfile?.toMap());
+      profileBox.put('profile', true);
       final successSnackBar = SnackBar(
         duration: const Duration(seconds: 2),
         content: const Text('Profile Set'),

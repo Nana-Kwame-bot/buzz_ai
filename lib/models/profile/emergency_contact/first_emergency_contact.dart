@@ -1,4 +1,4 @@
-class EmergencyContact {
+class FirstEmergencyContact {
   final String? name;
   final String? relation;
   final String? contactNumber;
@@ -6,7 +6,7 @@ class EmergencyContact {
 
 //<editor-fold desc="Data Methods">
 
-  const EmergencyContact({
+  const FirstEmergencyContact({
     this.name,
     this.relation,
     this.contactNumber,
@@ -16,7 +16,7 @@ class EmergencyContact {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is EmergencyContact &&
+      (other is FirstEmergencyContact &&
           runtimeType == other.runtimeType &&
           name == other.name &&
           relation == other.relation &&
@@ -40,13 +40,13 @@ class EmergencyContact {
         '}';
   }
 
-  EmergencyContact copyWith({
+  FirstEmergencyContact copyWith({
     String? name,
     String? relation,
     String? contactNumber,
     bool? contactAdded,
   }) {
-    return EmergencyContact(
+    return FirstEmergencyContact(
       name: name ?? this.name,
       relation: relation ?? this.relation,
       contactNumber: contactNumber ?? this.contactNumber,
@@ -63,8 +63,8 @@ class EmergencyContact {
     };
   }
 
-  factory EmergencyContact.fromMap(Map<String, dynamic> map) {
-    return EmergencyContact(
+  factory FirstEmergencyContact.fromMap(Map<String, dynamic> map) {
+    return FirstEmergencyContact(
       name: map['name'] ?? '',
       relation: map['relation'] ?? '',
       contactNumber: map['contactNumber'] ?? '',
