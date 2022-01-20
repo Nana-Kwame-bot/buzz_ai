@@ -1,14 +1,19 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
+import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:map_launcher/map_launcher.dart' as map_launcher;
 import 'package:provider/provider.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -25,7 +30,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     requestAllPermission();
+    initializeBackgroundExecution();
     super.initState();
+  }
+
+  void initializeBackgroundExecution() async {
+    FlutterBackgroundService bgService = FlutterBackgroundService();
+  await bgService.configure(
+    iosConfiguration: IosConfiguration(
+      autoStart: true,
+      onForeground: onStart,
+      onBackground: onIosBackground,
+    ),
+    androidConfiguration: AndroidConfiguration(
+      autoStart: true,
+      onStart: onStart,
+      isForegroundMode: true,
+    ),
+  );
   }
 
   @override
@@ -50,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             showDialog(
             context: context,
             builder: (context) => AlertDialog(
-            title: const Text("Invalide destination"),
+            title: const Text("Invalid destination"),
             content: Text(destinationValid),
             ),
             );
@@ -114,6 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  ElevatedButton(onPressed: () {
+                    Provider.of<AuthenticationController>(context, listen: false).signOut();
+                  }, child: Text("g")),
                   SizedBox(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
