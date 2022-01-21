@@ -64,5 +64,11 @@
 	<string>This app needs access to location when open.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To upload a accident that you already capture with camera.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To capture accidents and upload.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>To record last 30 sec's of audio if SOS situation is detected.</string>
 </dict>
 </plist>
