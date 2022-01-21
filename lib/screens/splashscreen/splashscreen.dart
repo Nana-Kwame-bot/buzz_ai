@@ -1,3 +1,5 @@
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushNamed(LoginScreen.iD);
+          // Navigator.of(context).pushNamed(LoginScreen.iD);
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
         }
       });
 

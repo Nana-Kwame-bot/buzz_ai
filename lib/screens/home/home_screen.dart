@@ -63,34 +63,34 @@ class _HomeScreenState extends State<HomeScreen> {
           floatingActionButton: Container(
             margin: const EdgeInsets.only(right: 40.0, bottom: 10.0 ),
             child: FloatingActionButton(
-              onPressed: () async {
-            String? destinationValid = validateDestination(value.coordinates);
-            if (destinationValid != null) {
-            showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-            title: const Text("Invalid destination"),
-            content: Text(destinationValid),
-            ),
-            );
-            return;
-            }
+            onPressed: () async {
+              String? destinationValid = validateDestination(value.coordinates);
+              if (destinationValid != null) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Invalid destination"),
+                    content: Text(destinationValid),
+                  ),
+                );
+                return;
+              }
 
-            List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
+              List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
 
-            map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
-            map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
+              map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+              map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
 
-            await availableMaps.first.showDirections(
-            origin: from,
-            destination: to,
-            );
+              await availableMaps.first.showDirections(
+                origin: from,
+                destination: to,
+              );
             },
-              child: const Icon(
-                Icons.navigation_sharp,
-                size: 30.0,
-              ),
-              backgroundColor: Colors.blueAccent,
+            child: const Icon(
+              Icons.navigation_sharp,
+              size: 30.0,
+            ),
+            backgroundColor: Colors.blueAccent,
             ),
           ),
           body: LayoutBuilder(
@@ -236,9 +236,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String? validateDestination(Coordinates coords) {
-    if (coords.sourceLatitude.toInt() == coords.destinationLatitude.toInt() 
-        && 
-        coords.sourceLongitude.toInt() == coords.destinationLongitude.toInt()
+    
+    if (coords.destinationLatitude == 0
+        &&  coords.destinationLongitude == 0
         ) {
       return "Source and destination should be different!";
     }

@@ -18,8 +18,8 @@ class HomeScreenController extends ChangeNotifier {
   Coordinates coordinates = const Coordinates(
     sourceLatitude: 37.42796133580664,
     sourceLongitude: -122.085749655962,
-    destinationLatitude: 37.43296265331129,
-    destinationLongitude: -122.08832357078792,
+    destinationLatitude: 0,
+    destinationLongitude: 0,
   );
 
   Address address = const Address(
@@ -110,8 +110,8 @@ class HomeScreenController extends ChangeNotifier {
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
-      destinationLatitude: currentPosition.latitude,
-      destinationLongitude: currentPosition.longitude,
+      destinationLatitude: 0,
+      destinationLongitude: 0,
     );
 
     notifyListeners();
