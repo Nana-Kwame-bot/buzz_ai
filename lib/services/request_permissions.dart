@@ -14,5 +14,6 @@ Future<void> requestAllPermission() async {
   for (int i = 0; i < allRequiredPermissions.length; i++) {
     PermissionStatus status = await allRequiredPermissions[i].request();
     log("${allRequiredPermissions[i]} ${status}");
+    await Future.delayed(const Duration(seconds: 1));
   }
 }

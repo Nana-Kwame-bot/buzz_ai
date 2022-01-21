@@ -61,12 +61,18 @@ class ActivityRecognitionApp with ChangeNotifier {
         userAccelerometerEvents.listen(
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
+
             if (lastGForce > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
                 excedeedGForce = lastGForce;
                 Bringtoforeground.bringAppToForeground();
                 notifyListeners();
+
+                Future.delayed(const Duration(seconds: 10)).then((value) {
+                  gForceExceeded = false;
+                  accidentReported = false;
+                });
               }
             }
 
