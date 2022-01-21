@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -130,15 +131,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           backgroundColor: Colors.white,
           body: SingleChildScrollView(
-            child: FutureBuilder<UserProfile>(
+            child: FutureBuilder<UserProfile?>(
               future: userProfileController.readProfileData(
                 userId: userId,
                 context: context,
               ),
               builder:
-                  (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
+                  (BuildContext context, AsyncSnapshot<UserProfile?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    return const BottomNavigation();
+                  }
                   return Column(
                     children: [
                       const ImagePick(),

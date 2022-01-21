@@ -142,7 +142,7 @@ class _SubmitFormState extends State<SubmitForm> {
 
     try {
       await _userRef.set(userProfile?.toMap());
-      profileBox.put('profile', true);
+      
       final successSnackBar = SnackBar(
         duration: const Duration(seconds: 2),
         content: const Text('Profile Set'),
@@ -155,6 +155,7 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+      profileBox.put('profile', true);
 
       await Future.delayed(const Duration(seconds: 2), () {
         if (widget.isFromSIgnUp) {

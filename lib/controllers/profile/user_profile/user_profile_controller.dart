@@ -217,7 +217,7 @@ class UserProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<UserProfile> readProfileData(
+  Future<UserProfile?> readProfileData(
       {required String userId, required BuildContext context}) async {
     DatabaseReference ref = database.ref("users/$userId");
     Map<String, dynamic>? data;
@@ -231,7 +231,6 @@ class UserProfileController extends ChangeNotifier {
 
     if (data != null) {
       log(data.toString());
-      log('data is not null');
       userProfile = UserProfile.fromMap(data);
       getBasicDetail(userProfile.basicDetail!, context);
       getContactDetail(userProfile.contactDetail!, context);
@@ -246,6 +245,7 @@ class UserProfileController extends ChangeNotifier {
       notifyListeners();
     } else {
       log('data is null');
+      return null;
     }
     return userProfile;
   }

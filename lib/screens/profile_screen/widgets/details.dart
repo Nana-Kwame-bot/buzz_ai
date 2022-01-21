@@ -4,6 +4,7 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class BasicDetails extends StatefulWidget {
@@ -15,6 +16,7 @@ class BasicDetails extends StatefulWidget {
 
 class _BasicDetailsState extends State<BasicDetails> {
   Timer? _timer;
+  TextEditingController _dobKey = TextEditingController();
 
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
@@ -23,6 +25,8 @@ class _BasicDetailsState extends State<BasicDetails> {
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (basicDetailsFormKey.currentState == null) return;
+
       if (basicDetailsFormKey.currentState!.validate()) {
         context.read<BasicDetailController>().makeValid();
       } else {
@@ -127,23 +131,42 @@ class _BasicDetailsState extends State<BasicDetails> {
                     ),
                   ),
                 ),
-                TextFormField(
-                  enabled: userProfileController.formEnabled,
-                  initialValue:
-                      basicDetailController.basicDetail.dateOfBirth ?? '',
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Date of birth',
-                    hintText: 'Enter your date of birth',
+                InkWell(
+                  child: TextFormField(
+                    controller: _dobKey,
+                    enabled: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Date of birth',
+                      hintText: 'Enter your date of birth',
+                    ),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter your date of birth';
+                      }
+                      return null;
+                    },
+                    onChanged: basicDetailController.setDOB,
+                    keyboardType: TextInputType.datetime,
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter your date of birth';
-                    }
-                    return null;
-                  },
-                  onChanged: basicDetailController.setDOB,
-                  keyboardType: TextInputType.datetime,
+                  onTap: userProfileController.formEnabled
+                      ? () {
+                          showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 50))),
+                            firstDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 50))),
+                            lastDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 5))),
+                          ).then((value) {
+                            if (value == null) return;
+                            _dobKey.text =
+                                "${value.day}-${value.month}-${value.year}";
+                            basicDetailController.setDOB(_dobKey.text);
+                          });
+                        }
+                      : null,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -176,6 +199,9 @@ class _BasicDetailsState extends State<BasicDetails> {
                   },
                   onChanged: basicDetailController.setWeight,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -269,6 +295,9 @@ class _BasicDetailsState extends State<BasicDetails> {
                             },
                             onChanged: basicDetailController.setAge,
                             keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                           ),
                         ],
                       ),
