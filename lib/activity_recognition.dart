@@ -62,7 +62,7 @@ class ActivityRecognitionApp with ChangeNotifier {
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
 
-            if (lastGForce > 1) {
+            if (lastGForce > 4) {
               if (!gForceExceeded) {
                 gForceExceeded = true;
                 excedeedGForce = lastGForce;
