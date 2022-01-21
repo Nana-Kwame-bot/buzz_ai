@@ -1,20 +1,22 @@
-import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class EmergencyContactDialog extends StatefulWidget {
-  const EmergencyContactDialog({Key? key}) : super(key: key);
+class ThirdEmergencyContactDialog extends StatefulWidget {
+  const ThirdEmergencyContactDialog({Key? key}) : super(key: key);
 
   @override
-  State<EmergencyContactDialog> createState() => _EmergencyContactDialogState();
+  State<ThirdEmergencyContactDialog> createState() =>
+      _ThirdEmergencyContactDialogState();
 }
 
-class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
-  var emergencyContactFormKey = GlobalKey<FormState>();
+class _ThirdEmergencyContactDialogState
+    extends State<ThirdEmergencyContactDialog> {
+  var thirdEmergencyContactFormKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    emergencyContactFormKey.currentState?.dispose();
+    thirdEmergencyContactFormKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -28,10 +30,10 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
         padding: const EdgeInsets.all(24.0),
         child: Consumer(
           builder: (BuildContext context,
-              EmergencyContactController emergencyContactController,
+              ThirdEmergencyContactController thirdEmergencyContactController,
               Widget? child) {
             return Form(
-              key: emergencyContactFormKey,
+              key: thirdEmergencyContactFormKey,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -39,7 +41,7 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Add Emergency Contact',
+                        'Add Third Emergency Contact',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 14.0,
@@ -69,10 +71,10 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                         }
                         return null;
                       },
-                      initialValue:
-                          emergencyContactController.emergencyContact.name ??
-                              '',
-                      onSaved: emergencyContactController.setName,
+                      initialValue: thirdEmergencyContactController
+                              .thirdEmergencyContact.name ??
+                          '',
+                      onSaved: thirdEmergencyContactController.setName,
                       keyboardType: TextInputType.name,
                     ),
                     Container(
@@ -98,9 +100,9 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                         }
                         return null;
                       },
-                      initialValue:
-                          emergencyContactController.emergencyContact.relation,
-                      onSaved: emergencyContactController.setRelation,
+                      initialValue: thirdEmergencyContactController
+                          .thirdEmergencyContact.relation,
+                      onSaved: thirdEmergencyContactController.setRelation,
                       keyboardType: TextInputType.text,
                     ),
                     Container(
@@ -126,10 +128,11 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                         }
                         return null;
                       },
-                      initialValue: emergencyContactController
-                              .emergencyContact.contactNumber ??
+                      initialValue: thirdEmergencyContactController
+                              .thirdEmergencyContact.contactNumber ??
                           '',
-                      onSaved: emergencyContactController.setEmergencyContact,
+                      onSaved:
+                          thirdEmergencyContactController.setEmergencyContact,
                       keyboardType: TextInputType.phone,
                     ),
                     Padding(
@@ -158,7 +161,7 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5247C5),
                               ),
-                              onPressed: validateBasicDetailForms,
+                              onPressed: validateEmergencyContactForm,
                               child: const Text(
                                 'Add Contact',
                                 style: TextStyle(
@@ -180,12 +183,15 @@ class _EmergencyContactDialogState extends State<EmergencyContactDialog> {
     );
   }
 
-  void validateBasicDetailForms() {
-    if (emergencyContactFormKey.currentState!.validate()) {
-      emergencyContactFormKey.currentState!.save();
-      Provider.of<EmergencyContactController>(context, listen: false)
-          .contactAdded();
+  void validateEmergencyContactForm() {
+    if (thirdEmergencyContactFormKey.currentState!.validate()) {
+      thirdEmergencyContactFormKey.currentState!.save();
+      context.read<ThirdEmergencyContactController>()
+        ..contactAdded()
+        ..makeValid();
       Navigator.of(context).pop();
+    } else {
+      context.read<ThirdEmergencyContactController>().makeInvalid();
     }
   }
 }

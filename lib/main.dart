@@ -3,6 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
 import 'package:buzz_ai/screens/misc/error_screen.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
@@ -10,7 +15,6 @@ import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controll
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
-import 'package:buzz_ai/controllers/profile/emergency_contact/emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
@@ -19,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
@@ -48,6 +53,11 @@ Future<void> initialize() async {
   }
 
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
+
+
+  await Hive.initFlutter();
+  await Hive.openBox<bool>('profileBox');
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -84,9 +94,29 @@ class _MyAppState extends State<MyApp> {
                   return ContactDetailController();
                 },
               ),
-              ChangeNotifierProvider<EmergencyContactController>(
+              ChangeNotifierProvider<FirstEmergencyContactController>(
                 create: (BuildContext context) {
-                  return EmergencyContactController()..onStart();
+                  return FirstEmergencyContactController();
+                },
+              ),
+              ChangeNotifierProvider<SecondEmergencyContactController>(
+                create: (BuildContext context) {
+                  return SecondEmergencyContactController();
+                },
+              ),
+              ChangeNotifierProvider<ThirdEmergencyContactController>(
+                create: (BuildContext context) {
+                  return ThirdEmergencyContactController();
+                },
+              ),
+              ChangeNotifierProvider<FourthEmergencyContactController>(
+                create: (BuildContext context) {
+                  return FourthEmergencyContactController();
+                },
+              ),
+              ChangeNotifierProvider<FifthEmergencyContactController>(
+                create: (BuildContext context) {
+                  return FifthEmergencyContactController();
                 },
               ),
               ChangeNotifierProvider<MultipleVehicleController>(
