@@ -27,6 +27,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter:
+    sdk: flutter
+
   # UI / UX Related Packages
   cupertino_icons: ^1.0.2
   google_fonts:
@@ -62,14 +65,12 @@ dependencies:
   activity_recognition_flutter: ^4.2.0
   sensors_plus: ^1.2.1
   flutter_background_service: ^0.2.2
-  flutter:
-    sdk: flutter
   hive: ^2.0.5
   hive_flutter: ^1.1.0
   hive_generator: ^1.1.2
   provider: ^6.0.1
   connectivity_plus: ^2.2.0
-  bringtoforeground:
+  bringtoforeground:  # Only works in android
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
 
