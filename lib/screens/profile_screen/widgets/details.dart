@@ -55,9 +55,15 @@ class _BasicDetailsState extends State<BasicDetails> {
             .dateOfBirth ??
         "";
     _ageKey.text = (Provider.of<BasicDetailController>(context, listen: false)
+                .basicDetail
+                .age ??
+            "")
+        .toString();
+
+    _dropDownValue = Provider.of<BasicDetailController>(context, listen: false)
             .basicDetail
-            .age ??
-        "").toString();
+            .bloodGroup ??
+        "";
   }
 
   @override

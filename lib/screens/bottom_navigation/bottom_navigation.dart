@@ -37,81 +37,88 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box>(
-      valueListenable: profileBox.listenable(),
-      builder: (BuildContext context, Box profileBox, Widget? child) {
-        if (!profileBox.get('profile', defaultValue: false)) {
-          return const ProfileScreen(isFromSignUp: true);
-        }
-        return WillPopScope(
-          onWillPop: () {
-            _onWillPop();
-            return Future.value(false);
-          },
-          child: SafeArea(
-            child: Consumer(
-              builder: (BuildContext context, BottomNavigationController value,
-                  Widget? child) {
-                return Consumer<ActivityRecognitionApp>(builder:
-                    (context, ActivityRecognitionApp activity, Widget? child) {
-                  if (activity.gForceExceeded && !activity.accidentReported) {
-                    return const SOSScreen(
-                      timeout: 30,
-                    );
-                  }
+    return FutureBuilder<Box>(
+      future: Hive.openBox("profile"),
+      builder: (context, AsyncSnapshot<Box> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.get('profile', defaultValue: false)) {
+              return const ProfileScreen(isFromSignUp: true);
+            }
 
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    body: PageView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: controller,
-                      children: value.pages,
-                    ),
-                    bottomNavigationBar: FancyBottomNavigation(
-                      // key: bottomNavigationKey,
-                      circleColor: defaultColor,
-                      inactiveIconColor: Colors.black54,
-                      initialSelection: 0,
-                      textColor: defaultColor,
-                      onTabChangedListener: (int index) {
-                        value.changePage(index);
-                        controller.jumpToPage(index);
-                      },
-                      tabs: value.tabs,
-                    ),
-                  );
-                });
+            return WillPopScope(
+              onWillPop: () {
+                _onWillPop();
+                return Future.value(false);
               },
               child: SafeArea(
                 child: Consumer(
                   builder: (BuildContext context,
                       BottomNavigationController value, Widget? child) {
-                    return Scaffold(
-                      backgroundColor: Colors.white,
-                      body: PageView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: controller,
-                        children: value.pages,
-                      ),
-                      bottomNavigationBar: FancyBottomNavigation(
-                        // key: bottomNavigationKey,
-                        circleColor: defaultColor,
-                        inactiveIconColor: Colors.black54,
-                        initialSelection: 0,
-                        textColor: defaultColor,
-                        onTabChangedListener: (int index) {
-                          value.changePage(index);
-                          controller.jumpToPage(index);
-                        },
-                        tabs: value.tabs,
-                      ),
-                    );
+                    return Consumer<ActivityRecognitionApp>(builder: (context,
+                        ActivityRecognitionApp activity, Widget? child) {
+                      if (activity.gForceExceeded &&
+                          !activity.accidentReported) {
+                        return const SOSScreen(
+                          timeout: 30,
+                        );
+                      }
+
+                      return Scaffold(
+                        backgroundColor: Colors.white,
+                        body: PageView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: controller,
+                          children: value.pages,
+                        ),
+                        bottomNavigationBar: FancyBottomNavigation(
+                          // key: bottomNavigationKey,
+                          circleColor: defaultColor,
+                          inactiveIconColor: Colors.black54,
+                          initialSelection: 0,
+                          textColor: defaultColor,
+                          onTabChangedListener: (int index) {
+                            value.changePage(index);
+                            controller.jumpToPage(index);
+                          },
+                          tabs: value.tabs,
+                        ),
+                      );
+                    });
                   },
+                  child: SafeArea(
+                    child: Consumer(
+                      builder: (BuildContext context,
+                          BottomNavigationController value, Widget? child) {
+                        return Scaffold(
+                          backgroundColor: Colors.white,
+                          body: PageView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: controller,
+                            children: value.pages,
+                          ),
+                          bottomNavigationBar: FancyBottomNavigation(
+                            // key: bottomNavigationKey,
+                            circleColor: defaultColor,
+                            inactiveIconColor: Colors.black54,
+                            initialSelection: 0,
+                            textColor: defaultColor,
+                            onTabChangedListener: (int index) {
+                              value.changePage(index);
+                              controller.jumpToPage(index);
+                            },
+                            tabs: value.tabs,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
+            );
+          }
+        }
+        return const CircularProgressIndicator();
       },
     );
   }
