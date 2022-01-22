@@ -16,8 +16,8 @@ class HomeScreenController extends ChangeNotifier {
   TextEditingController destinationTextController = TextEditingController();
 
   Coordinates coordinates = const Coordinates(
-    sourceLatitude: 37.42796133580664,
-    sourceLongitude: -122.085749655962,
+    sourceLatitude: 0,
+    sourceLongitude: 0,
     destinationLatitude: 0,
     destinationLongitude: 0,
   );
@@ -108,8 +108,8 @@ class HomeScreenController extends ChangeNotifier {
     }
     sourceTextController.text = address.locality;
     coordinates = coordinates.copyWith(
-      sourceLatitude: currentPosition.latitude,
-      sourceLongitude: currentPosition.longitude,
+      sourceLatitude: 0,
+      sourceLongitude: 0,
       destinationLatitude: 0,
       destinationLongitude: 0,
     );
