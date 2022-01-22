@@ -155,7 +155,7 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-      profileBox.put('profile', true);
+      await profileBox.put('profile', true);
 
       await Future.delayed(const Duration(seconds: 2), () {
         if (widget.isFromSIgnUp) {

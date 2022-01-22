@@ -62,63 +62,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            leading: widget.isFromSignUp
+            actions: widget.isFromSignUp
                 ? null
-                : IconButton(
-                    onPressed: () async {
-                      await showModal<void>(
-                        configuration: const FadeScaleTransitionConfiguration(
-                          transitionDuration: Duration(milliseconds: 500),
-                        ),
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Sign Out?'),
-                            content: const Text(
-                                'Are you sure you want to sign out?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () async {
-                                  await Provider.of<AuthenticationController>(
-                                    context,
-                                    listen: false,
-                                  ).signOut().whenComplete(() {
-                                    userProfileController.disableForms();
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(LoginScreen.iD,
-                                            (route) {
-                                      return false;
+                : [
+                    IconButton(
+                      onPressed: () async {
+                        await showModal<void>(
+                          configuration: const FadeScaleTransitionConfiguration(
+                            transitionDuration: Duration(milliseconds: 500),
+                          ),
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Sign Out?'),
+                              content: const Text(
+                                  'Are you sure you want to sign out?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    await Provider.of<AuthenticationController>(
+                                      context,
+                                      listen: false,
+                                    ).signOut().whenComplete(() {
+                                      userProfileController.disableForms();
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                              LoginScreen.iD, (route) {
+                                        return false;
+                                      });
                                     });
-                                  });
-                                },
-                                child: const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                    color: defaultColor,
+                                  },
+                                  child: const Text(
+                                    'Yes',
+                                    style: TextStyle(
+                                      color: defaultColor,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: defaultColor,
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      color: defaultColor,
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                          );
-                        },
-                        context: context,
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
+                                )
+                              ],
+                            );
+                          },
+                          context: context,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
+                  ],
             backgroundColor: Colors.white,
             title: const Text(
               'Profile',
@@ -139,13 +141,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               builder:
                   (BuildContext context, AsyncSnapshot<UserProfile?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    return const BottomNavigation();
+                  if (snapshot.hasData && widget.isFromSignUp) {
+                    Future.delayed(const Duration(seconds: 0)).then((value) =>
+                        Navigator.of(context)
+                            .pushReplacementNamed(BottomNavigation.iD));
+                    return Container();
                   }
                   return Column(
                     children: [
                       const ImagePick(),
-                      const BasicDetails(),
+                      BasicDetails(isFromSignUp: widget.isFromSignUp),
                       const ContactDetails(),
                       const Emergency(),
                       const VehicleInformation(),

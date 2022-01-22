@@ -8,7 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class BasicDetails extends StatefulWidget {
-  const BasicDetails({Key? key}) : super(key: key);
+  const BasicDetails({Key? key, this.isFromSignUp}) : super(key: key);
+
+  final bool? isFromSignUp;
 
   @override
   State<BasicDetails> createState() => _BasicDetailsState();
@@ -16,7 +18,20 @@ class BasicDetails extends StatefulWidget {
 
 class _BasicDetailsState extends State<BasicDetails> {
   Timer? _timer;
-  TextEditingController _dobKey = TextEditingController();
+  final TextEditingController _dobKey = TextEditingController();
+  final TextEditingController _ageKey = TextEditingController();
+
+  String _dropDownValue = "O +";
+  final List<String> _bloodGroups = [
+    "A +",
+    "A -",
+    "B +",
+    "B -",
+    "AB +",
+    "AB -",
+    "O +",
+    "O -"
+  ];
 
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
@@ -33,6 +48,16 @@ class _BasicDetailsState extends State<BasicDetails> {
         context.read<BasicDetailController>().makeInvalid();
       }
     });
+    Provider.of<UserProfileController>(context, listen: false).formEnabled =
+        widget.isFromSignUp ?? false;
+    _dobKey.text = Provider.of<BasicDetailController>(context, listen: false)
+            .basicDetail
+            .dateOfBirth ??
+        "";
+    _ageKey.text = (Provider.of<BasicDetailController>(context, listen: false)
+            .basicDetail
+            .age ??
+        "").toString();
   }
 
   @override
@@ -64,28 +89,31 @@ class _BasicDetailsState extends State<BasicDetails> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        onPressed: () {
-                          userProfileController.changeFormState();
-                          ScaffoldMessenger.of(context)
-                            ..clearSnackBars()
-                            ..showSnackBar(
-                              SnackBar(
-                                backgroundColor: defaultColor,
-                                duration: const Duration(seconds: 2),
-                                content: Text(
-                                  userProfileController.formEnabled
-                                      ? 'Form Enabled'
-                                      : 'Form Disabled',
+                    Visibility(
+                      visible: !(widget.isFromSignUp ?? false),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () {
+                            userProfileController.changeFormState();
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  backgroundColor: defaultColor,
+                                  duration: const Duration(seconds: 2),
+                                  content: Text(
+                                    userProfileController.formEnabled
+                                        ? 'Form Enabled'
+                                        : 'Form Disabled',
+                                  ),
                                 ),
-                              ),
-                            );
-                        },
-                        icon: const Icon(
-                          Icons.edit,
-                          color: defaultColor,
+                              );
+                          },
+                          icon: const Icon(
+                            Icons.edit,
+                            color: defaultColor,
+                          ),
                         ),
                       ),
                     ),
@@ -161,9 +189,20 @@ class _BasicDetailsState extends State<BasicDetails> {
                                 .add(const Duration(days: -(365 * 5))),
                           ).then((value) {
                             if (value == null) return;
+
                             _dobKey.text =
                                 "${value.day}-${value.month}-${value.year}";
                             basicDetailController.setDOB(_dobKey.text);
+
+                            basicDetailController.setAge(
+                                (DateTime.now().difference(value).inDays ~/ 365)
+                                    .toString());
+                            setState(() {
+                              _ageKey.text =
+                                  (DateTime.now().difference(value).inDays ~/
+                                          365)
+                                      .toString();
+                            });
                           });
                         }
                       : null,
@@ -199,9 +238,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   },
                   onChanged: basicDetailController.setWeight,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -275,13 +312,8 @@ class _BasicDetailsState extends State<BasicDetails> {
                             ),
                           ),
                           TextFormField(
-                            enabled: userProfileController.formEnabled,
-                            initialValue: basicDetailController.basicDetail.age
-                                        .toString() ==
-                                    'null'
-                                ? ''
-                                : basicDetailController.basicDetail.age
-                                    .toString(),
+                            enabled: false,
+                            controller: _ageKey,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Age',
@@ -319,24 +351,29 @@ class _BasicDetailsState extends State<BasicDetails> {
                               ),
                             ),
                           ),
-                          TextFormField(
-                            enabled: userProfileController.formEnabled,
-                            initialValue:
-                                basicDetailController.basicDetail.bloodGroup ??
-                                    '',
+                          DropdownButtonFormField<String>(
+                            value: _dropDownValue,
+                            hint: const Text("Blood Type"),
+                            items: _bloodGroups
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              if (value == null) return;
+
+                              basicDetailController.setBloodGroup(value);
+                              setState(() {
+                                _dropDownValue = value;
+                              });
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
                               hintText: 'Enter your blood group',
                             ),
-                            keyboardType: TextInputType.text,
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Enter your blood group';
-                              }
-                              return null;
-                            },
-                            onChanged: basicDetailController.setBloodGroup,
                           ),
                         ],
                       ),
