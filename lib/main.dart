@@ -141,7 +141,7 @@ class _MyAppState extends State<MyApp> {
               ),
               ChangeNotifierProvider<HomeScreenController>(
                 create: (BuildContext context) {
-                  return HomeScreenController();
+                  return HomeScreenController()..onAppStarted();
                 },
               ),
               ChangeNotifierProvider<ImagePickController>(

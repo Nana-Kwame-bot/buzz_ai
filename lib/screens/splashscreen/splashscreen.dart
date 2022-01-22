@@ -31,8 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..forward()
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          // Navigator.of(context).pushNamed(LoginScreen.iD);
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          Navigator.of(context).pushNamed(LoginScreen.iD);
         }
       });
 

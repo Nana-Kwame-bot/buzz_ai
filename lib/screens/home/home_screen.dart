@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
-  bool _currentLocationLoaded = false;
 
   @override
   void initState() {
@@ -162,31 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               await value.getUserLocation(p);
                             },
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(
                                 Icons.my_location,
                                 color: defaultColor,
                               ),
-                              suffixIcon: Visibility(
-                                visible: !_currentLocationLoaded,
-                                child: FutureBuilder<void>(
-                                  future: Provider.of<HomeScreenController>(context, listen: false).onAppStarted(),
-                                  builder: (context, AsyncSnapshot snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.done) {
-                                      _currentLocationLoaded = true;
-                                      return Container();
-                                    }
-
-                                    return const Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  },
-                                ),
-                              ),
                               fillColor: Colors.white,
                               filled: true,
-                              border: const OutlineInputBorder(
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -255,9 +237,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String? validateDestination(Coordinates coords) {
     
-    if (coords.sourceLatitude.toInt() == coords.destinationLatitude.toInt() 
-        && 
-        coords.sourceLongitude.toInt() == coords.destinationLongitude.toInt()
+    if (coords.destinationLatitude == 0
+        &&  coords.destinationLongitude == 0
         ) {
       return "Source and destination should be different!";
     }
