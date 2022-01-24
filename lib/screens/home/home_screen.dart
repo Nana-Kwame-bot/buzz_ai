@@ -1,12 +1,16 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:map_launcher/map_launcher.dart' as map_launcher;
@@ -199,7 +203,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                               await value.getDestinationLocation(p);
-                              await value.getRoute();
+                              List<PointLatLng>? points = await value.getRoute();
+
+                              if (points == null) return;
+                              _uploadPoints(points, value.sourceTextController.text, value.destinationTextController.text);
                             },
                             controller: value.destinationTextController,
                             readOnly: true,
@@ -252,5 +259,26 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Text(value.toString()),
       ),
     );
+  }
+
+  Future<void> _uploadPoints(List<PointLatLng> points, String from, String to) async {
+    List<Map<String, double>> pointsToUpload = points.map((point) => {"lat": point.latitude, "lng": point.longitude}).toList();
+
+    String uid = Provider.of<AuthenticationController>(context, listen: false).auth.currentUser!.uid;
+    await FirebaseFirestore.instance
+      .collection("userDatabase")
+      .doc(uid)
+      .set({
+          "historyData": FieldValue.arrayUnion([
+            {
+              "timestamp": DateTime.now(),
+              "route": pointsToUpload,
+              "from": from,
+              "to": to,
+            }
+          ])
+        },
+        SetOptions(merge: true),
+      );
   }
 }

@@ -154,7 +154,7 @@ class HomeScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getRoute() async {
+  Future<List<PointLatLng>?> getRoute() async {
     await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(
@@ -178,7 +178,9 @@ class HomeScreenController extends ChangeNotifier {
         ),
         "destination",
         BitmapDescriptor.defaultMarkerWithHue(90));
-    _getPolyline();
+    List<PointLatLng>? points = await _getPolyline();
+
+    return points;
   }
 
   void onError(webservice.PlacesAutocompleteResponse value) {
@@ -204,9 +206,10 @@ class HomeScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
-  _getPolyline() async {
+  Future<List<PointLatLng>?> _getPolyline() async {
+    PolylineResult? result;
     try {
-      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      result = await polylinePoints.getRouteBetweenCoordinates(
         apiKey,
         PointLatLng(coordinates.sourceLatitude, coordinates.sourceLongitude),
         PointLatLng(
@@ -224,6 +227,8 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
+
+    return result?.points;
   }
 
   Future<Position> _getGeoLocationPosition() async {
