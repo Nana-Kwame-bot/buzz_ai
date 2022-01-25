@@ -33,22 +33,29 @@ class RouteHistory extends StatelessWidget {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              List<Map<String, dynamic>> data =
-                  List<Map<String, dynamic>>.from(snapshot.data["historyData"]);
+              Map<String, dynamic> data =
+                  Map<String, dynamic>.from(snapshot.data);
 
               return ListView.builder(
-                itemCount: data.length,
+                itemCount: data.keys.length,
                 itemBuilder: (context, index) {
-                  DateTime date = data[index]["timestamp"].toDate();
+                  String key = data.keys.toList()[index];
+
+                  DateTime date = DateTime.parse(key);
                   String formattedDate =
                       DateFormat("MMM dd, yyyy - ").format(date);
                   String formattedTime = DateFormat("hh:mm a").format(date);
 
+                  String formattedArraivalTime =
+                      DateFormat("hh:mm a").format(data[key]["endTimeStamp"].toDate());
+
                   return HistoryCard(
-                      data: data[index],
-                      formattedDate: formattedDate,
-                      formattedTime: formattedTime,
-                      index: index);
+                    data: data[key],
+                    formattedDate: formattedDate,
+                    formattedTime: formattedTime,
+                    formattedArraivalTime: formattedArraivalTime,
+                    index: index,
+                  );
                 },
               );
             }
@@ -70,6 +77,7 @@ class RouteHistory extends StatelessWidget {
               data: const {},
               formattedDate: formattedDate,
               formattedTime: formattedTime,
+              formattedArraivalTime: "",
               index: index,
               isLoading: true,
             ),
@@ -91,7 +99,7 @@ class RouteHistory extends StatelessWidget {
         .doc(uid)
         .get();
 
-    return snapshot.data();
+    return snapshot.data()?["historyData"];
   }
 }
 
@@ -101,6 +109,7 @@ class HistoryCard extends StatelessWidget {
     required this.data,
     required this.formattedDate,
     required this.formattedTime,
+    required this.formattedArraivalTime,
     required this.index,
     this.isLoading = false,
   }) : super(key: key);
@@ -108,6 +117,7 @@ class HistoryCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final String formattedDate;
   final String formattedTime;
+  final String formattedArraivalTime;
   final int index;
   final bool isLoading;
 
@@ -143,7 +153,7 @@ class HistoryCard extends StatelessWidget {
               to: isLoading ? "Point B" : data["to"],
               fromDate: formattedDate,
               fromTime: formattedTime,
-              toTime: "6:00 PM",
+              toTime: formattedArraivalTime,
               points: List<Map<String, dynamic>>.from(data["route"]),
               index: index,
             ),
