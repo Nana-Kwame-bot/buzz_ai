@@ -17,15 +17,16 @@ class RouteHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.black,
         title: Text(
           "Travelled History",
           style: GoogleFonts.barlow(
             fontWeight: FontWeight.w600,
+            color: Colors.black,
           ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: FutureBuilder(
         future: _getRouteHistory(context),
@@ -134,18 +135,20 @@ class HistoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: InkWell(
-        onTap: () => Navigator.of(context).push(PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => RouteDetailed(
-            from: isLoading ? "Point A" : data["from"],
-            to: isLoading ? "Point B" : data["to"],
-            fromDate: formattedDate,
-            fromTime: formattedTime,
-            toTime: "6:00 PM",
-            points: List<Map<String, dynamic>>.from(data["route"]),
-            index: index,
+        onTap: () => Navigator.of(context).push(
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 500),
+            pageBuilder: (_, __, ___) => RouteDetailed(
+              from: isLoading ? "Point A" : data["from"],
+              to: isLoading ? "Point B" : data["to"],
+              fromDate: formattedDate,
+              fromTime: formattedTime,
+              toTime: "6:00 PM",
+              points: List<Map<String, dynamic>>.from(data["route"]),
+              index: index,
+            ),
           ),
-        )),
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
