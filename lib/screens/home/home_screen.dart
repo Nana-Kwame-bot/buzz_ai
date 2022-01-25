@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
@@ -269,12 +271,14 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, double>> pointsToUpload = points.map((point) => {"lat": point.latitude, "lng": point.longitude}).toList();
     Map data = {
               "timestamp": DateTime.now(),
-              "route": pointsToUpload,
+              "route": [],
               "from": from,
               "to": to,
             };
     String uid = Provider.of<AuthenticationController>(context, listen: false).auth.currentUser!.uid;
     late StreamSubscription<location.LocationData> locStream;
+    List<Map> history = [];
+    bool _intermediatedateUploaded = false;
 
     FirebaseFirestore.instance
       .collection("userDatabase")
@@ -285,12 +289,47 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         },
         SetOptions(merge: true),
-      ).then((value) => locStream = location.Location().onLocationChanged.listen((event) async {
+      ).then((value) => 
+        locStream = location.Location().onLocationChanged.listen((event) async {
           if (event.latitude == null || event.longitude == null) return;
+          ActivityEvent? currentActivity = Provider.of<ActivityRecognitionApp>(context, listen: false).currentActivityEvent;
           
-          if (event.latitude! == points.last.latitude && event.longitude! == points.last.longitude) {
-            data["endTimeStamp"] = DateTime.now();
-            await FirebaseFirestore.instance
+          if (currentActivity != null && currentActivity.type == ActivityType.IN_VEHICLE) {
+            log("Moving now!");
+
+            Map temp = {"lat": event.latitude, "lng": event.longitude};
+            Map lastTemp = {};
+
+            if (temp != lastTemp) {
+              history.add(temp);
+              lastTemp = temp;
+              _intermediatedateUploaded = false;
+            }
+
+            if (event.latitude! == points.last.latitude && event.longitude! == points.last.longitude) {
+              data["endTimeStamp"] = DateTime.now();
+              data["route"] = history;
+
+              await FirebaseFirestore.instance
+                .collection("userDatabase")
+                .doc(uid)
+                .set({
+                    "historyData": {
+                      data["timestamp"].toString(): data
+                    }
+                  },
+                  SetOptions(merge: true),
+                );
+                locStream.cancel();
+            } else {
+              log("Not reached the destination");
+            }
+          } else {
+            log("Not moving");
+            data["route"] = history.toSet().toList();
+
+            if (!_intermediatedateUploaded) {
+              await FirebaseFirestore.instance
               .collection("userDatabase")
               .doc(uid)
               .set({
@@ -300,9 +339,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 SetOptions(merge: true),
               );
-              locStream.cancel();
-          } else {
-            log("Not reached the destination");
+              _intermediatedateUploaded = true;
+            }
           }
         },
       ),
