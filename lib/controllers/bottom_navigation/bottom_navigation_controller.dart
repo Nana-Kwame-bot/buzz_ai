@@ -21,11 +21,9 @@ class BottomNavigationController extends ChangeNotifier {
   }
 
   List<Widget> pages = [
-    const HomeScreen(),
     const RouteHistory(),
+    const HomeScreen(),
     const AccidentReportScreen(),
-    const ProfileScreen(
-      isFromSignUp: false,
-    ),
+    const ProfileScreen(isFromSignUp: false),
   ];
 }

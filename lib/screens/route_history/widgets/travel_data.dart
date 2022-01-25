@@ -1,15 +1,16 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TravelDataWidget extends StatelessWidget {
   const TravelDataWidget({
     Key? key,
-    required this.from,
-    required this.fromTime,
+    required this.location,
+    required this.arraivalTime,
   }) : super(key: key);
 
-  final String from;
-  final String fromTime;
+  final String location;
+  final String arraivalTime;
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +39,32 @@ class TravelDataWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      from,
-                      style: GoogleFonts.barlow(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
+                    Expanded(
+                      flex: 3,
+                      child: AutoSizeText(
+                        location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        minFontSize: 18,
+                        maxFontSize: 20,
+                        style: GoogleFonts.barlow(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    Text(
-                      fromTime,
-                      style: GoogleFonts.barlow(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 1,
+                      child: AutoSizeText(
+                        arraivalTime,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        minFontSize: 15,
+                        maxFontSize: 18,
+                        style: GoogleFonts.barlow(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                        ),
                       ),
                     )
                   ],

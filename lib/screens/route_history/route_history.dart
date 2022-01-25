@@ -134,8 +134,9 @@ class HistoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: InkWell(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => RouteDetailed(
+        onTap: () => Navigator.of(context).push(PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (_, __, ___) => RouteDetailed(
             from: isLoading ? "Point A" : data["from"],
             to: isLoading ? "Point B" : data["to"],
             fromDate: formattedDate,

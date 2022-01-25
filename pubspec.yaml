@@ -48,6 +48,7 @@ dependencies:
   slide_to_confirm:
   flutter_svg: ^1.0.1
   shimmer: ^2.0.0
+  auto_size_text: ^3.0.0
   gradient_progress_indicator:
     git:
       url: https://github.com/otonielduarte/gradient-progress-indicator.git

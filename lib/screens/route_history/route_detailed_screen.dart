@@ -79,7 +79,7 @@ class RouteDetailed extends StatelessWidget {
                 ),
               ],
             ),
-            TravelDataWidget(from: from, fromTime: fromTime),
+            TravelDataWidget(location: from, arraivalTime: fromTime),
             Padding(
               padding: const EdgeInsets.only(left: 54, top: 15, bottom: 15),
               child: Row(
@@ -103,7 +103,7 @@ class RouteDetailed extends StatelessWidget {
                 ],
               ),
             ),
-            TravelDataWidget(from: from, fromTime: fromTime),
+            TravelDataWidget(location: to, arraivalTime: toTime),
           ],
         ),
       ),
