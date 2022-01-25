@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:buzz_ai/screens/route_history/widgets/from_date_time.dart';
 import 'package:buzz_ai/screens/route_history/widgets/google_map_with_route.dart';
 import 'package:buzz_ai/screens/route_history/widgets/travel_data.dart';
@@ -73,7 +75,21 @@ class RouteDetailed extends StatelessWidget {
                         tag: "from-to-$index",
                         child: FromDateTime(text: fromDate, subText: fromTime),
                       ),
-                      Hero(tag: "car-$index", child: icon),
+                      Hero(
+                        tag: "car-$index",
+                        child: ShaderMask(
+                          blendMode: BlendMode.srcIn,
+                          shaderCallback: (Rect bounds) => ui.Gradient.linear(
+                            const Offset(0, 0),
+                            const Offset(0, 60),
+                            [
+                              const Color(0xff413394),
+                              const Color(0xff7C62FF),
+                            ],
+                          ),
+                          child: icon,
+                        ),
+                      ),
                     ],
                   ),
                 ),

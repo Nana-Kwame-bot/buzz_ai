@@ -1,6 +1,7 @@
 import 'package:buzz_ai/screens/route_history/widgets/from_date_time.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:ui' as ui;
 
 class CardHeader extends StatelessWidget {
   const CardHeader({
@@ -25,7 +26,21 @@ class CardHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Hero(tag: "car-$index", child: icon),
+        Hero(
+          tag: "car-$index",
+          child: ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (Rect bounds) => ui.Gradient.linear(
+              const Offset(0, 0),
+              const Offset(0, 60),
+              [
+                const Color(0xff413394),
+                const Color(0xff7C62FF),
+              ],
+            ),
+            child: icon,
+          ),
+        ),
         Hero(
           tag: "from-to-$index",
           child: FromDateTime(text: text, subText: subText),
