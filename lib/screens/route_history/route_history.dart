@@ -46,8 +46,13 @@ class RouteHistory extends StatelessWidget {
                       DateFormat("MMM dd, yyyy - ").format(date);
                   String formattedTime = DateFormat("hh:mm a").format(date);
 
-                  String formattedArraivalTime =
+                  String formattedArraivalTime;
+                  try {
+                    formattedArraivalTime  =
                       DateFormat("hh:mm a").format(data[key]["endTimeStamp"].toDate());
+                  } catch (e) {
+                    return Container();
+                  }
 
                   return HistoryCard(
                     data: data[key],
