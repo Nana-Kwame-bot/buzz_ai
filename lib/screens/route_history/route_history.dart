@@ -49,7 +49,7 @@ class RouteHistory extends StatelessWidget {
                   String formattedArraivalTime;
                   try {
                     formattedArraivalTime  =
-                      DateFormat("hh:mm a").format(data[key]["endTimeStamp"].toDate());
+                      DateFormat("hh:mm a").format(data[key]["toTime"].toDate());
                   } catch (e) {
                     return Container();
                   }
@@ -141,8 +141,8 @@ class HistoryCard extends StatelessWidget {
           child: Timeline(),
         ),
         FromAndTo(
-          from: isLoading ? "Point A" : data["from"],
-          to: isLoading ? "Point B" : data["to"],
+          from: isLoading ? "Point A" : data["from"].toString(),
+          to: isLoading ? "Point B" : data["to"].toString(),
         ),
       ],
     );
@@ -154,12 +154,12 @@ class HistoryCard extends StatelessWidget {
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
             pageBuilder: (_, __, ___) => RouteDetailed(
-              from: isLoading ? "Point A" : data["from"],
-              to: isLoading ? "Point B" : data["to"],
+              from: isLoading ? "Point A" : data["from"].toString(),
+              to: isLoading ? "Point B" : data["to"].toString(),
               fromDate: formattedDate,
               fromTime: formattedTime,
               toTime: formattedArraivalTime,
-              points: List<Map<String, dynamic>>.from(data["route"]),
+              routes: List<Map<String, dynamic>>.from(data["routes"]),
               index: index,
             ),
           ),

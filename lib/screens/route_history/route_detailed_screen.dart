@@ -20,7 +20,7 @@ class RouteDetailed extends StatelessWidget {
       size: 50,
       color: Color(0xff7b69da),
     ),
-    required this.points,
+    required this.routes,
     required this.toTime,
     required this.index,
   }) : super(key: key);
@@ -30,7 +30,7 @@ class RouteDetailed extends StatelessWidget {
   final String fromDate;
   final String fromTime;
   final Widget icon;
-  final List<Map<String, dynamic>> points;
+  final List<Map<String, dynamic>> routes;
   final String toTime;
   final int index;
 
@@ -57,7 +57,7 @@ class RouteDetailed extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.70,
-                    child: GoogleMapWithRoute(points: points),
+                    child: GoogleMapWithRoute(points: routes),
                   ),
                   Container(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -83,8 +83,7 @@ class RouteDetailed extends StatelessWidget {
                           tag: "car-$index",
                           child: ShaderMask(
                             blendMode: BlendMode.srcIn,
-                            shaderCallback: (Rect bounds) =>
-                                ui.Gradient.linear(
+                            shaderCallback: (Rect bounds) => ui.Gradient.linear(
                               const Offset(0, 0),
                               const Offset(0, 60),
                               [

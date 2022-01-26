@@ -1,8 +1,3 @@
-import 'dart:async';
-import 'dart:developer';
-
-import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
-import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
@@ -10,7 +5,6 @@ import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -19,7 +13,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:map_launcher/map_launcher.dart' as map_launcher;
 import 'package:provider/provider.dart';
-import 'package:location/location.dart' as location;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,6 +20,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
@@ -67,6 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
+        
+
+
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
@@ -95,9 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   origin: from,
                   destination: to,
                 );
-
-                if (points == null) return;
-                _uploadPoints(points!, value.sourceTextController.text, value.destinationTextController.text);
               },
               child: const Icon(
                 Icons.navigation_sharp,
@@ -212,7 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                               await value.getDestinationLocation(p);
-                              points = await value.getRoute();
                             },
                             controller: value.destinationTextController,
                             readOnly: true,
@@ -267,83 +260,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _uploadPoints(List<PointLatLng> points, String from, String to) async {
-    List<Map<String, double>> pointsToUpload = points.map((point) => {"lat": point.latitude, "lng": point.longitude}).toList();
-    Map data = {
-              "timestamp": DateTime.now(),
-              "route": [],
-              "from": from,
-              "to": to,
-            };
-    String uid = Provider.of<AuthenticationController>(context, listen: false).auth.currentUser!.uid;
-    late StreamSubscription<location.LocationData> locStream;
-    List<Map> history = [];
-    bool _intermediatedateUploaded = false;
-
-    FirebaseFirestore.instance
-      .collection("userDatabase")
-      .doc(uid)
-      .set({
-          "historyData": {
-            data["timestamp"].toString(): data,
-          },
-        },
-        SetOptions(merge: true),
-      ).then((value) => 
-        locStream = location.Location().onLocationChanged.listen((event) async {
-          if (event.latitude == null || event.longitude == null) return;
-          ActivityEvent? currentActivity = Provider.of<ActivityRecognitionApp>(context, listen: false).currentActivityEvent;
-          
-          if (currentActivity != null && currentActivity.type == ActivityType.IN_VEHICLE) {
-            log("Moving now!");
-
-            Map temp = {"lat": event.latitude, "lng": event.longitude};
-            Map lastTemp = {};
-
-            if (temp != lastTemp) {
-              history.add(temp);
-              lastTemp = temp;
-              _intermediatedateUploaded = false;
-            }
-
-            if (event.latitude! == points.last.latitude && event.longitude! == points.last.longitude) {
-              data["endTimeStamp"] = DateTime.now();
-              data["route"] = history;
-
-              await FirebaseFirestore.instance
-                .collection("userDatabase")
-                .doc(uid)
-                .set({
-                    "historyData": {
-                      data["timestamp"].toString(): data
-                    }
-                  },
-                  SetOptions(merge: true),
-                );
-                locStream.cancel();
-            } else {
-              log("Not reached the destination");
-            }
-          } else {
-            log("Not moving");
-            data["route"] = history.toSet().toList();
-
-            if (!_intermediatedateUploaded) {
-              await FirebaseFirestore.instance
-              .collection("userDatabase")
-              .doc(uid)
-              .set({
-                  "historyData": {
-                    data["timestamp"].toString(): data
-                  }
-                },
-                SetOptions(merge: true),
-              );
-              _intermediatedateUploaded = true;
-            }
-          }
-        },
-      ),
-    );
-  }
+  
 }
