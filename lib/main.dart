@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
@@ -30,6 +31,7 @@ import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
 bool _deviceHasCapableAccelerometer = true;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -54,8 +56,20 @@ Future<void> initialize() async {
 
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
 
-
   await Hive.initFlutter();
+  AwesomeNotifications().initialize(
+    'resource://drawable/res_notification_app_icon',
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        defaultColor: Colors.teal,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        channelDescription: '',
+      ),
+    ],
+  );
   runApp(const MyApp());
 }
 
