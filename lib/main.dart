@@ -59,7 +59,7 @@ Future<void> initialize() async {
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
 
   await Hive.initFlutter();
-  AwesomeNotifications().initialize(
+  await AwesomeNotifications().initialize(
       null,
       [
         NotificationChannel(
@@ -158,9 +158,22 @@ class _MyAppState extends State<MyApp> {
                   return UserProfileController()..setPersistence();
                 },
               ),
-              ChangeNotifierProvider<NotificationsController>(
+              ChangeNotifierProvider<ActivityRecognitionApp>(
+                create: (BuildContext context) {
+                  return ActivityRecognitionApp()..init();
+                },
+              ),
+              ChangeNotifierProxyProvider<ActivityRecognitionApp,
+                  NotificationsController>(
                 create: (BuildContext context) {
                   return NotificationsController();
+                },
+                update: (
+                  BuildContext context,
+                  ActivityRecognitionApp recognition,
+                  NotificationsController? controller,
+                ) {
+                  return controller!..update(recognition);
                 },
               ),
               ChangeNotifierProvider<BasicDetailController>(
@@ -233,11 +246,6 @@ class _MyAppState extends State<MyApp> {
                   return SubmitAccidentReport();
                 },
               ),
-              ChangeNotifierProvider<ActivityRecognitionApp>(
-                create: (BuildContext context) {
-                  return ActivityRecognitionApp()..init();
-                },
-              ),
             ],
             child: const BuzzaiApp(),
           )
@@ -260,6 +268,13 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           );
+  }
+
+  @override
+  void dispose() {
+    AwesomeNotifications().actionSink.close();
+    AwesomeNotifications().createdSink.close();
+    super.dispose();
   }
 }
 

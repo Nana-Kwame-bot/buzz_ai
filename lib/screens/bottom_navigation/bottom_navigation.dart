@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
+import 'package:buzz_ai/controllers/notifications/notifications_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/screens/sos/sos_main.dart';
 import 'dart:developer';
@@ -97,7 +98,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                             inactiveIconColor: Colors.black54,
                             initialSelection: 0,
                             textColor: defaultColor,
-                            onTabChangedListener: (int index) {
+                            onTabChangedListener: (int index) async {
                               value.changePage(index);
                               controller.jumpToPage(index);
                             },
