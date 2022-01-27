@@ -37,7 +37,7 @@ void main() async {
   );
   // initState();
   await initialize();
-  runApp(const MyApp());
+  // runApp(const MyApp());
 }
 
 Future<void> initialize() async {
