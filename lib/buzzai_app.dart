@@ -51,7 +51,7 @@ class BuzzaiApp extends StatelessWidget {
                 .currentActivityEvent;
 
         if (currentActivity != null &&
-            currentActivity.type == ActivityType.ON_FOOT) {
+            currentActivity.type == ActivityType.IN_VEHICLE) {
           // If user moves append the lat and lng to the history
           log("Moving now!");
 
