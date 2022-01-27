@@ -151,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           TextFormField(
+                            style: value.sourceTextController.text == "Location error" ? const TextStyle(color: Colors.red) : null,
                             onTap: () async {
                               Prediction? p = await PlacesAutocomplete.show(
                                 offset: 0,
@@ -168,14 +169,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               await value.getUserLocation(p);
                             },
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
                                 Icons.my_location,
                                 color: defaultColor,
                               ),
+                              suffixIcon: Visibility(
+                                visible: value.sourceTextController.text.isEmpty,
+                                child:  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                              ),
                               fillColor: Colors.white,
                               filled: true,
-                              border: OutlineInputBorder(
+                              border: const OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),

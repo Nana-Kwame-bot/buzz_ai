@@ -106,7 +106,7 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
-    sourceTextController.text = address.locality;
+    sourceTextController.text = address.locality == "" ? "Location error" : address.locality;
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
