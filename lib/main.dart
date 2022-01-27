@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
+import 'package:buzz_ai/controllers/notifications/notifications_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
@@ -129,6 +130,22 @@ class _MyAppState extends State<MyApp> {
         }
       },
     );
+
+    AwesomeNotifications().actionStream.listen((ReceivedAction receivedAction) {
+      if (receivedAction.channelKey == 'basic_channel' && Platform.isIOS) {
+        AwesomeNotifications().getGlobalBadgeCounter().then(
+          (int counter) {
+            return AwesomeNotifications().setGlobalBadgeCounter(counter - 1);
+          },
+        );
+      }
+      if (receivedAction.buttonKeyPressed == "Yes") {
+        //TODO: Do something with this info
+      }
+      if (receivedAction.buttonKeyPressed == "No") {
+        //TODO: Do something with this info
+      }
+    });
   }
 
   @override
@@ -139,6 +156,11 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider<UserProfileController>(
                 create: (BuildContext context) {
                   return UserProfileController()..setPersistence();
+                },
+              ),
+              ChangeNotifierProvider<NotificationsController>(
+                create: (BuildContext context) {
+                  return NotificationsController();
                 },
               ),
               ChangeNotifierProvider<BasicDetailController>(
