@@ -77,7 +77,6 @@ dependencies:
   bringtoforeground:  # Only works in android
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
-  awesome_notifications: ^0.6.21
 
 dev_dependencies:
   change_app_package_name: ^1.0.0
