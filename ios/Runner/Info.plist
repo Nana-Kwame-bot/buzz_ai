@@ -70,5 +70,7 @@
 	<string>To capture accidents and upload.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>To record last 30 sec's of audio if SOS situation is detected.</string>
+	<key>UIBackgroundModes</key>
+	<string>location</string>
 </dict>
 </plist>

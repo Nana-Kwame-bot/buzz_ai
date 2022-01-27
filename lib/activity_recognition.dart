@@ -91,7 +91,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     // Android requires explicitly asking permission
     if (Platform.isAndroid) {
-      if (await Permission.activityRecognition.request().isGranted) {
+      if ((await Permission.activityRecognition.request()).isGranted) {
         startTracking();
       }
     }
@@ -161,10 +161,11 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent = currentActivityEvent;
+    _lastActivityEvent = currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
+    notifyListeners();
   }
 
   void onError(Object error) {
@@ -186,7 +187,7 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
+    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
       if (event == "acc") {
         _accelerometerValues.add(data);
       }

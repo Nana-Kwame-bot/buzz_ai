@@ -1,3 +1,4 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
@@ -7,6 +8,7 @@ import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:map_launcher/map_launcher.dart' as map_launcher;
@@ -19,10 +21,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
+  List<PointLatLng>? points;
 
   @override
   void initState() {
@@ -33,18 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initializeBackgroundExecution() async {
     FlutterBackgroundService bgService = FlutterBackgroundService();
-  await bgService.configure(
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-      onForeground: onStart,
-      onBackground: onIosBackground,
-    ),
-    androidConfiguration: AndroidConfiguration(
-      autoStart: true,
-      onStart: onStart,
-      isForegroundMode: true,
-    ),
-  );
+    await bgService.configure(
+      iosConfiguration: IosConfiguration(
+        autoStart: true,
+        onForeground: onStart,
+        onBackground: onIosBackground,
+      ),
+      androidConfiguration: AndroidConfiguration(
+        autoStart: true,
+        onStart: onStart,
+        isForegroundMode: true,
+      ),
+    );
   }
 
   @override
@@ -57,6 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
+        
+
+
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
@@ -64,28 +71,28 @@ class _HomeScreenState extends State<HomeScreen> {
             margin: const EdgeInsets.only(right: 40.0, bottom: 10.0 ),
             child: FloatingActionButton(
               onPressed: () async {
-            String? destinationValid = validateDestination(value.coordinates);
-            if (destinationValid != null) {
-            showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-            title: const Text("Invalid destination"),
-            content: Text(destinationValid),
-            ),
-            );
-            return;
-            }
+                String? destinationValid = validateDestination(value.coordinates);
+                if (destinationValid != null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                    title: const Text("Invalid destination"),
+                    content: Text(destinationValid),
+                    ),
+                  );
+                  return;
+                }
 
-            List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
+                List<map_launcher.AvailableMap> availableMaps = await map_launcher.MapLauncher.installedMaps;
 
-            map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
-            map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
+                map_launcher.Coords from = map_launcher.Coords(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+                map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
 
-            await availableMaps.first.showDirections(
-            origin: from,
-            destination: to,
-            );
-            },
+                await availableMaps.first.showDirections(
+                  origin: from,
+                  destination: to,
+                );
+              },
               child: const Icon(
                 Icons.navigation_sharp,
                 size: 30.0,
@@ -199,7 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                               await value.getDestinationLocation(p);
-                              await value.getRoute();
                             },
                             controller: value.destinationTextController,
                             readOnly: true,
@@ -253,4 +259,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  
 }
