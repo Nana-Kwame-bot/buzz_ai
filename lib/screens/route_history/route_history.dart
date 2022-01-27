@@ -17,6 +17,7 @@ class RouteHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         foregroundColor: Colors.black,
         title: Text(
           "Travelled History",

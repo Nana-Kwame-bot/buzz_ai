@@ -41,8 +41,14 @@ class _EmergencyState extends State<Emergency> {
                 leading: firstEmergencyContactController
                         .firstEmergencyContact.contactAdded!
                     ? IconButton(
-                        color: Colors.transparent,
-                        onPressed: () {},
+                        color: Colors.red,
+                        onPressed: userProfileController.formEnabled
+                            ? () {
+                                setState(() {
+                                  firstEmergencyContactController.clear();
+                                });
+                              }
+                            : null,
                         icon: const Icon(
                           Icons.remove_circle_outline,
                         ),
@@ -61,13 +67,11 @@ class _EmergencyState extends State<Emergency> {
                       : 'Add Emergency Contact',
                   style: const TextStyle(fontSize: 14.0),
                 ),
-                onTap: userProfileController.formEnabled
-                    ? () => showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const FirstEmergencyContactDialog();
-                        })
-                    : null,
+                onTap: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const FirstEmergencyContactDialog();
+                    }),
               ),
               if (firstEmergencyContactController
                   .firstEmergencyContact.contactAdded!) ...[

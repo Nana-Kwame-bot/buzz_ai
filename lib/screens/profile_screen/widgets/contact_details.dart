@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ContactDetails extends StatefulWidget {
@@ -97,8 +99,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue:
-                      contactDetailController.contactDetail.phoneNumber ?? '',
+                  initialValue: Provider.of<AuthenticationController>(context, listen: false).auth.currentUser?.phoneNumber ?? "",
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',
@@ -112,6 +113,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                   },
                   onChanged: contactDetailController.setPhoneNumber,
                   keyboardType: TextInputType.phone,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
               ],
             ),

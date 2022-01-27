@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
@@ -14,7 +15,9 @@ import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String iD = '/profile';
@@ -61,63 +64,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            leading: widget.isFromSignUp
+            actions: widget.isFromSignUp
                 ? null
-                : IconButton(
-                    onPressed: () async {
-                      await showModal<void>(
-                        configuration: const FadeScaleTransitionConfiguration(
-                          transitionDuration: Duration(milliseconds: 500),
-                        ),
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Sign Out?'),
-                            content: const Text(
-                                'Are you sure you want to sign out?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () async {
-                                  await Provider.of<AuthenticationController>(
-                                    context,
-                                    listen: false,
-                                  ).signOut().whenComplete(() {
-                                    userProfileController.disableForms();
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(LoginScreen.iD,
-                                            (route) {
-                                      return false;
+                : [
+                    IconButton(
+                      onPressed: () async {
+                        await showModal<void>(
+                          configuration: const FadeScaleTransitionConfiguration(
+                            transitionDuration: Duration(milliseconds: 500),
+                          ),
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Sign Out?'),
+                              content: const Text(
+                                  'Are you sure you want to sign out?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    await prefs.remove("profileComplete");
+                                    await Provider.of<AuthenticationController>(
+                                      context,
+                                      listen: false,
+                                    ).signOut().whenComplete(() {
+                                      userProfileController.disableForms();
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                              LoginScreen.iD, (route) {
+                                        return false;
+                                      });
                                     });
-                                  });
-                                },
-                                child: const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                    color: defaultColor,
+                                  },
+                                  child: const Text(
+                                    'Yes',
+                                    style: TextStyle(
+                                      color: defaultColor,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: defaultColor,
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      color: defaultColor,
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                          );
-                        },
-                        context: context,
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
+                                )
+                              ],
+                            );
+                          },
+                          context: context,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
+                  ],
             backgroundColor: Colors.white,
             title: const Text(
               'Profile',
@@ -130,28 +138,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           backgroundColor: Colors.white,
           body: SingleChildScrollView(
-            child: FutureBuilder<UserProfile>(
+            child: FutureBuilder<UserProfile?>(
               future: userProfileController.readProfileData(
                 userId: userId,
                 context: context,
               ),
               builder:
-                  (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
-                  return Column(
-                    children: [
-                      const ImagePick(),
-                      const BasicDetails(),
-                      const ContactDetails(),
-                      const Emergency(),
-                      const VehicleInformation(),
-                      const MultipleCar(),
-                      SubmitForm(
-                        isFromSIgnUp: widget.isFromSignUp,
-                      ),
-                    ],
-                  );
+                  (BuildContext context, AsyncSnapshot<UserProfile?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData && widget.isFromSignUp) {
+                    Future.delayed(Duration.zero).then((value) async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool("profileComplete", true);
+                      Navigator.of(context)
+                          .pushReplacementNamed(BottomNavigation.iD);
+                    });
+                    return Container();
+                  }
+                  return ProfileInputFields(isFromSignUp: widget.isFromSignUp);
                 }
                 return SizedBox(
                   height: MediaQuery.of(context).size.height / 1.3,
@@ -182,5 +186,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
     return;
+  }
+}
+
+class ProfileInputFields extends StatelessWidget {
+  const ProfileInputFields({
+    Key? key,
+    this.isFromSignUp = false,
+  }) : super(key: key);
+
+  final bool isFromSignUp;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const ImagePick(),
+        BasicDetails(isFromSignUp: isFromSignUp),
+        const ContactDetails(),
+        const Emergency(),
+        const VehicleInformation(),
+        const MultipleCar(),
+        SubmitForm(
+          isFromSIgnUp: isFromSignUp,
+        ),
+      ],
+    );
   }
 }

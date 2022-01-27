@@ -1,9 +1,7 @@
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
-import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -30,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    requestAllPermission();
     initializeBackgroundExecution();
     super.initState();
   }
@@ -61,9 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
-        
-
-
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
@@ -151,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           TextFormField(
+                            style: value.sourceTextController.text == "Location error" ? const TextStyle(color: Colors.red) : null,
                             onTap: () async {
                               Prediction? p = await PlacesAutocomplete.show(
                                 offset: 0,
@@ -168,14 +163,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               await value.getUserLocation(p);
                             },
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
                                 Icons.my_location,
                                 color: defaultColor,
                               ),
+                              suffixIcon: Visibility(
+                                visible: value.sourceTextController.text.isEmpty,
+                                child:  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                              ),
                               fillColor: Colors.white,
                               filled: true,
-                              border: OutlineInputBorder(
+                              border: const OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -206,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                               await value.getDestinationLocation(p);
+                              await value.getRoute();
                             },
                             controller: value.destinationTextController,
                             readOnly: true,
@@ -242,9 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String? validateDestination(Coordinates coords) {
-    if (coords.sourceLatitude.toInt() == coords.destinationLatitude.toInt() 
-        && 
-        coords.sourceLongitude.toInt() == coords.destinationLongitude.toInt()
+    
+    if (coords.destinationLatitude == 0
+        &&  coords.destinationLongitude == 0
         ) {
       return "Source and destination should be different!";
     }

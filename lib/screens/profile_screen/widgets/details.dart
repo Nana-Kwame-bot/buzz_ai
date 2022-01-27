@@ -4,10 +4,13 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/models/profile/gender/gender.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class BasicDetails extends StatefulWidget {
-  const BasicDetails({Key? key}) : super(key: key);
+  const BasicDetails({Key? key, this.isFromSignUp}) : super(key: key);
+
+  final bool? isFromSignUp;
 
   @override
   State<BasicDetails> createState() => _BasicDetailsState();
@@ -15,6 +18,20 @@ class BasicDetails extends StatefulWidget {
 
 class _BasicDetailsState extends State<BasicDetails> {
   Timer? _timer;
+  final TextEditingController _dobKey = TextEditingController();
+  final TextEditingController _ageKey = TextEditingController();
+
+  final List<String> _bloodGroups = [
+    "A +",
+    "A -",
+    "B +",
+    "B -",
+    "AB +",
+    "AB -",
+    "O +",
+    "O -"
+  ];
+  String _dropDownValue = "";
 
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
@@ -23,12 +40,33 @@ class _BasicDetailsState extends State<BasicDetails> {
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (basicDetailsFormKey.currentState == null) return;
+
       if (basicDetailsFormKey.currentState!.validate()) {
         context.read<BasicDetailController>().makeValid();
       } else {
         context.read<BasicDetailController>().makeInvalid();
       }
     });
+    Provider.of<UserProfileController>(context, listen: false).formEnabled =
+        widget.isFromSignUp ?? false;
+    _dobKey.text = Provider.of<BasicDetailController>(context, listen: false)
+            .basicDetail
+            .dateOfBirth ??
+        "";
+    _ageKey.text = (Provider.of<BasicDetailController>(context, listen: false)
+                .basicDetail
+                .age ??
+            "")
+        .toString();
+
+    String? storedBloodGroup =
+        Provider.of<BasicDetailController>(context, listen: false)
+            .basicDetail
+            .bloodGroup;
+    _dropDownValue = (storedBloodGroup == null || storedBloodGroup == "")
+        ? _bloodGroups.first
+        : storedBloodGroup;
   }
 
   @override
@@ -60,28 +98,31 @@ class _BasicDetailsState extends State<BasicDetails> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        onPressed: () {
-                          userProfileController.changeFormState();
-                          ScaffoldMessenger.of(context)
-                            ..clearSnackBars()
-                            ..showSnackBar(
-                              SnackBar(
-                                backgroundColor: defaultColor,
-                                duration: const Duration(seconds: 2),
-                                content: Text(
-                                  userProfileController.formEnabled
-                                      ? 'Form Enabled'
-                                      : 'Form Disabled',
+                    Visibility(
+                      visible: !(widget.isFromSignUp ?? false),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () {
+                            userProfileController.changeFormState();
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  backgroundColor: defaultColor,
+                                  duration: const Duration(seconds: 2),
+                                  content: Text(
+                                    userProfileController.formEnabled
+                                        ? 'Form Enabled'
+                                        : 'Form Disabled',
+                                  ),
                                 ),
-                              ),
-                            );
-                        },
-                        icon: const Icon(
-                          Icons.edit,
-                          color: defaultColor,
+                              );
+                          },
+                          icon: const Icon(
+                            Icons.edit,
+                            color: defaultColor,
+                          ),
                         ),
                       ),
                     ),
@@ -127,23 +168,54 @@ class _BasicDetailsState extends State<BasicDetails> {
                     ),
                   ),
                 ),
-                TextFormField(
-                  enabled: userProfileController.formEnabled,
-                  initialValue:
-                      basicDetailController.basicDetail.dateOfBirth ?? '',
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Date of birth',
-                    hintText: 'Enter your date of birth',
+                InkWell(
+                  child: TextFormField(
+                    controller: _dobKey,
+                    enabled: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Date of birth',
+                      hintText: 'Enter your date of birth',
+                    ),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter your date of birth';
+                      }
+                      return null;
+                    },
+                    onChanged: basicDetailController.setDOB,
+                    keyboardType: TextInputType.datetime,
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter your date of birth';
-                    }
-                    return null;
-                  },
-                  onChanged: basicDetailController.setDOB,
-                  keyboardType: TextInputType.datetime,
+                  onTap: userProfileController.formEnabled
+                      ? () {
+                          showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 50))),
+                            firstDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 50))),
+                            lastDate: DateTime.now()
+                                .add(const Duration(days: -(365 * 5))),
+                          ).then((value) {
+                            if (value == null) return;
+
+                            _dobKey.text =
+                                "${value.day}-${value.month}-${value.year}";
+                            basicDetailController.setDOB(_dobKey.text);
+
+                            basicDetailController.setAge(
+                                (DateTime.now().difference(value).inDays ~/ 365)
+                                    .toString());
+
+                            setState(() {
+                              _ageKey.text =
+                                  (DateTime.now().difference(value).inDays ~/
+                                          365)
+                                      .toString();
+                            });
+                          });
+                        }
+                      : null,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -176,6 +248,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                   },
                   onChanged: basicDetailController.setWeight,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -249,13 +322,8 @@ class _BasicDetailsState extends State<BasicDetails> {
                             ),
                           ),
                           TextFormField(
-                            enabled: userProfileController.formEnabled,
-                            initialValue: basicDetailController.basicDetail.age
-                                        .toString() ==
-                                    'null'
-                                ? ''
-                                : basicDetailController.basicDetail.age
-                                    .toString(),
+                            enabled: false,
+                            controller: _ageKey,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Age',
@@ -269,6 +337,9 @@ class _BasicDetailsState extends State<BasicDetails> {
                             },
                             onChanged: basicDetailController.setAge,
                             keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                           ),
                         ],
                       ),
@@ -290,24 +361,29 @@ class _BasicDetailsState extends State<BasicDetails> {
                               ),
                             ),
                           ),
-                          TextFormField(
-                            enabled: userProfileController.formEnabled,
-                            initialValue:
-                                basicDetailController.basicDetail.bloodGroup ??
-                                    '',
+                          DropdownButtonFormField<String>(
+                            value: _dropDownValue,
+                            hint: const Text("Blood Type"),
+                            items: _bloodGroups
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: userProfileController.formEnabled ? (String? value) {
+                              if (value == null) return;
+
+                              basicDetailController.setBloodGroup(value);
+                              setState(() {
+                                _dropDownValue = value;
+                              });
+                            } : null,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
                               hintText: 'Enter your blood group',
                             ),
-                            keyboardType: TextInputType.text,
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Enter your blood group';
-                              }
-                              return null;
-                            },
-                            onChanged: basicDetailController.setBloodGroup,
                           ),
                         ],
                       ),
@@ -345,6 +421,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     return null;
                   },
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: basicDetailController.setLicenseNumber,
                 ),
               ],

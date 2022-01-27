@@ -1,6 +1,13 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
+import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String iD = '/';
@@ -20,6 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
+    requestAllPermission();
     super.initState();
 
     _animationController = AnimationController(
@@ -27,10 +35,26 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 3300),
     )
       ..forward()
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushNamed(LoginScreen.iD);
+      ..addStatusListener((status) async {
+        if (Provider.of<AuthenticationController>(context, listen: false)
+                .auth
+                .currentUser ==
+            null) {
+          if (status == AnimationStatus.completed) {
+            Navigator.of(context).pushNamed(LoginScreen.iD);
+            return;
+          }
         }
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool isProfileComplete = prefs.getBool("profileComplete") ?? false;
+
+        if (isProfileComplete) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const BottomNavigation()));
+          return;
+        }
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const ProfileScreen(isFromSignUp: true)));
       });
 
     _animation = CurvedAnimation(

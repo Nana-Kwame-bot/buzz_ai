@@ -35,10 +35,13 @@ class BuzzaiApp extends StatelessWidget {
       "timestamp": DateTime.now(),
       "routes": [],
     };
-    String uid = Provider.of<AuthenticationController>(context, listen: false)
+    String? uid = Provider.of<AuthenticationController>(context, listen: false)
         .auth
-        .currentUser!
-        .uid;
+        .currentUser
+        ?.uid;
+
+    if (uid == null) return; 
+    
     List<Map> history = [];
     DateTime _lastStillTime = DateTime.now();
 
@@ -64,7 +67,7 @@ class BuzzaiApp extends StatelessWidget {
           }
         } else {
           // If not moving
-          log("Not moving");
+          // log("Not moving");
 
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
           if (_stillFor < 10)
