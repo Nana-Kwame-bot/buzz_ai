@@ -150,8 +150,8 @@ class _FirstEmergencyContactDialogState
                           : null,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Blood group',
-                        hintText: 'Enter your blood group',
+                        labelText: 'Relationship',
+                        hintText: 'Enter your relation with the emergency contact',
                       ),
                     ),
                     Container(
