@@ -20,6 +20,7 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -58,18 +59,18 @@ Future<void> initialize() async {
 
   await Hive.initFlutter();
   AwesomeNotifications().initialize(
-    'resource://drawable/res_notification_app_icon',
-    [
-      NotificationChannel(
-        channelKey: 'basic_channel',
-        channelName: 'Basic Notifications',
-        defaultColor: Colors.teal,
-        importance: NotificationImportance.High,
-        channelShowBadge: true,
-        channelDescription: '',
-      ),
-    ],
-  );
+      null,
+      [
+        NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic Notifications',
+          defaultColor: defaultColor,
+          importance: NotificationImportance.High,
+          channelShowBadge: true,
+          channelDescription: 'Show basic notifications',
+        ),
+      ],
+      debug: true);
   runApp(const MyApp());
 }
 
@@ -83,8 +84,51 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // activityRecognitionApp.init();
     super.initState();
+    AwesomeNotifications().isNotificationAllowed().then(
+      (isAllowed) {
+        if (!isAllowed) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Allow Notifications'),
+                content:
+                    const Text('Buzzai would like to send you notifications'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Don't Allow",
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      AwesomeNotifications()
+                          .requestPermissionToSendNotifications()
+                          .then((_) {
+                        Navigator.pop(context);
+                      });
+                    },
+                    child: const Text(
+                      'Allow',
+                      style: TextStyle(
+                        color: defaultColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+    );
   }
 
   @override
