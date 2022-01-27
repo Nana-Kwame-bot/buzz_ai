@@ -36,4 +36,15 @@ class FirstEmergencyContactController extends ChangeNotifier {
     firstEmergencyContact = firstEmergencyContact.copyWith(name: newValue);
     notifyListeners();
   }
+
+  void clear() {
+    firstEmergencyContact = firstEmergencyContact.copyWith(
+      name: "",
+      relation: "",
+      contactNumber: "",
+      contactAdded: false,
+    );
+
+    notifyListeners();
+  }
 }

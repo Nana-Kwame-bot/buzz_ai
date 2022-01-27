@@ -1,4 +1,5 @@
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,44 @@ class FirstEmergencyContactDialog extends StatefulWidget {
 class _FirstEmergencyContactDialogState
     extends State<FirstEmergencyContactDialog> {
   var firstEmergencyContactFormKey = GlobalKey<FormState>();
+  String _relationValue = "Mother";
+  List<String> relationships = [
+    "Father",
+    "Mother",
+    "Brother",
+    "Sister",
+    "Son",
+    "Daughter",
+    "Grand Father",
+    "Grand Mother",
+    "Wife",
+    "Husband",
+    "Fiancé",
+    "Aunt",
+    "Uncle",
+    "Niece",
+    "Nephew",
+    "Boyfriend",
+    "Girlfriend",
+    "Lover",
+    "Client",
+    "Patient",
+    "Friend",
+  ];
+
+  @override
+  void didChangeDependencies() {
+    String storedRelationship =
+        Provider.of<FirstEmergencyContactController>(context, listen: false)
+                .firstEmergencyContact
+                .relation ??
+            "";
+
+    if (storedRelationship != "") {
+      _relationValue = storedRelationship;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -28,9 +67,10 @@ class _FirstEmergencyContactDialogState
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        child: Consumer(
+        child: Consumer2(
           builder: (BuildContext context,
               FirstEmergencyContactController emergencyContactController,
+              UserProfileController userProfileController,
               Widget? child) {
             return Form(
               key: firstEmergencyContactFormKey,
@@ -60,6 +100,7 @@ class _FirstEmergencyContactDialogState
                       ),
                     ),
                     TextFormField(
+                      enabled: userProfileController.formEnabled,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Name',
@@ -81,29 +122,37 @@ class _FirstEmergencyContactDialogState
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: const Text(
-                        'Phone number',
+                        'Relation',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 12.0,
                         ),
                       ),
                     ),
-                    TextFormField(
+                    DropdownButtonFormField(
+                      value: _relationValue,
+                      items: relationships
+                          .map<DropdownMenuItem<String>>(
+                              (relation) => DropdownMenuItem(
+                                    value: relation,
+                                    child: Text(relation),
+                                  ))
+                          .toList(),
+                      onChanged: userProfileController.formEnabled
+                          ? (String? value) {
+                              if (value == null) return;
+
+                              emergencyContactController.setRelation(value);
+                              setState(() {
+                                _relationValue = value;
+                              });
+                            }
+                          : null,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Relation',
-                        hintText: 'Enter your relation',
+                        labelText: 'Blood group',
+                        hintText: 'Enter your blood group',
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your relation';
-                        }
-                        return null;
-                      },
-                      initialValue: emergencyContactController
-                          .firstEmergencyContact.relation,
-                      onSaved: emergencyContactController.setRelation,
-                      keyboardType: TextInputType.text,
                     ),
                     Container(
                       alignment: Alignment.centerLeft,
@@ -117,6 +166,7 @@ class _FirstEmergencyContactDialogState
                       ),
                     ),
                     TextFormField(
+                      enabled: userProfileController.formEnabled,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Emergency Contact',
@@ -158,9 +208,14 @@ class _FirstEmergencyContactDialogState
                           Expanded(
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                backgroundColor: const Color(0xFF5247C5),
+                                backgroundColor:
+                                    userProfileController.formEnabled
+                                        ? const Color(0xFF5247C5)
+                                        : Colors.grey,
                               ),
-                              onPressed: validateEmergencyContactForm,
+                              onPressed: userProfileController.formEnabled
+                                  ? validateEmergencyContactForm
+                                  : null,
                               child: const Text(
                                 'Add Contact',
                                 style: TextStyle(
