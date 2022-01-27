@@ -1,9 +1,7 @@
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
-import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -30,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    requestAllPermission();
     initializeBackgroundExecution();
     super.initState();
   }
@@ -61,9 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
-        
-
-
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
@@ -214,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                               await value.getDestinationLocation(p);
+                              await value.getRoute();
                             },
                             controller: value.destinationTextController,
                             readOnly: true,

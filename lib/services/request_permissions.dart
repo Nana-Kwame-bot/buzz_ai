@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 List<Permission> allRequiredPermissions = [
   Permission.locationAlways,
+  Permission.location,
   Permission.manageExternalStorage,
   Permission.activityRecognition,
   Permission.storage,

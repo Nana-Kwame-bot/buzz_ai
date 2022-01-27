@@ -4,6 +4,7 @@ import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/services/request_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
+    requestAllPermission();
     super.initState();
 
     _animationController = AnimationController(
