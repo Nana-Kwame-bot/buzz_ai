@@ -60,10 +60,13 @@ class _BasicDetailsState extends State<BasicDetails> {
             "")
         .toString();
 
-    _dropDownValue = Provider.of<BasicDetailController>(context, listen: false)
+    String? storedBloodGroup =
+        Provider.of<BasicDetailController>(context, listen: false)
             .basicDetail
-            .bloodGroup ??
-        _bloodGroups.first;
+            .bloodGroup;
+    _dropDownValue = (storedBloodGroup == null || storedBloodGroup == "")
+        ? _bloodGroups.first
+        : storedBloodGroup;
   }
 
   @override
@@ -368,14 +371,14 @@ class _BasicDetailsState extends State<BasicDetails> {
                                 child: Text(value),
                               );
                             }).toList(),
-                            onChanged: (String? value) {
+                            onChanged: userProfileController.formEnabled ? (String? value) {
                               if (value == null) return;
 
                               basicDetailController.setBloodGroup(value);
                               setState(() {
                                 _dropDownValue = value;
                               });
-                            },
+                            } : null,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',

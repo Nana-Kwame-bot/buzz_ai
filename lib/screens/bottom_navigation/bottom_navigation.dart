@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavigation extends StatefulWidget {
   static const String iD = '/bottom_navigation';
@@ -30,12 +31,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Box>(
-      future: Hive.openBox("profile"),
-      builder: (context, AsyncSnapshot<Box> snapshot) {
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
-            if (snapshot.data!.get('profile', defaultValue: false)) {
+            if (!(snapshot.data!.getBool('profileComplete') ?? false)) {
               return const ProfileScreen(isFromSignUp: true);
             }
 

@@ -35,10 +35,13 @@ class BuzzaiApp extends StatelessWidget {
       "timestamp": DateTime.now(),
       "routes": [],
     };
-    String uid = Provider.of<AuthenticationController>(context, listen: false)
+    String? uid = Provider.of<AuthenticationController>(context, listen: false)
         .auth
-        .currentUser!
-        .uid;
+        .currentUser
+        ?.uid;
+
+    if (uid == null) return; 
+    
     List<Map> history = [];
     DateTime _lastStillTime = DateTime.now();
 

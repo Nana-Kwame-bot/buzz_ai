@@ -1,9 +1,11 @@
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,18 +34,25 @@ class _SplashScreenState extends State<SplashScreen>
     )
       ..forward()
       ..addStatusListener((status) async {
+        if (Provider.of<AuthenticationController>(context, listen: false)
+                .auth
+                .currentUser ==
+            null) {
+          if (status == AnimationStatus.completed) {
+            Navigator.of(context).pushNamed(LoginScreen.iD);
+            return;
+          }
+        }
         SharedPreferences prefs = await SharedPreferences.getInstance();
         bool isProfileComplete = prefs.getBool("profileComplete") ?? false;
 
-        if (!isProfileComplete) {
+        if (isProfileComplete) {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const ProfileScreen(isFromSignUp: true)));
+              builder: (context) => const BottomNavigation()));
           return;
         }
-
-        if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushNamed(LoginScreen.iD);
-        }
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const ProfileScreen(isFromSignUp: true)));
       });
 
     _animation = CurvedAnimation(

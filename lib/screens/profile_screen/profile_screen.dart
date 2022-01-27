@@ -81,7 +81,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () async {
-                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
                                     await prefs.remove("profileComplete");
                                     await Provider.of<AuthenticationController>(
                                       context,
@@ -146,24 +147,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   (BuildContext context, AsyncSnapshot<UserProfile?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData && widget.isFromSignUp) {
-                    Future.delayed(const Duration(seconds: 0)).then((value) =>
-                        Navigator.of(context)
-                            .pushReplacementNamed(BottomNavigation.iD));
+                    Future.delayed(Duration.zero).then((value) async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool("profileComplete", true);
+                      Navigator.of(context)
+                          .pushReplacementNamed(BottomNavigation.iD);
+                    });
                     return Container();
                   }
-                  return Column(
-                    children: [
-                      const ImagePick(),
-                      BasicDetails(isFromSignUp: widget.isFromSignUp),
-                      const ContactDetails(),
-                      const Emergency(),
-                      const VehicleInformation(),
-                      const MultipleCar(),
-                      SubmitForm(
-                        isFromSIgnUp: widget.isFromSignUp,
-                      ),
-                    ],
-                  );
+                  return ProfileInputFields(isFromSignUp: widget.isFromSignUp);
                 }
                 return SizedBox(
                   height: MediaQuery.of(context).size.height / 1.3,
@@ -194,5 +186,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
     return;
+  }
+}
+
+class ProfileInputFields extends StatelessWidget {
+  const ProfileInputFields({
+    Key? key,
+    this.isFromSignUp = false,
+  }) : super(key: key);
+
+  final bool isFromSignUp;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const ImagePick(),
+        BasicDetails(isFromSignUp: isFromSignUp),
+        const ContactDetails(),
+        const Emergency(),
+        const VehicleInformation(),
+        const MultipleCar(),
+        SubmitForm(
+          isFromSIgnUp: isFromSignUp,
+        ),
+      ],
+    );
   }
 }

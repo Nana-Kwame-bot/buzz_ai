@@ -99,7 +99,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ),
                 TextFormField(
                   enabled: userProfileController.formEnabled,
-                  initialValue: Provider.of<AuthenticationController>(context, listen: false).auth.currentUser!.phoneNumber,
+                  initialValue: Provider.of<AuthenticationController>(context, listen: false).auth.currentUser?.phoneNumber ?? "",
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Phone number',
