@@ -1,6 +1,7 @@
 import 'package:buzz_ai/screens/accidentreport_screen/accidentreport_screen.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
+import 'package:buzz_ai/screens/route_history/route_history.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 
@@ -21,12 +22,8 @@ class BottomNavigationController extends ChangeNotifier {
 
   List<Widget> pages = [
     const HomeScreen(),
-    Container(
-      color: Colors.greenAccent,
-    ),
+    const RouteHistory(),
     const AccidentReportScreen(),
-    const ProfileScreen(
-      isFromSignUp: false,
-    ),
+    const ProfileScreen(isFromSignUp: false),
   ];
 }
