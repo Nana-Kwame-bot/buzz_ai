@@ -64,7 +64,7 @@ class BuzzaiApp extends StatelessWidget {
           }
         } else {
           // If not moving
-          log("Not moving");
+          // log("Not moving");
 
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
           if (_stillFor < 10)

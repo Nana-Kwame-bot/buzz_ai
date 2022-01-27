@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class VehicleInformation extends StatefulWidget {
@@ -186,6 +187,7 @@ class _VehicleInformationState extends State<VehicleInformation> {
                   },
                   onChanged: vehicleInfoController.setPlateNumber,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
               ],
             ),

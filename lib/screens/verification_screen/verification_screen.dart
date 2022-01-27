@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerificationScreen extends StatefulWidget {
   static const String iD = '/verification';
@@ -19,13 +20,6 @@ class VerificationScreen extends StatefulWidget {
 
 class _VerificationScreenState extends State<VerificationScreen> {
   var verificationFormKey = GlobalKey<FormState>();
-  late Box<bool> profileBox;
-
-  @override
-  void initState() {
-    super.initState();
-    profileBox = Hive.box<bool>('profileBox');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +90,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           return null;
                         },
                         onSaved: (String? value) async {
-                          bool isProfileSet =
-                              profileBox.get('profile', defaultValue: false) ??
-                                  false;
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          bool isProfileSet = prefs.getBool("profileComplete") ?? false;
+                          
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
                           if (_result) {

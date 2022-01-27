@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubmitForm extends StatefulWidget {
   final bool isFromSIgnUp;
@@ -28,7 +29,6 @@ class SubmitForm extends StatefulWidget {
 class _SubmitFormState extends State<SubmitForm> {
   late UserProfileController userProfileController;
   late AuthenticationController authenticationController;
-  late Box<bool> profileBox;
   late DatabaseReference _userRef;
   UserProfile? userProfile;
   late String userId;
@@ -46,7 +46,6 @@ class _SubmitFormState extends State<SubmitForm> {
     );
     userId = authenticationController.auth.currentUser!.uid;
     _userRef = userProfileController.database.ref('users/$userId');
-    profileBox = Hive.box<bool>('profileBox');
   }
 
   @override
@@ -155,7 +154,8 @@ class _SubmitFormState extends State<SubmitForm> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-      await profileBox.put('profile', true);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool("profileComplete", true);
 
       await Future.delayed(const Duration(seconds: 2), () {
         if (widget.isFromSIgnUp) {

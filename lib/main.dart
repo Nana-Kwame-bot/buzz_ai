@@ -56,7 +56,6 @@ Future<void> initialize() async {
 
 
   await Hive.initFlutter();
-  await Hive.openBox<bool>('profileBox');
   runApp(const MyApp());
 }
 

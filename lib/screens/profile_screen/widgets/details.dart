@@ -21,7 +21,6 @@ class _BasicDetailsState extends State<BasicDetails> {
   final TextEditingController _dobKey = TextEditingController();
   final TextEditingController _ageKey = TextEditingController();
 
-  String _dropDownValue = "O +";
   final List<String> _bloodGroups = [
     "A +",
     "A -",
@@ -32,6 +31,7 @@ class _BasicDetailsState extends State<BasicDetails> {
     "O +",
     "O -"
   ];
+  String _dropDownValue = "";
 
   final basicDetailsFormKey =
       GlobalKey<FormState>(debugLabel: 'basicDetailsFormKey');
@@ -63,7 +63,7 @@ class _BasicDetailsState extends State<BasicDetails> {
     _dropDownValue = Provider.of<BasicDetailController>(context, listen: false)
             .basicDetail
             .bloodGroup ??
-        "";
+        _bloodGroups.first;
   }
 
   @override
@@ -203,6 +203,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                             basicDetailController.setAge(
                                 (DateTime.now().difference(value).inDays ~/ 365)
                                     .toString());
+
                             setState(() {
                               _ageKey.text =
                                   (DateTime.now().difference(value).inDays ~/
@@ -417,6 +418,7 @@ class _BasicDetailsState extends State<BasicDetails> {
                     return null;
                   },
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: basicDetailController.setLicenseNumber,
                 ),
               ],

@@ -27,13 +27,6 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State<BottomNavigation> {
   final PageController controller = PageController(keepPage: false);
   DateTime _currentBackPressTime = DateTime.now();
-  late Box<bool> profileBox;
-
-  @override
-  void initState() {
-    super.initState();
-    profileBox = Hive.box<bool>('profileBox');
-  }
 
   @override
   Widget build(BuildContext context) {

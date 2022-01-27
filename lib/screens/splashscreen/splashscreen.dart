@@ -1,8 +1,10 @@
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
+import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String iD = '/';
@@ -29,7 +31,16 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 3300),
     )
       ..forward()
-      ..addStatusListener((status) {
+      ..addStatusListener((status) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool isProfileComplete = prefs.getBool("profileComplete") ?? false;
+
+        if (!isProfileComplete) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const ProfileScreen(isFromSignUp: true)));
+          return;
+        }
+
         if (status == AnimationStatus.completed) {
           Navigator.of(context).pushNamed(LoginScreen.iD);
         }

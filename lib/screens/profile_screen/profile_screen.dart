@@ -15,7 +15,9 @@ import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String iD = '/profile';
@@ -79,6 +81,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () async {
+                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    await prefs.remove("profileComplete");
                                     await Provider.of<AuthenticationController>(
                                       context,
                                       listen: false,
