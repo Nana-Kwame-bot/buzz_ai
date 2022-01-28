@@ -1,10 +1,13 @@
 // ignore_for_file: must_be_immutable
+
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'dart:math';
+
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
+import 'package:buzz_ai/models/sensors/sensor_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -88,13 +91,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     // Android requires explicitly asking permission
     if (Platform.isAndroid) {
-      PermissionStatus permissionStatus = PermissionStatus.granted;
-      try {
-        permissionStatus = await Permission.activityRecognition.request();
-      } on Exception catch (e) {
-        dev.log(e.toString());
-      }
-      if (permissionStatus == PermissionStatus.granted) {
+      if ((await Permission.activityRecognition.request()).isGranted) {
         startTracking();
       }
     }
@@ -148,7 +145,6 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   DateTime lastUpdate = DateTime.now();
-
   _throttle(Function callback, String sensor, List<double> event) async {
     if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
       return;
@@ -165,8 +161,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent =
-        currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
+    _lastActivityEvent = currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
@@ -253,7 +248,6 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   bool _sensorDataUploaded = false;
-
   Future<void> uploadSensorData([File? file]) async {
     if (_sensorDataUploaded) return;
 

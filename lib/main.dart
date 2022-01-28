@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/controllers/notifications/notifications_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
@@ -21,7 +19,6 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
-import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -33,7 +30,6 @@ import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
 bool _deviceHasCapableAccelerometer = true;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -41,7 +37,7 @@ void main() async {
   );
   // initState();
   await initialize();
-  // runApp(const MyApp());
+  runApp(const MyApp());
 }
 
 Future<void> initialize() async {
@@ -58,20 +54,8 @@ Future<void> initialize() async {
 
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
 
+
   await Hive.initFlutter();
-  await AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic Notifications',
-          defaultColor: defaultColor,
-          importance: NotificationImportance.High,
-          channelShowBadge: true,
-          channelDescription: 'Show basic notifications',
-        ),
-      ],
-      debug: true);
   runApp(const MyApp());
 }
 
@@ -85,67 +69,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    // activityRecognitionApp.init();
     super.initState();
-    AwesomeNotifications().isNotificationAllowed().then(
-      (isAllowed) {
-        if (!isAllowed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Allow Notifications'),
-                content:
-                    const Text('Buzzai would like to send you notifications'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Don't Allow",
-                      style: TextStyle(color: Colors.grey, fontSize: 18),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      AwesomeNotifications()
-                          .requestPermissionToSendNotifications()
-                          .then((_) {
-                        Navigator.pop(context);
-                      });
-                    },
-                    child: const Text(
-                      'Allow',
-                      style: TextStyle(
-                        color: defaultColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      },
-    );
-
-    AwesomeNotifications().actionStream.listen((ReceivedAction receivedAction) {
-      if (receivedAction.channelKey == 'basic_channel' && Platform.isIOS) {
-        AwesomeNotifications().getGlobalBadgeCounter().then(
-          (int counter) {
-            return AwesomeNotifications().setGlobalBadgeCounter(counter - 1);
-          },
-        );
-      }
-      if (receivedAction.buttonKeyPressed == "Yes") {
-        //TODO: Do something with this info
-      }
-      if (receivedAction.buttonKeyPressed == "No") {
-        //TODO: Do something with this info
-      }
-    });
   }
 
   @override
@@ -156,24 +81,6 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider<UserProfileController>(
                 create: (BuildContext context) {
                   return UserProfileController()..setPersistence();
-                },
-              ),
-              ChangeNotifierProvider<ActivityRecognitionApp>(
-                create: (BuildContext context) {
-                  return ActivityRecognitionApp()..init();
-                },
-              ),
-              ChangeNotifierProxyProvider<ActivityRecognitionApp,
-                  NotificationsController>(
-                create: (BuildContext context) {
-                  return NotificationsController();
-                },
-                update: (
-                  BuildContext context,
-                  ActivityRecognitionApp recognition,
-                  NotificationsController? controller,
-                ) {
-                  return controller!..update(recognition);
                 },
               ),
               ChangeNotifierProvider<BasicDetailController>(
@@ -246,6 +153,11 @@ class _MyAppState extends State<MyApp> {
                   return SubmitAccidentReport();
                 },
               ),
+              ChangeNotifierProvider<ActivityRecognitionApp>(
+                create: (BuildContext context) {
+                  return ActivityRecognitionApp()..init();
+                },
+              ),
             ],
             child: const BuzzaiApp(),
           )
@@ -268,13 +180,6 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           );
-  }
-
-  @override
-  void dispose() {
-    AwesomeNotifications().actionSink.close();
-    AwesomeNotifications().createdSink.close();
-    super.dispose();
   }
 }
 
