@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +51,13 @@ class RequestPermission extends StatelessWidget {
           itemCount: _allPermissions.length + 2,
           itemBuilder: (context, index) {
             if (index == 0) {
-              return const Text("We need certian permissions to run the app.");
+              return const Center(
+                  child: Text(
+                "We need certian permissions to run the app.",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ));
             }
 
             if (index == _allPermissions.length + 1) {
@@ -61,16 +68,13 @@ class RequestPermission extends StatelessWidget {
                     Permission permission = element["permission"];
 
                     if (!(await permission.isGranted)) {
-                      Provider.of<IssueNotificationProvider>(context,
-                              listen: false)
-                          .showIssue(
-                              issue: "Please provide all permissions!",
-                              issueLevel: 2);
-                      Future.delayed(const Duration(seconds: 10)).then(
-                          (value) => Provider.of<IssueNotificationProvider>(
-                                  context,
-                                  listen: false)
-                              .hideIssue());
+                      Fluttertoast.showToast(
+                        msg: "All permissions are required!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        backgroundColor: Colors.red,
+                        timeInSecForIosWeb: 3,
+                        gravity: ToastGravity.TOP,
+                      );
 
                       return;
                     }
