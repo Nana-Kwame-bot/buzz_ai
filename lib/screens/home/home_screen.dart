@@ -161,7 +161,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
 
-                              await value.getUserLocation(p);
+                              if (p == null) return;
+
+                              await value.setNewCurrentLocation(p);
+                              await value.getRoute();
                             },
                             decoration: InputDecoration(
                               prefixIcon: const Icon(
@@ -207,6 +210,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onError(value, context);
                                 },
                               );
+
+                              if (p == null) return;
+
                               await value.getDestinationLocation(p);
                               await value.getRoute();
                             },

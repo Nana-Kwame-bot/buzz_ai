@@ -106,7 +106,8 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
-    sourceTextController.text = address.locality == "" ? "Location error" : address.locality;
+    sourceTextController.text =
+        address.locality == "" ? "Location error" : address.locality;
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
@@ -114,6 +115,21 @@ class HomeScreenController extends ChangeNotifier {
       destinationLongitude: 0,
     );
 
+    notifyListeners();
+  }
+
+  Future<void> setNewCurrentLocation(webservice.Prediction? p) async {
+    _resetMap();
+    webservice.PlacesDetailsResponse? detail = await _getPrediction(p);
+
+    userDestination =
+        sourceTextController.text = detail?.result.formattedAddress ?? '';
+
+    coordinates = coordinates.copyWith(
+      sourceLatitude: detail?.result.geometry?.location.lat,
+      sourceLongitude: detail?.result.geometry?.location.lng,
+    );
+    _resetMap();
     notifyListeners();
   }
 
