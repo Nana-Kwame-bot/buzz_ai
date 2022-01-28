@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/services/get_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,6 +51,9 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
     }
 
     Future<void> uploadReport() async {
+      ActivityRecognitionApp ara =
+          Provider.of<ActivityRecognitionApp>(context, listen: false);
+
       setState(() {
         _uploading = true;
       });
@@ -55,6 +61,15 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
       if (widget.data == null) {
         await getData();
       }
+
+      final ref = FirebaseStorage.instance
+          .ref(widget.data!["uid"])
+          .child("audio")
+          .child(ara.fileName.split("/").last);
+      await ref.putFile(File(ara.fileName));
+      var url = await ref.getDownloadURL();
+
+      widget.data!["audio"] = url;
 
       await FirebaseFirestore.instance
           .collection("accidentDatabase")

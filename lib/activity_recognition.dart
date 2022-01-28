@@ -7,7 +7,7 @@ import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
-import 'package:buzz_ai/models/sensors/sensor_data.dart';
+import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +29,9 @@ class ActivityRecognitionApp with ChangeNotifier {
   bool gForceExceeded = false;
   double? excedeedGForce;
   bool accidentReported = false;
+  SoundRecorder recorder = SoundRecorder();
+  late String fileName = "${DateTime.now()}.aac";
+  bool isAudioRecording = false;
 
   // Sensor variables
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
@@ -48,6 +51,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   @override
   void dispose() {
+    recorder.dispose();
     activityStreamSubscription?.cancel();
     super.dispose();
   }
@@ -64,6 +68,8 @@ class ActivityRecognitionApp with ChangeNotifier {
 
             if (lastGForce > 4) {
               if (!gForceExceeded) {
+                _recordAudio();
+
                 gForceExceeded = true;
                 excedeedGForce = lastGForce;
                 Bringtoforeground.bringAppToForeground();
@@ -144,6 +150,20 @@ class ActivityRecognitionApp with ChangeNotifier {
     });
   }
 
+  Future<void> _recordAudio() async {
+    isAudioRecording = true;
+    String path = (await getApplicationDocumentsDirectory()).path;
+    fileName = "$path/$fileName";
+    await recorder.init();
+    await recorder.record(fileName);
+
+    Future.delayed(const Duration(seconds: 3)).then((value) {
+      isAudioRecording = false;
+      recorder.stop();
+      recorder.dispose();
+    });
+  }
+
   DateTime lastUpdate = DateTime.now();
   _throttle(Function callback, String sensor, List<double> event) async {
     if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
@@ -161,7 +181,8 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent = currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
+    _lastActivityEvent =
+        currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
@@ -266,7 +287,6 @@ class ActivityRecognitionApp with ChangeNotifier {
         .collection("userDatabase")
         .doc(uid)
         .update({
-      "historyData": [],
       "sensorData": FieldValue.arrayUnion([
         {
           "timestamp": DateTime.now(),
@@ -279,50 +299,5 @@ class ActivityRecognitionApp with ChangeNotifier {
     await File(
             "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv")
         .delete();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Activity Recognition'),
-        ),
-        body: Center(
-          child: ListView.builder(
-              itemCount: _events.length,
-              reverse: true,
-              itemBuilder: (_, int idx) {
-                final activity = _events[idx];
-                return ListTile(
-                  leading: _activityIcon(activity.type),
-                  title: Text(
-                      '${activity.type.toString().split('.').last} (${activity.confidence}%)'),
-                  trailing: Text(activity.timeStamp
-                      .toString()
-                      .split(' ')
-                      .last
-                      .split('.')
-                      .first),
-                );
-              }),
-        ),
-      ),
-    );
-  }
-
-  Icon _activityIcon(ActivityType type) {
-    switch (type) {
-      case ActivityType.IN_VEHICLE:
-        return Icon(Icons.car_rental);
-      case ActivityType.RUNNING:
-        return Icon(Icons.run_circle);
-      case ActivityType.STILL:
-        return Icon(Icons.cancel_outlined);
-      case ActivityType.TILTING:
-        return Icon(Icons.redo);
-      default:
-        return Icon(Icons.device_unknown);
-    }
   }
 }

@@ -72,5 +72,17 @@
 	<string>To record last 30 sec's of audio if SOS situation is detected.</string>
 	<key>UIBackgroundModes</key>
 	<string>location</string>
+	<key>NSAppleMusicUsageDescription</key>
+    <string>MyApp does not need this permission</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>MyApp does not need this permission</string>
+    <key>NSContactsUsageDescription</key>
+    <string>MyApp does not need this permission</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>MyApp does not need this permission</string>
+    <key>UIBackgroundModes</key>
+    <array>
+            <string>audio</string>
+    </array>
 </dict>
 </plist>
