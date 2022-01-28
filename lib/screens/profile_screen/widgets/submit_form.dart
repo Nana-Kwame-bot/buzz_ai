@@ -11,6 +11,7 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/misc/request_permission.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -141,7 +142,7 @@ class _SubmitFormState extends State<SubmitForm> {
 
     try {
       await _userRef.set(userProfile?.toMap());
-      
+
       final successSnackBar = SnackBar(
         duration: const Duration(seconds: 2),
         content: const Text('Profile Set'),
@@ -159,7 +160,14 @@ class _SubmitFormState extends State<SubmitForm> {
 
       await Future.delayed(const Duration(seconds: 2), () {
         if (widget.isFromSIgnUp) {
-          Navigator.of(context).pushNamed(BottomNavigation.iD);
+          if (prefs.getBool("allPermissionsGranted") ?? false) {
+            Navigator.of(context).pushReplacementNamed(
+              BottomNavigation.iD,
+            );
+            return;
+          }
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => RequestPermission()));
         }
       });
     } on Exception catch (e) {

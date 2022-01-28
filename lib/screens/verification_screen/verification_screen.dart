@@ -1,6 +1,7 @@
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/routes/screen_arguments/profile_screen_arguments.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/misc/request_permission.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/gestures.dart';
@@ -90,9 +91,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           return null;
                         },
                         onSaved: (String? value) async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          bool isProfileSet = prefs.getBool("profileComplete") ?? false;
-                          
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          bool isProfileSet =
+                              prefs.getBool("profileComplete") ?? false;
+
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
                           if (_result) {
@@ -104,9 +107,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 ),
                               );
                             } else {
-                              Navigator.of(context).pushReplacementNamed(
-                                BottomNavigation.iD,
-                              );
+                              if (prefs.getBool("allPermissionsGranted") ??
+                                  false) {
+                                Navigator.of(context).pushReplacementNamed(
+                                  BottomNavigation.iD,
+                                );
+                                return;
+                              }
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => RequestPermission()));
                             }
                           } else {
                             final snackBar = SnackBar(

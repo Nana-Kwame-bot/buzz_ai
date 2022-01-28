@@ -97,8 +97,12 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     // Android requires explicitly asking permission
     if (Platform.isAndroid) {
-      if ((await Permission.activityRecognition.request()).isGranted) {
+      if (await Permission.activityRecognition.isGranted) {
         startTracking();
+      } else {
+        await Permission.activityRecognition.request().then((status) {
+          if (status.isGranted) startTracking();
+        });
       }
     }
 
