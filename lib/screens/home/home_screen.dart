@@ -3,7 +3,9 @@ import 'package:buzz_ai/controllers/notifications/notifications_controller.dart'
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
   List<PointLatLng>? points;
+  bool _onAppStartedSuccess = false;
 
   @override
   void initState() {
@@ -112,23 +115,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _mapSize = size;
                               });
                             },
-                            child: GoogleMap(
-                              padding: EdgeInsets.only(top: _mapSize.height - 150),
-                              mapType: MapType.normal,
-                              initialCameraPosition: value.kGooglePlex,
-                              myLocationEnabled: true,
-                              compassEnabled: true,
-                              tiltGesturesEnabled: false,
-                              scrollGesturesEnabled: true,
-                              zoomGesturesEnabled: true,
-                              markers: Set<Marker>.of(value.markers.values),
-                              polylines: Set<Polyline>.of(value.polylines.values),
-                              onMapCreated: (controller) {
-                                setState(() {
-                                  _mapOpacity = 1;
-                                });
-                                value.onMapCreated(controller);
-                              },
+                            child: Consumer(
+                              builder: (context, Object connectivityResult, child) {
+                                if (connectivityResult.runtimeType == ConnectivityResult) {
+                                  if (connectivityResult == ConnectivityResult.none) {
+                                    _onAppStartedSuccess = false;
+                                  } else {
+                                    if (!_onAppStartedSuccess) {
+                                      value.onAppStarted();
+                                      _onAppStartedSuccess = true;
+                                    }
+                                  }
+                                }
+      
+                                return GoogleMap(
+                                  padding: EdgeInsets.only(top: _mapSize.height - 150),
+                                  mapType: MapType.normal,
+                                  initialCameraPosition: value.kGooglePlex,
+                                  myLocationEnabled: true,
+                                  compassEnabled: true,
+                                  tiltGesturesEnabled: false,
+                                  scrollGesturesEnabled: true,
+                                  zoomGesturesEnabled: true,
+                                  markers: Set<Marker>.of(value.markers.values),
+                                  polylines: Set<Polyline>.of(value.polylines.values),
+                                  onMapCreated: (controller) {
+                                    setState(() {
+                                      _mapOpacity = 1;
+                                    });
+                                    value.onMapCreated(controller);
+                                  },
+                                );
+                              }
                             ),
                           ),
                         ],
