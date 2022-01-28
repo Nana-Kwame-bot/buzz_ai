@@ -99,5 +99,7 @@ class IssueNotificationProvider extends ChangeNotifier {
   void hideIssue() {
     issue = "";
     issueLevel = 0;
+
+    notifyListeners();
   }
 }

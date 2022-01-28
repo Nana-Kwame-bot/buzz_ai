@@ -4,6 +4,7 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
+import 'package:buzz_ai/screens/misc/request_permission.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/contact_details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/details.dart';
 import 'package:buzz_ai/screens/profile_screen/widgets/emergency.dart';
@@ -148,10 +149,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData && widget.isFromSignUp) {
                     Future.delayed(Duration.zero).then((value) async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
                       await prefs.setBool("profileComplete", true);
-                      Navigator.of(context)
-                          .pushReplacementNamed(BottomNavigation.iD);
+                      if (widget.isFromSignUp) {
+                        if (prefs.getBool("allPermissionsGranted") ?? false) {
+                          Navigator.of(context).pushReplacementNamed(
+                            BottomNavigation.iD,
+                          );
+                          return;
+                        }
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => RequestPermission()));
+                      }
                     });
                     return Container();
                   }

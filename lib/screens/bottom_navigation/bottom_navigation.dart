@@ -38,8 +38,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   Provider.of<IssueNotificationProvider>(context, listen: false)
                       .showIssue(issue: "No internet!", issueLevel: 0));
         } else {
-          Provider.of<IssueNotificationProvider>(context, listen: false)
-              .hideIssue();
+          Future.delayed(
+              Duration.zero,
+              () =>
+                  Provider.of<IssueNotificationProvider>(context, listen: false)
+                      .hideIssue());
         }
       }
 

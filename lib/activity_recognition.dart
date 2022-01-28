@@ -91,8 +91,12 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     // Android requires explicitly asking permission
     if (Platform.isAndroid) {
-      if ((await Permission.activityRecognition.request()).isGranted) {
+      if (await Permission.activityRecognition.isGranted) {
         startTracking();
+      } else {
+        await Permission.activityRecognition.request().then((status) {
+          if (status.isGranted) startTracking();
+        });
       }
     }
 
@@ -161,7 +165,8 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent = currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
+    _lastActivityEvent =
+        currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
