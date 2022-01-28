@@ -111,8 +111,6 @@ class HomeScreenController extends ChangeNotifier {
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
-      destinationLatitude: 0,
-      destinationLongitude: 0,
     );
 
     notifyListeners();

@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
@@ -86,8 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
 
                 await availableMaps.first.showDirections(
+                  originTitle: value.sourceTextController.text,
                   origin: from,
+                  destinationTitle: value.destinationTextController.text,
                   destination: to,
+                  directionsMode: map_launcher.DirectionsMode.driving,
                 );
               },
               child: const Icon(
@@ -291,6 +294,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   
 }
