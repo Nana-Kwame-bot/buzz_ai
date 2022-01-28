@@ -19,6 +19,8 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:buzz_ai/widgets/issue_notifier.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -53,7 +55,6 @@ Future<void> initialize() async {
   }
 
   log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
-
 
   await Hive.initFlutter();
   runApp(const MyApp());
@@ -152,6 +153,16 @@ class _MyAppState extends State<MyApp> {
                 create: (BuildContext context) {
                   return SubmitAccidentReport();
                 },
+              ),
+              ChangeNotifierProvider<IssueNotificationProvider>(
+                create: (BuildContext context) {
+                  return IssueNotificationProvider();
+                },
+              ),
+              StreamProvider(
+                create: (_) => Connectivity().onConnectivityChanged,
+                initialData: ConnectivityResult.none,
+                catchError: (_, error) => error.toString(),
               ),
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {

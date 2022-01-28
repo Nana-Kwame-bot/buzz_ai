@@ -2,7 +2,9 @@ import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controlle
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -20,11 +22,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
   List<PointLatLng>? points;
+  bool _onAppStartedSuccess = false;
 
   @override
   void initState() {
@@ -83,8 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 map_launcher.Coords to = map_launcher.Coords(value.coordinates.destinationLatitude, value.coordinates.destinationLongitude);
 
                 await availableMaps.first.showDirections(
+                  originTitle: value.sourceTextController.text,
                   origin: from,
+                  destinationTitle: value.destinationTextController.text,
                   destination: to,
+                  directionsMode: map_launcher.DirectionsMode.driving,
                 );
               },
               child: const Icon(
@@ -111,23 +117,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _mapSize = size;
                               });
                             },
-                            child: GoogleMap(
-                              padding: EdgeInsets.only(top: _mapSize.height - 150),
-                              mapType: MapType.normal,
-                              initialCameraPosition: value.kGooglePlex,
-                              myLocationEnabled: true,
-                              compassEnabled: true,
-                              tiltGesturesEnabled: false,
-                              scrollGesturesEnabled: true,
-                              zoomGesturesEnabled: true,
-                              markers: Set<Marker>.of(value.markers.values),
-                              polylines: Set<Polyline>.of(value.polylines.values),
-                              onMapCreated: (controller) {
-                                setState(() {
-                                  _mapOpacity = 1;
-                                });
-                                value.onMapCreated(controller);
-                              },
+                            child: Consumer(
+                              builder: (context, Object connectivityResult, child) {
+                                if (connectivityResult.runtimeType == ConnectivityResult) {
+                                  if (connectivityResult == ConnectivityResult.none) {
+                                    _onAppStartedSuccess = false;
+                                  } else {
+                                    if (!_onAppStartedSuccess) {
+                                      value.onAppStarted();
+                                      _onAppStartedSuccess = true;
+                                    }
+                                  }
+                                }
+      
+                                return GoogleMap(
+                                  padding: EdgeInsets.only(top: _mapSize.height - 150),
+                                  mapType: MapType.normal,
+                                  initialCameraPosition: value.kGooglePlex,
+                                  myLocationEnabled: true,
+                                  compassEnabled: true,
+                                  tiltGesturesEnabled: false,
+                                  scrollGesturesEnabled: true,
+                                  zoomGesturesEnabled: true,
+                                  markers: Set<Marker>.of(value.markers.values),
+                                  polylines: Set<Polyline>.of(value.polylines.values),
+                                  onMapCreated: (controller) {
+                                    setState(() {
+                                      _mapOpacity = 1;
+                                    });
+                                    value.onMapCreated(controller);
+                                  },
+                                );
+                              }
                             ),
                           ),
                         ],
@@ -161,7 +182,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
 
-                              await value.getUserLocation(p);
+                              if (p == null) return;
+
+                              await value.setNewCurrentLocation(p);
+
+                              if (value.coordinates.destinationLatitude == 0 && value.coordinates.destinationLongitude == 0) {
+                                await value.setMarkerAtSinglePoint(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+                                return;
+                              }
+                              await value.getRoute();
                             },
                             decoration: InputDecoration(
                               prefixIcon: const Icon(
@@ -207,6 +236,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onError(value, context);
                                 },
                               );
+
+                              if (p == null) return;
+
                               await value.getDestinationLocation(p);
                               await value.getRoute();
                             },
@@ -262,6 +294,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   
 }

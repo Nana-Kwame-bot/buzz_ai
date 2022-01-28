@@ -106,13 +106,39 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
-    sourceTextController.text = address.locality == "" ? "Location error" : address.locality;
+    sourceTextController.text =
+        address.locality == "" ? "Location error" : address.locality;
     coordinates = coordinates.copyWith(
       sourceLatitude: currentPosition.latitude,
       sourceLongitude: currentPosition.longitude,
-      destinationLatitude: 0,
-      destinationLongitude: 0,
     );
+
+    notifyListeners();
+  }
+
+  Future<void> setNewCurrentLocation(webservice.Prediction? p) async {
+    _resetMap();
+    webservice.PlacesDetailsResponse? detail = await _getPrediction(p);
+
+    userDestination =
+        sourceTextController.text = detail?.result.formattedAddress ?? '';
+
+    coordinates = coordinates.copyWith(
+      sourceLatitude: detail?.result.geometry?.location.lat,
+      sourceLongitude: detail?.result.geometry?.location.lng,
+    );
+    _resetMap();
+    notifyListeners();
+  }
+
+  Future<void> setMarkerAtSinglePoint(double lat, double lng) async {
+    await mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(lat, lng),
+        14,
+      ),
+    );
+    _addMarker(LatLng(lat, lng), "origin", BitmapDescriptor.defaultMarker);
 
     notifyListeners();
   }
