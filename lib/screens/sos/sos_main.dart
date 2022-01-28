@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
+import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
 import 'package:buzz_ai/services/get_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_progress_indicator/gradient_progress_indicator.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -54,7 +58,9 @@ class _SOSScreenState extends State<SOSScreen> {
         .auth
         .currentUser!
         .uid;
-    List<double> last30sG = Provider.of<ActivityRecognitionApp>(context, listen: false).last30GForce;
+    List<double> last30sG =
+        Provider.of<ActivityRecognitionApp>(context, listen: false)
+            .last30GForce;
 
     data = {
       "coordinates": locationData == null
@@ -229,6 +235,13 @@ class _SOSScreenState extends State<SOSScreen> {
   }
 
   Future<void> uploadReport() async {
+    ActivityRecognitionApp ara =
+        Provider.of<ActivityRecognitionApp>(context, listen: false);
+
+    if (ara.isAudioRecording) {
+      await ara.recorder.stop();
+    }
+
     _uploadStarted = true;
     setState(() {
       _positiveText = "Uploading...";
@@ -245,6 +258,15 @@ class _SOSScreenState extends State<SOSScreen> {
       await getData();
     }
     data!["gForce"] = _activityProvider.excedeedGForce;
+
+    final ref = FirebaseStorage.instance
+        .ref(data!["uid"])
+        .child("audio")
+        .child(ara.fileName.split("/").last);
+    await ref.putFile(File(ara.fileName));
+    var url = await ref.getDownloadURL();
+
+    data!["audio"] = url;
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
 
