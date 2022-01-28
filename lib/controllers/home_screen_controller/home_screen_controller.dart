@@ -133,6 +133,18 @@ class HomeScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setMarkerAtSinglePoint(double lat, double lng) async {
+    await mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(lat, lng),
+        14,
+      ),
+    );
+    _addMarker(LatLng(lat, lng), "origin", BitmapDescriptor.defaultMarker);
+
+    notifyListeners();
+  }
+
   Future<void> getUserLocation(webservice.Prediction? p) async {
     webservice.PlacesDetailsResponse? detail = await _getPrediction(p);
     sourceTextController.text = detail?.result.formattedAddress ?? '';

@@ -1,4 +1,5 @@
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
+import 'package:buzz_ai/controllers/notifications/notifications_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
@@ -164,6 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (p == null) return;
 
                               await value.setNewCurrentLocation(p);
+
+                              if (value.coordinates.destinationLatitude == 0 && value.coordinates.destinationLongitude == 0) {
+                                await value.setMarkerAtSinglePoint(value.coordinates.sourceLatitude, value.coordinates.sourceLongitude);
+                                return;
+                              }
                               await value.getRoute();
                             },
                             decoration: InputDecoration(
