@@ -4,8 +4,6 @@ import io.flutter.embedding.android.FlutterActivity
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import android.os.Bundle
-import android.widget.TextView
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -24,24 +22,16 @@ class MainActivity: FlutterActivity() {
         channel.setMethodCallHandler {call, result ->
             if (call.method == "accelerometer_max_range") {
                 // val arguments = call.arguments() as Map<String, String>
-                val sensorList = getSensorList()
-                var accelerometerMaxRange = 0f;
-                
-                for (sensor in sensorList) {
-                    if (sensor.name.toLowerCase().contains("accelerometer")) {
-                        accelerometerMaxRange = sensor.maximumRange
-                    }
-                }
-
-                result.success(accelerometerMaxRange)
+                val maxAcc = getSensorList()
+                result.success(maxAcc)
             }
         }
     }
 
-    private fun getSensorList(): List<Sensor> {
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
+    private fun getSensorList(): Float {
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-        return deviceSensors
+        return accelerometerSensor.maximumRange
     }
 }
