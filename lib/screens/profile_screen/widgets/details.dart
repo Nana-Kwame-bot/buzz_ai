@@ -371,14 +371,16 @@ class _BasicDetailsState extends State<BasicDetails> {
                                 child: Text(value),
                               );
                             }).toList(),
-                            onChanged: userProfileController.formEnabled ? (String? value) {
-                              if (value == null) return;
+                            onChanged: userProfileController.formEnabled
+                                ? (String? value) {
+                                    if (value == null) return;
 
-                              basicDetailController.setBloodGroup(value);
-                              setState(() {
-                                _dropDownValue = value;
-                              });
-                            } : null,
+                                    basicDetailController.setBloodGroup(value);
+                                    setState(() {
+                                      _dropDownValue = value;
+                                    });
+                                  }
+                                : null,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Blood group',
@@ -420,8 +422,10 @@ class _BasicDetailsState extends State<BasicDetails> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.singleLineFormatter
+                  ],
                   onChanged: basicDetailController.setLicenseNumber,
                 ),
               ],

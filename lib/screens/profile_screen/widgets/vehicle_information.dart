@@ -186,8 +186,10 @@ class _VehicleInformationState extends State<VehicleInformation> {
                     return null;
                   },
                   onChanged: vehicleInfoController.setPlateNumber,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.singleLineFormatter
+                  ],
                 ),
               ],
             ),

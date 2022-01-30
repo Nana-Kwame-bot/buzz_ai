@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
@@ -50,11 +49,12 @@ Future<void> initialize() async {
   double accelerometerMaxRange =
       await sensorListChannel.invokeMethod("accelerometer_max_range");
 
-  if (accelerometerMaxRange < 40) {
-    log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
-    maxAccelerometerValue = accelerometerMaxRange;
-    _deviceHasCapableAccelerometer = false;
-  }
+  ///Commented out for debugging purposes
+  // if (accelerometerMaxRange < 40) {
+  //   log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
+  //   maxAccelerometerValue = accelerometerMaxRange;
+  //   _deviceHasCapableAccelerometer = false;
+  // }
 
   log("Device compatible to run. Accelerometer capacity: $accelerometerMaxRange");
 
