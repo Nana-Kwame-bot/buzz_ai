@@ -49,12 +49,11 @@ Future<void> initialize() async {
   double accelerometerMaxRange =
       await sensorListChannel.invokeMethod("accelerometer_max_range");
 
-  ///Commented out for debugging purposes
-  // if (accelerometerMaxRange < 40) {
-  //   log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
-  //   maxAccelerometerValue = accelerometerMaxRange;
-  //   _deviceHasCapableAccelerometer = false;
-  // }
+  if (accelerometerMaxRange < 40) {
+    log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
+    maxAccelerometerValue = accelerometerMaxRange;
+    _deviceHasCapableAccelerometer = false;
+  }
 
   log("Device compatible to run. Accelerometer capacity: $accelerometerMaxRange");
 

@@ -88,14 +88,11 @@ class ImagePick extends StatelessWidget {
                       backgroundImage: (value.basicDetail.imageURL == null ||
                               value.basicDetail.imageURL == '')
                           ? null
-                          : controller.formEnabled
-                              ? FileImage(
-                                  File(value.basicDetail.imageURL!),
-                                )
-                              : null,
+                          : FileImage(
+                              File(value.basicDetail.imageURL!),
+                            ),
                       child: !(value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '' ||
-                              !controller.formEnabled)
+                              value.basicDetail.imageURL == '')
                           ? null
                           : Lottie.asset(
                               'assets/lottie/profile.json',
