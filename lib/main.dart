@@ -32,6 +32,7 @@ import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
 
 bool _deviceHasCapableAccelerometer = true;
+double maxAccelerometerValue = 0.0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -49,12 +50,13 @@ Future<void> initialize() async {
   double accelerometerMaxRange =
       await sensorListChannel.invokeMethod("accelerometer_max_range");
 
-  if ((accelerometerMaxRange / 9.5) < 4) {
-    log("In-compatible device. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
+  if (accelerometerMaxRange < 40) {
+    log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
+    maxAccelerometerValue = accelerometerMaxRange;
     _deviceHasCapableAccelerometer = false;
   }
 
-  log("Device compatible to run. Accelerometer capacity: ${(accelerometerMaxRange / 9.5)}");
+  log("Device compatible to run. Accelerometer capacity: $accelerometerMaxRange");
 
   await Hive.initFlutter();
   runApp(const MyApp());
@@ -180,7 +182,7 @@ class _MyAppState extends State<MyApp> {
               ),
               title: "Accelerometer Error",
               description:
-                  "Your device's accelerometer is not capable of recording more than 4 G-force!",
+                  "Your device's accelerometer value $maxAccelerometerValue that is not capable of recording more than 4 G-force!",
               action: ElevatedButton(
                 onPressed: () {
                   FlutterBackgroundService()
