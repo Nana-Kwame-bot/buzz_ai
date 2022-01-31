@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fifth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
@@ -21,6 +22,7 @@ import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
 import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -69,11 +71,94 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     // activityRecognitionApp.init();
+    WidgetsBinding.instance!.addObserver(this);
+    AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelKey: "activity_change",
+          channelName: "Activity Change",
+          channelDescription:
+              "Notification channel for notiyfing user of activity change",
+          defaultColor: Colors.orange,
+          ledColor: Colors.orange,
+          criticalAlerts: true,
+          importance: NotificationImportance.Max,
+          playSound: true,
+          defaultRingtoneType: DefaultRingtoneType.Notification,
+        ),
+        NotificationChannel(
+          channelKey: "alert",
+          channelName: "Critical Alerts",
+          channelDescription:
+              "Notification channel for notiyfing user of critical errors and information",
+          defaultColor: Colors.red,
+          ledColor: Colors.red,
+          criticalAlerts: true,
+          importance: NotificationImportance.Max,
+          playSound: true,
+          defaultRingtoneType: DefaultRingtoneType.Notification,
+        )
+      ],
+      debug: kDebugMode,
+    );
+
+    // Timer.periodic(const Duration(seconds: 5), (timer) {
+    //   AwesomeNotifications().createNotification(
+    //     content: NotificationContent(
+    //       id: 1,
+    //       channelKey: 'activity_change',
+    //       title: "title",
+    //       body: "body ${DateTime.now()}",
+    //     ),
+    //     schedule: NotificationCalendar(
+
+    //       repeats: true,
+    //     ),
+    //   );
+    // });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'alert',
+          title: "Application terminated",
+          body: "Please keep the app running in the background.",
+          autoDismissible: false,
+          backgroundColor: Colors.red,
+          criticalAlert: true,
+          displayOnBackground: true,
+        ),
+        actionButtons: [
+          NotificationActionButton(
+            key: "open",
+            label: "Open",
+          ),
+          NotificationActionButton(
+            key: "dismiss",
+            label: "Dismiss",
+            isDangerousOption: true,
+            buttonType: ActionButtonType.DisabledAction,
+          ),
+        ],
+      );
+    }
   }
 
   @override

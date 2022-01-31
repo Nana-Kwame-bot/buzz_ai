@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
@@ -28,11 +33,35 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
   List<PointLatLng>? points;
   bool _onAppStartedSuccess = false;
+  Stream<ReceivedAction> notificationActionStream = AwesomeNotifications().actionStream;
 
   @override
   void initState() {
     initializeBackgroundExecution();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    notificationActionStream.listen((ReceivedNotification receivedNotification) {
+      if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
+        AwesomeNotifications().dismiss(receivedNotification.id!);
+      }
+
+      // Navigator.of(context).pushNamed('/NotificationPage',
+      //     arguments: {"id": receivedNotification.id});
+      log("App opened from notification: ${receivedNotification}");
+      
+      Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
+    });
+
+    AwesomeNotifications().dismissedStream.listen((event) { 
+      if (event.channelKey == 'activity_change') {
+        Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
+      }
+    });
+
+    super.didChangeDependencies();
   }
 
   void initializeBackgroundExecution() async {

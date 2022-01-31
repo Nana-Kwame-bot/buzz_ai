@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,6 +33,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   SoundRecorder recorder = SoundRecorder();
   late String fileName = "${DateTime.now()}.aac";
   bool isAudioRecording = false;
+  bool notificationShown = false;
 
   // Sensor variables
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
@@ -212,7 +214,11 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
+    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
+      if (_lastActivityEvent!.type != ActivityType.ON_FOOT) {
+        _updateActivityNotification(currentActivityEvent!);
+      }
+
       if (event == "acc") {
         _accelerometerValues.add(data);
       }
@@ -303,5 +309,47 @@ class ActivityRecognitionApp with ChangeNotifier {
     await File(
             "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv")
         .delete();
+  }
+
+  _updateActivityNotification(ActivityEvent currentActivityEvent) {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+
+    String title = "";
+    String body = "";
+    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
+      title = "Are you driving?";
+      body =
+          "Please open the application if you're driving so that we can ensure your safety";
+    }
+
+    if (!notificationShown) {
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'activity_change',
+          title: title,
+          body: body,
+        ),
+        
+        actionButtons: [
+          NotificationActionButton(
+            key: "open",
+            label: "Open",
+          ),
+          NotificationActionButton(
+            key: "dismiss",
+            label: "Dismiss",
+            isDangerousOption: true,
+            buttonType: ActionButtonType.DisabledAction,
+          ),
+        ],
+      );
+      notificationShown = true;
+      notifyListeners();
+    }
   }
 }
