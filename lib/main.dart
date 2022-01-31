@@ -163,7 +163,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return _deviceHasCapableAccelerometer
+    return !_deviceHasCapableAccelerometer
         ? MultiProvider(
             providers: [
               ChangeNotifierProvider<UserProfileController>(
