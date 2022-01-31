@@ -269,6 +269,7 @@ class _SOSScreenState extends State<SOSScreen> {
     data!["audio"] = url;
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
+    File(ara.fileName).delete();
 
     setState(() {
       _positiveText = "Done.";

@@ -36,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   Stream<ReceivedAction> notificationActionStream = AwesomeNotifications().actionStream;
 
   @override
+  bool get wantKeepAlive => false;
+
+  @override
   void initState() {
     initializeBackgroundExecution();
     super.initState();
@@ -43,23 +46,25 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   void didChangeDependencies() {
-    notificationActionStream.listen((ReceivedNotification receivedNotification) {
-      if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
-        AwesomeNotifications().dismiss(receivedNotification.id!);
-      }
+    try {
+      notificationActionStream.listen((ReceivedNotification receivedNotification) {
+        if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
+          AwesomeNotifications().dismiss(receivedNotification.id!);
+        }
 
-      // Navigator.of(context).pushNamed('/NotificationPage',
-      //     arguments: {"id": receivedNotification.id});
-      log("App opened from notification: ${receivedNotification}");
-      
-      Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
-    });
-
-    AwesomeNotifications().dismissedStream.listen((event) { 
-      if (event.channelKey == 'activity_change') {
+        // Navigator.of(context).pushNamed('/NotificationPage',
+        //     arguments: {"id": receivedNotification.id});
+        log("App opened from notification: ${receivedNotification}");
+        
         Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
-      }
-    });
+      });
+
+      AwesomeNotifications().dismissedStream.listen((event) { 
+        if (event.channelKey == 'activity_change') {
+          Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
+        }
+      });
+    } catch (e) {}
 
     super.didChangeDependencies();
   }
@@ -323,9 +328,4 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  
 }

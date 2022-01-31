@@ -121,10 +121,9 @@ class ActivityRecognitionApp with ChangeNotifier {
     await recorder.init();
     await recorder.record(fileName);
 
-    Future.delayed(const Duration(seconds: 3)).then((value) {
+    Future.delayed(const Duration(seconds: 3)).then((value) async {
       isAudioRecording = false;
-      recorder.stop();
-      recorder.dispose();
+      await recorder.stop();
     });
   }
 
