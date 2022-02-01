@@ -1,5 +1,8 @@
+/// The function [log] from `dart:developer` library is overridden to prefix the [log] with "BG: " to differentiate logs from foreground and from this isolate.
+/// If you want to use the plain [log] function from `dart:developer` use [dev.log].
+
 import 'dart:async';
-import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -15,6 +18,28 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+void log(
+  String message, {
+  DateTime? time,
+  int? sequenceNumber,
+  int level = 0,
+  String name = '',
+  Zone? zone,
+  Object? error,
+  StackTrace? stackTrace,
+}) {
+  dev.log(
+    "BG: " + message,
+    time: time,
+    sequenceNumber: sequenceNumber,
+    level: level,
+    name: name,
+    zone: zone,
+    error: error,
+    stackTrace: stackTrace,
+  );
+}
 
 void onIosBackground() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -145,30 +170,7 @@ Future<void> uploadSensorData([File? file]) async {
 }
 
 void sensors() {
-  userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-    print("BG: ${event.x + event.y + event.z}");
-
-    if ((event.x + event.y + event.z) > 8) {
-      AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: 1,
-          channelKey: 'activity_change',
-          title: "title",
-          body: "body",
-        ),
-        actionButtons: [
-          NotificationActionButton(
-            key: "open",
-            label: "Open",
-          ),
-          NotificationActionButton(
-            key: "dismiss",
-            label: "Dismiss",
-            isDangerousOption: true,
-            buttonType: ActionButtonType.DisabledAction,
-          ),
-        ],
-      );
-    }
-  });
+  // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+  //   log("${event.x + event.y + event.z}");
+  // });
 }
