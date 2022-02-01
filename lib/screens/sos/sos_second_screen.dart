@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
@@ -53,6 +54,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
     Future<void> uploadReport() async {
       ActivityRecognitionApp ara =
           Provider.of<ActivityRecognitionApp>(context, listen: false);
+          String path = (await getApplicationDocumentsDirectory()).path;
 
       setState(() {
         _uploading = true;
@@ -63,17 +65,20 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
       }
 
       final ref = FirebaseStorage.instance
-          .ref(widget.data!["uid"])
-          .child("audio")
-          .child(ara.fileName.split("/").last);
-      await ref.putFile(File(ara.fileName));
+        .ref(widget.data!["uid"])
+        .child("audio/${ara.fileName}");
+
+        File audioFile = File("$path/${ara.fileName}");
+      await ref.putFile(audioFile);
       var url = await ref.getDownloadURL();
+      audioFile.delete();
 
       widget.data!["audio"] = url;
 
       await FirebaseFirestore.instance
           .collection("accidentDatabase")
           .add(widget.data!);
+      
 
       setState(() {
         _uploading = false;
