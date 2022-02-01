@@ -13,6 +13,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_progress_indicator/gradient_progress_indicator.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
@@ -242,11 +243,15 @@ class _SOSScreenState extends State<SOSScreen> {
     UserProfile user =
         Provider.of<UserProfileController>(context, listen: false).userProfile;
 
-    String name = user.basicDetail!.fullName!;
-    String time = DateTime.now().toIso8601String();
-    String address = "${data!["location"]} (${data!["coordinates"]})";
+    DateTime now = DateTime.now();
 
-    String message = "$name\n+$time\n+$address";
+    String name = user.basicDetail!.fullName!;
+    String address = data!["location"].toString();
+    String coords = data!["coordinates"].toString();
+    String date = DateFormat("dd/MM/yyyy").format(now);
+    String time = DateFormat("HH:MM").format(now);
+
+    String message = "Accident found from $name's device dated on $date at $time.\n\nAddress: $address\nCoordinates: $coords";
 
     List recipients = [
       user.firstEmergencyContact!.contactNumber!,
