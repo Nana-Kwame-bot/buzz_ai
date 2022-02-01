@@ -168,8 +168,8 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
-      if (_lastActivityEvent!.type != ActivityType.ON_FOOT) {
+    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
+      if (_lastActivityEvent!.type != ActivityType.IN_VEHICLE) {
         _updateActivityNotification(currentActivityEvent!);
       }
 
@@ -231,7 +231,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     String title = "";
     String body = "";
-    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
+    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
       title = "Are you driving?";
       body =
           "Please open the application if you're driving so that we can ensure your safety";
