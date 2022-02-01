@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void onIosBackground() {
@@ -55,6 +57,7 @@ void onStart() {
 
   activityRecognitionApp.init();
   startUploadWatcher();
+  sensors();
 }
 
 void startUploadWatcher() async {
@@ -139,4 +142,33 @@ Future<void> uploadSensorData([File? file]) async {
     return;
   }
   await file.delete();
+}
+
+void sensors() {
+  userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+    print("BG: ${event.x + event.y + event.z}");
+
+    if ((event.x + event.y + event.z) > 8) {
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'activity_change',
+          title: "title",
+          body: "body",
+        ),
+        actionButtons: [
+          NotificationActionButton(
+            key: "open",
+            label: "Open",
+          ),
+          NotificationActionButton(
+            key: "dismiss",
+            label: "Dismiss",
+            isDangerousOption: true,
+            buttonType: ActionButtonType.DisabledAction,
+          ),
+        ],
+      );
+    }
+  });
 }
