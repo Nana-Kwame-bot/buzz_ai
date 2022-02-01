@@ -262,9 +262,9 @@ class _SOSScreenState extends State<SOSScreen> {
 
     final ref = FirebaseStorage.instance
         .ref(data!["uid"])
-        .child("audio/${ara.fileName.split("/").last}");
+        .child("audio/${ara.fileName}");
 
-    File audioFile = File(path + ara.fileName);
+    File audioFile = File("$path/${ara.fileName}");
     await ref.putFile(audioFile);
     var url = await ref.getDownloadURL();
 
