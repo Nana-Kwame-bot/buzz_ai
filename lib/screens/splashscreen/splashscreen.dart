@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/global/all_permissions.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
@@ -6,6 +9,7 @@ import 'package:buzz_ai/screens/misc/request_permission.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,9 +53,13 @@ class _SplashScreenState extends State<SplashScreen>
 
         if (isProfileComplete) {
           if (prefs.getBool("allPermissionsGranted") ?? false) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const BottomNavigation()));
-            return;
+            bool isAllGranted = await checkForAllPermissions();
+
+            if (isAllGranted) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const BottomNavigation()));
+              return;
+            }
           }
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => RequestPermission()));
@@ -72,6 +80,22 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<bool> checkForAllPermissions() async {
+    bool isAllGranted = true;
+    List<Permission> _allPermissions = List<Permission>.from(
+        allPermissions.map((e) => e["permission"]).toList());
+
+    for (var permission in _allPermissions) {
+      bool isGranted = await permission.isGranted;
+      if (isGranted) continue;
+
+      log("⚠️⚠️⚠️⚠️ $permission is not granted!");
+      isAllGranted = false;
+    }
+
+    return isAllGranted;
   }
 
   @override

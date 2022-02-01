@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
 import 'package:buzz_ai/services/get_location.dart';
@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:telephony/telephony.dart';
 
 class SOSScreen extends StatefulWidget {
   const SOSScreen({Key? key, this.timeout = 30}) : super(key: key);
@@ -234,6 +235,37 @@ class _SOSScreenState extends State<SOSScreen> {
     }
   }
 
+  Future<void> sendSms() async {
+    await Provider.of<UserProfileController>(context, listen: false)
+        .readProfileData(userId: data!["uid"], context: context);
+
+    UserProfile user =
+        Provider.of<UserProfileController>(context, listen: false).userProfile;
+
+    String name = user.basicDetail!.fullName!;
+    String time = DateTime.now().toIso8601String();
+    String address = "${data!["location"]} (${data!["coordinates"]})";
+
+    String message = "$name\n+$time\n+$address";
+
+    List recipients = [
+      user.firstEmergencyContact!.contactNumber!,
+      user.secondEmergencyContact?.contactNumber,
+      user.thirdEmergencyContact?.contactNumber,
+      user.fourthEmergencyContact?.contactNumber,
+      user.fifthEmergencyContact?.contactNumber,
+    ];
+
+    recipients.removeWhere((recipient) => recipient == null);
+
+    final Telephony telephony = Telephony.instance;
+    await telephony.requestPhoneAndSmsPermissions;
+
+    for (String recipient in recipients) {
+      telephony.sendSms(to: recipient, message: message);
+    }
+  }
+
   Future<void> uploadReport() async {
     ActivityRecognitionApp ara =
         Provider.of<ActivityRecognitionApp>(context, listen: false);
@@ -272,6 +304,8 @@ class _SOSScreenState extends State<SOSScreen> {
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
     audioFile.delete();
+
+    sendSms();
 
     setState(() {
       _positiveText = "Done.";
