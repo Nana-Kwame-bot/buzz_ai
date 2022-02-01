@@ -52,7 +52,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                if (!(snapshot.data!.getBool('profileComplete') ?? false)) {
+                if (!(snapshot.data?.getBool('profileComplete') ?? false)) {
                   return const ProfileScreen(isFromSignUp: true);
                 }
 
