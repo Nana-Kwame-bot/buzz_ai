@@ -9,10 +9,6 @@ import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -59,6 +55,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void init() async {
+    recorder.init();
     prefs = await SharedPreferences.getInstance();
     Timer.periodic(const Duration(seconds: 1), (timer) => last30GForce = []);
 
@@ -70,7 +67,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
             if (lastGForce > 4) {
               if (!gForceExceeded) {
-                _recordAudio();
+                recordAudio();
 
                 gForceExceeded = true;
                 excedeedGForce = lastGForce;
@@ -114,16 +111,15 @@ class ActivityRecognitionApp with ChangeNotifier {
     }
   }
 
-  Future<void> _recordAudio() async {
-    isAudioRecording = true;
-    String path = (await getApplicationDocumentsDirectory()).path;
-    fileName = "$path/$fileName";
-    await recorder.init();
+  Future<void> recordAudio() async {
+    isAudioRecording = await recorder.isRecording;
+    if (isAudioRecording) return;
+
     await recorder.record(fileName);
 
     Future.delayed(const Duration(seconds: 3)).then((value) async {
-      isAudioRecording = false;
       await recorder.stop();
+      isAudioRecording = await recorder.isRecording;
     });
   }
 
