@@ -49,6 +49,7 @@ dependencies:
   flutter_svg: ^1.0.1
   shimmer: ^2.0.0
   auto_size_text: ^3.0.0
+  awesome_notifications: ^0.6.21
   gradient_progress_indicator:
     git:
       url: https://github.com/otonielduarte/gradient-progress-indicator.git
@@ -74,7 +75,7 @@ dependencies:
   hive_generator: ^1.1.2
   provider: ^6.0.1
   connectivity_plus: ^2.2.0
-  flutter_sound: ^9.1.1
+  record: ^3.0.2
   bringtoforeground:  # Only works in android
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
