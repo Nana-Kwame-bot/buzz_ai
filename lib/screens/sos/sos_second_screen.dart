@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
@@ -53,6 +54,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
     Future<void> uploadReport() async {
       ActivityRecognitionApp ara =
           Provider.of<ActivityRecognitionApp>(context, listen: false);
+      String path = (await getApplicationDocumentsDirectory()).path;
 
       setState(() {
         _uploading = true;
@@ -64,10 +66,12 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
 
       final ref = FirebaseStorage.instance
           .ref(widget.data!["uid"])
-          .child("audio")
-          .child(ara.fileName.split("/").last);
-      await ref.putFile(File(ara.fileName));
+          .child("audio/${ara.fileName}");
+
+      File audioFile = File("$path/${ara.fileName}");
+      await ref.putFile(audioFile);
       var url = await ref.getDownloadURL();
+      audioFile.delete();
 
       widget.data!["audio"] = url;
 
@@ -81,9 +85,24 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
 
       Provider.of<ActivityRecognitionApp>(context, listen: false)
           .accidentReported = true;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const BottomNavigation(),
+    }
+
+    void showReport() {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Report uploaded!"),
+          content: const Text(
+              "We have detected a abnormal increase in G-force and we suspect this is a accident. We have upload your current location with a 3 second audio clip."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).popAndPushNamed(BottomNavigation.iD);
+              },
+              child: const Text("OK"),
+            ),
+          ],
         ),
       );
     }
@@ -126,7 +145,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                           ConfirmationSlider(
                             onConfirmation: () {
                               widget.data!["crashStatus"] = "No Crash";
-                              uploadReport();
+                              uploadReport().then((value) => showReport());
                             },
                             text: "No crash",
                             textStyle: GoogleFonts.barlow(
@@ -147,7 +166,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                           ConfirmationSlider(
                             onConfirmation: () {
                               widget.data!["crashStatus"] = "Minor Crash";
-                              uploadReport();
+                              uploadReport().then((value) => showReport());
                             },
                             text: "Minor crash",
                             textStyle: GoogleFonts.barlow(
@@ -167,8 +186,8 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                           const SizedBox(height: 20),
                           ConfirmationSlider(
                             onConfirmation: () {
-                              widget.data!["crashStatus"] = "Crash";
-                              uploadReport();
+                              // widget.data!["crashStatus"] = "Crash";
+                              uploadReport().then((value) => showReport());
                             },
                             text: "SOS",
                             textStyle: GoogleFonts.barlow(

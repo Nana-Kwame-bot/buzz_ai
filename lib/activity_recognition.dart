@@ -6,12 +6,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -32,6 +29,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   SoundRecorder recorder = SoundRecorder();
   late String fileName = "${DateTime.now()}.aac";
   bool isAudioRecording = false;
+  bool notificationShown = false;
 
   // Sensor variables
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
@@ -57,6 +55,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void init() async {
+    recorder.init();
     prefs = await SharedPreferences.getInstance();
     Timer.periodic(const Duration(seconds: 1), (timer) => last30GForce = []);
 
@@ -68,7 +67,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
             if (lastGForce > 4) {
               if (!gForceExceeded) {
-                _recordAudio();
+                recordAudio();
 
                 gForceExceeded = true;
                 excedeedGForce = lastGForce;
@@ -110,61 +109,18 @@ class ActivityRecognitionApp with ChangeNotifier {
     else {
       startTracking();
     }
-
-    Timer.periodic(const Duration(seconds: 3), (timer) async {
-      DateTime now = DateTime.now();
-
-      if (now.hour == 2 && now.minute >= 30) {
-        Connectivity()
-            .onConnectivityChanged
-            .listen((ConnectivityResult result) async {
-          if ([ConnectivityResult.mobile, ConnectivityResult.wifi]
-              .contains(result)) {
-            String path = (await getApplicationDocumentsDirectory()).path;
-
-            if (prefs.getBool("sensorUploadPending") ?? false) {
-              List<String> allPendingUploads =
-                  prefs.getStringList("sensorDataPendingUploads") ?? [];
-
-              for (var pendingFile in allPendingUploads) {
-                File file = File("$path/$pendingFile");
-                await uploadSensorData(file);
-              }
-              prefs.setStringList("sensorDataPendingUploads", []);
-            }
-            await uploadSensorData();
-          } else {
-            // Queue all pending files
-            DateTime today = DateTime.now();
-            await prefs.setBool("sensorUploadPending", true);
-            List<String> allPendingUploads = [
-              "sensordata-${today.day}-${today.month}-${today.year}.csv",
-            ];
-
-            allPendingUploads
-                .addAll(prefs.getStringList("sensorDataPendingUploads") ?? []);
-
-            await prefs.setStringList(
-              "sensorDataPendingUploads",
-              allPendingUploads,
-            );
-          }
-        });
-      }
-    });
   }
 
-  Future<void> _recordAudio() async {
-    isAudioRecording = true;
-    String path = (await getApplicationDocumentsDirectory()).path;
-    fileName = "$path/$fileName";
-    await recorder.init();
+  Future<void> recordAudio() async {
+    isAudioRecording = await recorder.isRecording;
+    if (isAudioRecording) return;
+
+    fileName = "${DateTime.now()}.aac";
     await recorder.record(fileName);
 
-    Future.delayed(const Duration(seconds: 3)).then((value) {
-      isAudioRecording = false;
-      recorder.stop();
-      recorder.dispose();
+    Future.delayed(const Duration(seconds: 3)).then((value) async {
+      await recorder.stop();
+      isAudioRecording = await recorder.isRecording;
     });
   }
 
@@ -213,6 +169,10 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (_lastActivityEvent == null) return;
 
     if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
+      if (_lastActivityEvent!.type != ActivityType.IN_VEHICLE) {
+        _updateActivityNotification(currentActivityEvent!);
+      }
+
       if (event == "acc") {
         _accelerometerValues.add(data);
       }
@@ -262,46 +222,44 @@ class ActivityRecognitionApp with ChangeNotifier {
     _lastWritten = DateTime.now();
   }
 
-  Future<String> readSensorData([File? infile]) async {
-    Directory dir = await getApplicationDocumentsDirectory();
-    DateTime today = DateTime.now();
-    File file = infile ??
-        File(
-            "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv");
-
-    return await file.readAsString();
-  }
-
-  bool _sensorDataUploaded = false;
-  Future<void> uploadSensorData([File? file]) async {
-    if (_sensorDataUploaded) return;
-
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-
-    String data = await readSensorData();
-    DateTime today = DateTime.now();
-
-    TaskSnapshot sensorDataUploadTask = await FirebaseStorage.instance
-        .ref(uid)
-        .child("sensor_data")
-        .child("${today.day}-${today.month}-${today.year}.csv")
-        .putString(data, format: PutStringFormat.raw);
-
-    await FirebaseFirestore.instance
-        .collection("userDatabase")
-        .doc(uid)
-        .update({
-      "sensorData": FieldValue.arrayUnion([
-        {
-          "timestamp": DateTime.now(),
-          "filePath": await sensorDataUploadTask.ref.getDownloadURL()
-        }
-      ])
+  _updateActivityNotification(ActivityEvent currentActivityEvent) {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
     });
-    _sensorDataUploaded = true;
-    Directory dir = await getApplicationDocumentsDirectory();
-    await File(
-            "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv")
-        .delete();
+
+    String title = "";
+    String body = "";
+    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
+      title = "Are you driving?";
+      body =
+          "Please open the application if you're driving so that we can ensure your safety";
+    }
+
+    if (!notificationShown) {
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'activity_change',
+          title: title,
+          body: body,
+        ),
+        actionButtons: [
+          NotificationActionButton(
+            key: "open",
+            label: "Open",
+          ),
+          NotificationActionButton(
+            key: "dismiss",
+            label: "Dismiss",
+            isDangerousOption: true,
+            buttonType: ActionButtonType.DisabledAction,
+          ),
+        ],
+      );
+      notificationShown = true;
+      notifyListeners();
+    }
   }
 }

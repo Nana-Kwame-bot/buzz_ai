@@ -38,6 +38,11 @@ class RequestPermission extends StatelessWidget {
       "name": "Microphone",
       "description": "To record audio when an accident happens.",
     },
+    {
+      "permission": Permission.notification,
+      "name": "Notification",
+      "description": "To notify you with activity updates.",
+    },
   ];
 
   RequestPermission({Key? key}) : super(key: key);

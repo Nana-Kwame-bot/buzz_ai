@@ -237,6 +237,7 @@ class _SOSScreenState extends State<SOSScreen> {
   Future<void> uploadReport() async {
     ActivityRecognitionApp ara =
         Provider.of<ActivityRecognitionApp>(context, listen: false);
+    String path = (await getApplicationDocumentsDirectory()).path;
 
     if (ara.isAudioRecording) {
       await ara.recorder.stop();
@@ -261,14 +262,16 @@ class _SOSScreenState extends State<SOSScreen> {
 
     final ref = FirebaseStorage.instance
         .ref(data!["uid"])
-        .child("audio")
-        .child(ara.fileName.split("/").last);
-    await ref.putFile(File(ara.fileName));
+        .child("audio/${ara.fileName}");
+
+    File audioFile = File("$path/${ara.fileName}");
+    await ref.putFile(audioFile);
     var url = await ref.getDownloadURL();
 
     data!["audio"] = url;
 
     await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
+    audioFile.delete();
 
     setState(() {
       _positiveText = "Done.";
