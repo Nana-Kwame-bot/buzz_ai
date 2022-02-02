@@ -7,7 +7,6 @@ import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controlle
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
-import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -60,9 +59,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       });
 
       AwesomeNotifications().dismissedStream.listen((event) { 
-        if (event.channelKey == 'activity_change') {
-          Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
-        }
+        
       });
     } catch (e) {}
 

@@ -47,4 +47,15 @@ class FourthEmergencyContactController extends ChangeNotifier {
     fourthEmergencyContact = fourthEmergencyContact.copyWith(name: newValue);
     notifyListeners();
   }
+
+  void clear() {
+    fourthEmergencyContact = fourthEmergencyContact.copyWith(
+      name: "",
+      relation: "",
+      contactNumber: "",
+      contactAdded: false,
+    );
+
+    notifyListeners();
+  }
 }

@@ -70,6 +70,8 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+late AppLifecycleState appState;
+
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
@@ -132,6 +134,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    appState = state;
     if (state == AppLifecycleState.detached) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
