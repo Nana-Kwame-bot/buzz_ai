@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/global/all_permissions.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
@@ -39,15 +40,21 @@ class _SplashScreenState extends State<SplashScreen>
     )
       ..forward()
       ..addStatusListener((status) async {
-        if (Provider.of<AuthenticationController>(context, listen: false)
-                .auth
-                .currentUser ==
-            null) {
+        AuthenticationController authControl =
+            Provider.of<AuthenticationController>(context, listen: false);
+
+        if (authControl.auth.currentUser == null) {
           if (status == AnimationStatus.completed) {
             Navigator.of(context).pushNamed(LoginScreen.iD);
             return;
           }
         }
+
+        // Initialize the profile before the app starts so that we can use it in emergency.
+        await Provider.of<UserProfileController>(context, listen: false)
+            .readProfileData(
+                userId: authControl.auth.currentUser!.uid, context: context);
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         bool isProfileComplete = prefs.getBool("profileComplete") ?? false;
 
@@ -66,6 +73,7 @@ class _SplashScreenState extends State<SplashScreen>
 
           return;
         }
+
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ProfileScreen(isFromSignUp: true)));
       });

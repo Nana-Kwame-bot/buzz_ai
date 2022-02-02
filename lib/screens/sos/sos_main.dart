@@ -1,24 +1,16 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
-import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
-import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
+import 'package:buzz_ai/screens/sos/service/get_location.dart';
+import 'package:buzz_ai/screens/sos/service/upload_report.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
-import 'package:buzz_ai/services/get_location.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:buzz_ai/screens/sos/widget/show_report.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_progress_indicator/gradient_progress_indicator.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:telephony/telephony.dart';
 
 class SOSScreen extends StatefulWidget {
   const SOSScreen({Key? key, this.timeout = 30}) : super(key: key);
@@ -31,7 +23,7 @@ class SOSScreen extends StatefulWidget {
 
 class _SOSScreenState extends State<SOSScreen> {
   String _positiveText = "YES";
-  Map<String, dynamic>? data;
+  Map<String, dynamic> data = {};
   late Stream<int> timerStream;
   bool _uploadStarted = false;
   bool _userConfirmsNoCrash = false;
@@ -42,42 +34,13 @@ class _SOSScreenState extends State<SOSScreen> {
     _activityProvider =
         Provider.of<ActivityRecognitionApp>(context, listen: false);
     timerStream = timer(widget.timeout);
-    getData();
     super.initState();
   }
 
-  Future<void> getData() async {
-    Map? locationData;
-
-    try {
-      locationData = await getLocation();
-    } catch (e) {
-      locationData = null;
-      // rethrow;
-    }
-
-    String uid = Provider.of<AuthenticationController>(context, listen: false)
-        .auth
-        .currentUser!
-        .uid;
-    List<double> last30sG =
-        Provider.of<ActivityRecognitionApp>(context, listen: false)
-            .last30GForce;
-
-    data = {
-      "coordinates": locationData == null
-          ? null
-          : [
-              locationData["position"].latitude,
-              locationData["position"].longitude
-            ],
-      "createdAt": DateTime.now(),
-      "location":
-          locationData == null ? null : locationData["placemark"].toJson(),
-      "uid": uid,
-      "crashStatus": "Crash",
-      "last30sG": last30sG,
-    };
+  @override
+  void didChangeDependencies() async {
+    data = await getData(context);
+    super.didChangeDependencies();
   }
 
   @override
@@ -158,7 +121,12 @@ class _SOSScreenState extends State<SOSScreen> {
                       snapshot.connectionState == ConnectionState.done) {
                     if (_uploadStarted) return Container();
                     WidgetsBinding.instance!
-                        .addPostFrameCallback((timeStamp) => uploadReport());
+                        .addPostFrameCallback((timeStamp) async {
+                      if (data.keys.length < 4) {
+                        data = await getData(context);
+                      }
+                      uploadReport(context, data);
+                    });
                   }
 
                   return GradientProgressIndicator(
@@ -175,7 +143,29 @@ class _SOSScreenState extends State<SOSScreen> {
               child: Column(
                 children: [
                   ConfirmationSlider(
-                    onConfirmation: uploadReport,
+                    onConfirmation: () async {
+                      if (data.keys.length < 4) {
+                        data = await getData(context);
+                      }
+                      Future uploadStatus = uploadReport(context, data);
+
+                      _uploadStarted = true;
+                      setState(() {
+                        _positiveText = "Uploading...";
+                      });
+
+                      if (_userConfirmsNoCrash) {
+                        setState(() {
+                          _positiveText = "Not a Crash";
+                        });
+                        return;
+                      }
+
+                      uploadStatus.then((value) {
+                        setState(() => _positiveText = "Done.");
+                        showReport(context);
+                      });
+                    },
                     text: _positiveText,
                     textStyle: GoogleFonts.barlow(
                       color: Colors.white,
@@ -234,106 +224,5 @@ class _SOSScreenState extends State<SOSScreen> {
       yield i;
       await Future.delayed(const Duration(seconds: 1));
     }
-  }
-
-  Future<void> sendSms() async {
-    await Provider.of<UserProfileController>(context, listen: false)
-        .readProfileData(userId: data!["uid"], context: context);
-
-    UserProfile user =
-        Provider.of<UserProfileController>(context, listen: false).userProfile;
-
-    DateTime now = DateTime.now();
-
-    String name = user.basicDetail!.fullName!;
-    String address = data!["location"].toString();
-    String coords = data!["coordinates"].toString();
-    String date = DateFormat("dd/MM/yyyy").format(now);
-    String time = DateFormat("HH:MM").format(now);
-
-    String message = "Accident found from $name's device dated on $date at $time.\n\nAddress: $address\nCoordinates: $coords";
-
-    List recipients = [
-      user.firstEmergencyContact!.contactNumber!,
-      user.secondEmergencyContact?.contactNumber,
-      user.thirdEmergencyContact?.contactNumber,
-      user.fourthEmergencyContact?.contactNumber,
-      user.fifthEmergencyContact?.contactNumber,
-    ];
-
-    recipients.removeWhere((recipient) => recipient == null);
-
-    final Telephony telephony = Telephony.instance;
-    await telephony.requestPhoneAndSmsPermissions;
-
-    for (String recipient in recipients) {
-      telephony.sendSms(to: recipient, message: message);
-    }
-  }
-
-  Future<void> uploadReport() async {
-    ActivityRecognitionApp ara =
-        Provider.of<ActivityRecognitionApp>(context, listen: false);
-    String path = (await getApplicationDocumentsDirectory()).path;
-
-    if (ara.isAudioRecording) {
-      await ara.recorder.stop();
-    }
-
-    _uploadStarted = true;
-    setState(() {
-      _positiveText = "Uploading...";
-    });
-
-    if (_userConfirmsNoCrash) {
-      setState(() {
-        _positiveText = "Not a Crash";
-      });
-      return;
-    }
-
-    if (data == null) {
-      await getData();
-    }
-    data!["gForce"] = _activityProvider.excedeedGForce;
-
-    final ref = FirebaseStorage.instance
-        .ref(data!["uid"])
-        .child("audio/${ara.fileName}");
-
-    File audioFile = File("$path/${ara.fileName}");
-    await ref.putFile(audioFile);
-    var url = await ref.getDownloadURL();
-
-    data!["audio"] = url;
-
-    await FirebaseFirestore.instance.collection("accidentDatabase").add(data!);
-    audioFile.delete();
-
-    sendSms();
-
-    setState(() {
-      _positiveText = "Done.";
-    });
-
-    Provider.of<ActivityRecognitionApp>(context, listen: false)
-        .accidentReported = true;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Report uploaded!"),
-        content: const Text(
-            "We have detected a abnormal increase in G-force and we suspect this is a accident. We have upload your current location with a 3 second audio clip."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).popAndPushNamed(BottomNavigation.iD);
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 }
