@@ -5,7 +5,7 @@ class BasicDetail {
   final int? weight;
   final int? age;
   final String? bloodGroup;
-  final int? licenseNumber;
+  final String? licenseNumber;
 
 //<editor-fold desc="Data Methods">
 
@@ -62,7 +62,7 @@ class BasicDetail {
     int? weight,
     int? age,
     String? bloodGroup,
-    int? licenseNumber,
+    String? licenseNumber,
   }) {
     return BasicDetail(
       imageURL: imageURL ?? this.imageURL,

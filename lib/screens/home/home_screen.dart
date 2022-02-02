@@ -264,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                 context: context,
                                 mode: Mode.overlay,
                                 language: "en",
-                                components: []
+                                components: [],
                                 apiKey: apiKey,
                                 onError: (PlacesAutocompleteResponse value) {
                                   onError(value, context);

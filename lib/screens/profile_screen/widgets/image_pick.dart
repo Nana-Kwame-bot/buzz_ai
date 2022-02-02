@@ -5,7 +5,6 @@ import 'package:buzz_ai/controllers/profile/image_pick/image_pick_controller.dar
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ImagePick extends StatelessWidget {
@@ -88,17 +87,16 @@ class ImagePick extends StatelessWidget {
                       backgroundImage: (value.basicDetail.imageURL == null ||
                               value.basicDetail.imageURL == '')
                           ? null
-                          : controller.formEnabled
-                              ? FileImage(
-                                  File(value.basicDetail.imageURL!),
-                                )
-                              : null,
+                          : FileImage(
+                              File(value.basicDetail.imageURL!),
+                            ),
                       child: !(value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '' ||
-                              !controller.formEnabled)
+                              value.basicDetail.imageURL == '')
                           ? null
-                          : Lottie.asset(
-                              'assets/lottie/profile.json',
+                          : const Icon(
+                              Icons.account_circle,
+                              color: defaultColor,
+                              size: 100,
                             ),
                     );
                   },

@@ -47,7 +47,7 @@ class BasicDetailController extends ChangeNotifier {
   }
 
   void setLicenseNumber(String? newValue) {
-    basicDetail = basicDetail.copyWith(licenseNumber: int.tryParse(newValue!));
+    basicDetail = basicDetail.copyWith(licenseNumber: newValue);
     notifyListeners();
   }
 }
