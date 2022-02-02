@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:buzz_ai/activity_recognition.dart';
@@ -33,6 +34,7 @@ Future<void> uploadReport(
       .collection("accidentDatabase")
       .add(data)
       .then((value) => sendSms(context, data));
+  log("sms sent");
   audioFile.delete();
 
   Provider.of<ActivityRecognitionApp>(context, listen: false).accidentReported =

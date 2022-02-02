@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
+import 'package:buzz_ai/controllers/home_screen/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';

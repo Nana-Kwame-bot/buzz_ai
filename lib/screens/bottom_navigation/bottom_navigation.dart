@@ -32,11 +32,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
         builder: (context, Object connectivityResult, child) {
       if (connectivityResult.runtimeType == ConnectivityResult) {
         if (connectivityResult == ConnectivityResult.none) {
-          Future.delayed(
-              Duration.zero,
-              () =>
-                  Provider.of<IssueNotificationProvider>(context, listen: false)
-                      .showIssue(issue: "No internet!", issueLevel: 0));
+          // Future.delayed(
+          //     Duration.zero,
+          //     () =>
+          //         Provider.of<IssueNotificationProvider>(context, listen: false)
+          //             .showIssue(issue: "No internet!", issueLevel: 0));
         } else {
           Future.delayed(
               Duration.zero,

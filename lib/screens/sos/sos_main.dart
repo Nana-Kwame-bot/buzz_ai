@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:developer';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/screens/sos/service/get_location.dart';
 import 'package:buzz_ai/screens/sos/service/upload_report.dart';
@@ -40,6 +40,7 @@ class _SOSScreenState extends State<SOSScreen> {
   @override
   void didChangeDependencies() async {
     data = await getData(context);
+    log("data +$data");
     super.didChangeDependencies();
   }
 
