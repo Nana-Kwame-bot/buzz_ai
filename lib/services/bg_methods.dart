@@ -1,6 +1,8 @@
 /// The function [log] from `dart:developer` library is overridden to prefix the [log] with "BG: " to differentiate logs from foreground and from this isolate.
 /// If you want to use the plain [log] function from `dart:developer` use [dev.log].
 
+// ignore_for_file: unused_import
+
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';

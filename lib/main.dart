@@ -8,6 +8,7 @@ import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_c
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/sos/sos_controller.dart';
 import 'package:buzz_ai/screens/misc/error_screen.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
@@ -256,6 +257,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
                   return ActivityRecognitionApp()..init();
+                },
+              ),
+              ChangeNotifierProvider<SOSController>(
+                create: (BuildContext context) {
+                  return SOSController()..onStart();
                 },
               ),
             ],

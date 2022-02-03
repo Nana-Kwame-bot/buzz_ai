@@ -1,5 +1,5 @@
+// ignore_for_file: unused_import
 import 'dart:developer';
-
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/global/all_permissions.dart';

@@ -10,6 +10,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:buzz_ai/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -151,7 +152,9 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onError(Object error) {
-    print('ERROR - $error');
+    if (kDebugMode) {
+      print('ERROR - $error');
+    }
   }
 
   double checkGForce(UserAccelerometerEvent event) {

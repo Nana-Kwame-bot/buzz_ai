@@ -1,25 +1,52 @@
+import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/sos/service/get_location.dart';
-import 'package:buzz_ai/screens/sos/service/upload_report.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/controllers/sos/sos_controller.dart';
+import 'package:buzz_ai/models/accident_data/accident_data.dart';
 import 'package:buzz_ai/screens/sos/widget/show_report.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
 class SOSSecondPage extends StatefulWidget {
-  SOSSecondPage({Key? key, required this.data}) : super(key: key);
+  const SOSSecondPage({Key? key}) : super(key: key);
 
   @override
   _SOSSecondPageState createState() => _SOSSecondPageState();
-
-  Map<String, dynamic> data = {};
 }
 
 class _SOSSecondPageState extends State<SOSSecondPage> {
   bool _uploading = false;
+  AccidentData accidentData = AccidentData(
+    longitude: 0,
+    latitude: 0,
+    timeCreated: DateTime.now(),
+    placemark: Placemark(),
+    crashStatus: "",
+    last30sG: [],
+    audioURL: "",
+    gForce: 0,
+  );
+  late SOSController _sosController;
+  late AuthenticationController _authenticationController;
+  late ActivityRecognitionApp _activityRecognitionApp;
+  late UserProfileController _userProfileController;
+
+  @override
+  void initState() {
+    super.initState();
+    _sosController = Provider.of<SOSController>(context, listen: false);
+    _authenticationController =
+        Provider.of<AuthenticationController>(context, listen: false);
+    _activityRecognitionApp =
+        Provider.of<ActivityRecognitionApp>(context, listen: false);
+    _userProfileController =
+        Provider.of<UserProfileController>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,12 +160,12 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
   }
 
   upload(String crashStatus) async {
-    if (widget.data.keys.length < 4) {
-      widget.data = await getData(context);
-    }
-
-    widget.data["crashStatus"] = crashStatus;
-    Future upload = uploadReport(context, widget.data);
+    _sosController.upDateCrashStatus(crashStatus);
+    Future upload = _sosController.uploadReport(
+      recognitionApp: _activityRecognitionApp,
+      userID: _authenticationController.auth.currentUser!.uid,
+      userProfile: _userProfileController.userProfile,
+    );
     setState(() => _uploading = true);
 
     upload.then((value) => showReport(context));
