@@ -19,6 +19,7 @@ import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:buzz_ai/services/upload_sensor_data.dart';
 import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -29,8 +30,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:workmanager/workmanager.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    log("Native called background task");
+    return uploadSensorData();
+  });
+}
 
 bool _deviceHasCapableAccelerometer = true;
 double maxAccelerometerValue = 0.0;
@@ -42,6 +51,14 @@ void main() async {
   // initState();
   await initialize();
   runApp(const MyApp());
+
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  Workmanager().registerPeriodicTask(
+    "Upload sensor data to storage",
+    "uploadSensorData",
+    frequency: const Duration(minutes: 15),
+    
+  );
 }
 
 Future<void> initialize() async {
