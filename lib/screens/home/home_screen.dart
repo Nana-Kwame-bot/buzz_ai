@@ -61,9 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       });
 
       AwesomeNotifications().dismissedStream.listen((event) { 
-        if (event.channelKey == 'activity_change') {
-          Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
-        }
+        
       });
     } catch (e) {}
 

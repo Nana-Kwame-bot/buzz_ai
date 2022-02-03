@@ -23,6 +23,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   ActivityEvent? _lastActivityEvent;
   int initialRetryTimeout = 1;
   DateTime lastUpdate = DateTime.now();
+  bool _activityRecognitionWorkingNotified = false;
 
   bool gForceExceeded = false;
   double? excedeedGForce;
@@ -140,6 +141,8 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
+    if (!_activityRecognitionWorkingNotified) showActivityRecognitionActive();
+
     if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
       _updateActivityNotification(currentActivityEvent!);
 
@@ -190,6 +193,34 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     await file.writeAsString(data.toString(), mode: FileMode.append);
     _lastWritten = DateTime.now();
+  }
+
+  void showActivityRecognitionActive() {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 2,
+        channelKey: 'activity_change',
+        title: "Activity Recognition initialized successfully!",
+        autoDismissible: true,
+
+      ),
+      actionButtons: [
+        NotificationActionButton(
+          key: "dismiss",
+          label: "Dismiss",
+          isDangerousOption: true,
+          buttonType: ActionButtonType.DisabledAction,
+        ),
+      ],
+    );
+
+    _activityRecognitionWorkingNotified = true;
   }
 
   _updateActivityNotification(ActivityEvent currentActivityEvent) {
