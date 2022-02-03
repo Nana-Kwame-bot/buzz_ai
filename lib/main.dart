@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           defaultColor: Colors.orange,
           ledColor: Colors.orange,
           criticalAlerts: true,
-          importance: NotificationImportance.Max,
+          importance: NotificationImportance.High,
           playSound: true,
           defaultRingtoneType: DefaultRingtoneType.Notification,
         ),
@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           defaultColor: Colors.red,
           ledColor: Colors.red,
           criticalAlerts: true,
-          importance: NotificationImportance.Max,
+          importance: NotificationImportance.High,
           playSound: true,
           defaultRingtoneType: DefaultRingtoneType.Notification,
         )
