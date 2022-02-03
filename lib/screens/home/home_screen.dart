@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       notificationActionStream.listen((ReceivedNotification receivedNotification) {
         if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
           AwesomeNotifications().dismiss(receivedNotification.id!);
+          return;
         }
 
         // Navigator.of(context).pushNamed('/NotificationPage',

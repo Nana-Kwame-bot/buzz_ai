@@ -9,6 +9,7 @@ import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
+import 'package:buzz_ai/main.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -143,7 +144,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     if (!_activityRecognitionWorkingNotified) showActivityRecognitionActive();
 
-    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
+    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
       _updateActivityNotification(currentActivityEvent!);
 
       if (event == "acc") {
@@ -232,13 +233,13 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     String title = "";
     String body = "";
-    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
+    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
       title = "Are you driving?";
       body =
           "Please open the application if you're driving so that we can ensure your safety";
     }
 
-    if (!notificationShown) {
+    if (!notificationShown && currentAppState == AppLifecycleState.paused) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,

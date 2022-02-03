@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/services/upload_watcher.dart';
 
 import 'package:flutter/material.dart';
@@ -63,8 +64,35 @@ void watchSensors() {
       double diffX = currentAvgX - targetX;
       double diffY = currentAvgY - targetY;
       double diffZ = currentAvgZ - targetZ;
-
-      print([diffX.abs(), diffY.abs(), diffZ.abs()]);
+      {
+        if (diffX.abs() <= 0.01) {
+          if (diffY.abs() <= 0.01) {
+            if (diffZ.abs() <= 0.01) {
+              AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                  id: 1,
+                  channelKey: 'activity_change',
+                  title: "Are you driving?",
+                  body:
+                      "Please open the application if you're driving so that we can ensure your safety",
+                ),
+                actionButtons: [
+                  NotificationActionButton(
+                    key: "open",
+                    label: "Open",
+                  ),
+                  NotificationActionButton(
+                    key: "dismiss",
+                    label: "Dismiss",
+                    isDangerousOption: true,
+                    buttonType: ActionButtonType.DisabledAction,
+                  ),
+                ],
+              );
+            }
+          }
+        }
+      }
 
       counter = 0;
     }

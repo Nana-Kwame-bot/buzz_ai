@@ -57,7 +57,6 @@ void main() async {
     "Upload sensor data to storage",
     "uploadSensorData",
     frequency: const Duration(minutes: 15),
-    
   );
 }
 
@@ -86,6 +85,8 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
+AppLifecycleState currentAppState = AppLifecycleState.resumed;
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
@@ -149,6 +150,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    currentAppState = state;
+
     if (state == AppLifecycleState.detached) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
