@@ -269,7 +269,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ),
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
-                  return ActivityRecognitionApp()..init();
+                  return ActivityRecognitionApp();
                 },
               ),
             ],

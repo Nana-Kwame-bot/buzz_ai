@@ -22,6 +22,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   ActivityEvent? currentActivityEvent;
   ActivityEvent? _lastActivityEvent;
   int initialRetryTimeout = 1;
+  DateTime lastUpdate = DateTime.now();
 
   bool gForceExceeded = false;
   double? excedeedGForce;
@@ -42,11 +43,6 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   int throttleAmount = 66; // In milliseconds.
 
-  void initState() {
-    init();
-    _events.add(ActivityEvent.unknown());
-  }
-
   @override
   void dispose() {
     recorder.dispose();
@@ -54,7 +50,9 @@ class ActivityRecognitionApp with ChangeNotifier {
     super.dispose();
   }
 
-  void init() async {
+  Future<void> init() async {
+    _events.add(ActivityEvent.unknown());
+
     recorder.init();
     prefs = await SharedPreferences.getInstance();
     Timer.periodic(const Duration(seconds: 1), (timer) => last30GForce = []);
@@ -86,10 +84,8 @@ class ActivityRecognitionApp with ChangeNotifier {
           },
         ),
         gyroscopeEvents.listen(
-          (GyroscopeEvent event) {
-            _throttle(updateSensorValues, "gyro",
-                <double>[event.x, event.y, event.z]);
-          },
+          (GyroscopeEvent event) => _throttle(
+              updateSensorValues, "gyro", <double>[event.x, event.y, event.z]),
         ),
       ],
     );
@@ -111,29 +107,6 @@ class ActivityRecognitionApp with ChangeNotifier {
     }
   }
 
-  Future<void> recordAudio() async {
-    isAudioRecording = await recorder.isRecording;
-    if (isAudioRecording) return;
-
-    fileName = "${DateTime.now()}.aac";
-    await recorder.record(fileName);
-
-    Future.delayed(const Duration(seconds: 3)).then((value) async {
-      await recorder.stop();
-      isAudioRecording = await recorder.isRecording;
-    });
-  }
-
-  DateTime lastUpdate = DateTime.now();
-  _throttle(Function callback, String sensor, List<double> event) async {
-    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
-      return;
-
-    callback(sensor, event);
-    // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
-    lastUpdate = DateTime.now();
-  }
-
   void startTracking() {
     activityStreamSubscription = activityRecognition
         .activityStream(runForegroundService: true)
@@ -141,8 +114,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent =
-        currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
+    _lastActivityEvent = currentActivityEvent;
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
@@ -168,10 +140,8 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
-    if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
-      if (_lastActivityEvent!.type != ActivityType.IN_VEHICLE) {
-        _updateActivityNotification(currentActivityEvent!);
-      }
+    if (currentActivityEvent!.type == ActivityType.ON_FOOT) {
+      _updateActivityNotification(currentActivityEvent!);
 
       if (event == "acc") {
         _accelerometerValues.add(data);
@@ -231,7 +201,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     String title = "";
     String body = "";
-    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
+    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
       title = "Are you driving?";
       body =
           "Please open the application if you're driving so that we can ensure your safety";
@@ -261,5 +231,27 @@ class ActivityRecognitionApp with ChangeNotifier {
       notificationShown = true;
       notifyListeners();
     }
+  }
+
+  Future<void> recordAudio() async {
+    isAudioRecording = await recorder.isRecording;
+    if (isAudioRecording) return;
+
+    fileName = "${DateTime.now()}.aac";
+    await recorder.record(fileName);
+
+    Future.delayed(const Duration(seconds: 3)).then((value) async {
+      await recorder.stop();
+      isAudioRecording = await recorder.isRecording;
+    });
+  }
+
+  _throttle(Function callback, String sensor, List<double> event) async {
+    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
+      return;
+
+    callback(sensor, event);
+    // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
+    lastUpdate = DateTime.now();
   }
 }

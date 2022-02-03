@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:developer';
 
-import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/services/upload_watcher.dart';
 
 import 'package:flutter/material.dart';
@@ -13,7 +11,6 @@ void onIosBackground() {
   log('FLUTTER BACKGROUND FETCH');
 }
 
-final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
 void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
@@ -36,7 +33,6 @@ void onStart() {
   // bring to foreground
   service.setForegroundMode(true);
 
-  activityRecognitionApp.init();
   startUploadWatcher();
   watchSensors();
 }
@@ -52,14 +48,13 @@ void watchSensors() {
 
   int counter = 0;
 
-
   userAccelerometerEvents.listen((UserAccelerometerEvent event) {
     totalX += event.x;
     totalY += event.y;
     totalZ += event.z;
 
     counter++;
-    
+
     if (counter >= 50) {
       double currentAvgX = totalX / counter;
       double currentAvgY = totalY / counter;
@@ -74,6 +69,4 @@ void watchSensors() {
       counter = 0;
     }
   });
-
-
 }
