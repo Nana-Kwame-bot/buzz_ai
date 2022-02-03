@@ -80,12 +80,11 @@ class _GoogleMapWithRouteState extends State<GoogleMapWithRoute> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 8,
-      patterns: [PatternItem.dash(40), PatternItem.gap(20)]
-    );
+        polylineId: id,
+        color: Colors.red,
+        points: polylineCoordinates,
+        width: 8,
+        patterns: [PatternItem.dash(40), PatternItem.gap(20)]);
     polylines[id] = polyline;
   }
 

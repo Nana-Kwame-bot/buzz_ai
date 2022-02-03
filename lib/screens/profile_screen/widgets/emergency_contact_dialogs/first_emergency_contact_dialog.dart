@@ -151,7 +151,8 @@ class _FirstEmergencyContactDialogState
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Relationship',
-                        hintText: 'Enter your relation with the emergency contact',
+                        hintText:
+                            'Enter your relation with the emergency contact',
                       ),
                     ),
                     Container(

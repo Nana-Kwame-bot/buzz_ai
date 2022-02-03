@@ -52,7 +52,7 @@ class IssueNotificationProvider extends ChangeNotifier {
   /// * 0 = Colors.red
   /// * 1 = Colors.orange
   /// * 2 = Colors.amberAccent
-  
+
   IssueNotificationProvider({
     this.issue = "",
     this.issueLevel = 0,

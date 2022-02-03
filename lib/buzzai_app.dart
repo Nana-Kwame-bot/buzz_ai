@@ -40,8 +40,8 @@ class BuzzaiApp extends StatelessWidget {
         .currentUser
         ?.uid;
 
-    if (uid == null) return; 
-    
+    if (uid == null) return;
+
     List<Map> history = [];
     DateTime _lastStillTime = DateTime.now();
 
@@ -79,9 +79,13 @@ class BuzzaiApp extends StatelessWidget {
           data["routes"] = history.toSet().toList();
           try {
             data["from"] = (await placemarkFromCoordinates(
-                history.toSet().first["lat"], history.toSet().first["lng"])).first.locality;
+                    history.toSet().first["lat"], history.toSet().first["lng"]))
+                .first
+                .locality;
             data["to"] = (await placemarkFromCoordinates(
-                history.toSet().last["lat"], history.toSet().last["lng"])).first.locality;
+                    history.toSet().last["lat"], history.toSet().last["lng"]))
+                .first
+                .locality;
           } catch (e) {
             data["from"] = null;
             data["to"] = null;
