@@ -93,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
         return Scaffold(
@@ -179,6 +181,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     setState(() {
                                       _mapOpacity = 1;
                                     });
+
                                     value.onMapCreated(controller);
                                   },
                                 );
