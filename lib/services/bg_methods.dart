@@ -67,9 +67,9 @@ void watchSensors() {
 
       print("[${event.x}, ${event.y}, ${event.z}] <<<>>> [$currentAvgX, $currentAvgY, $currentAvgZ]  ==  Xdiff: $diffX, Ydiff: $diffY, Zdiff: $diffZ");
 
-      if (diffX.abs() <= 2) {
-        if (diffY.abs() <= 0.8) {
-          if (diffZ.abs() <= 1) {
+      if (diffX.abs() >= 1) {
+        if (diffY.abs() >= 1) {
+          if (diffZ.abs() >= 1) {
             AwesomeNotifications().createNotification(
               content: NotificationContent(
                 id: 1,
