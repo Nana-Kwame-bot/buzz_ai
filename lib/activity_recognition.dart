@@ -154,7 +154,7 @@ class ActivityRecognitionApp with ChangeNotifier {
         _gyroscopeValues.add(data);
       }
 
-      dev.log(data.toString());
+      // dev.log(data.toString());
     } else if (currentActivityEvent!.type == ActivityType.STILL) {
       if (_lastActivityEvent!.type != ActivityType.STILL) {
         // This inequality makes sure that we write only once

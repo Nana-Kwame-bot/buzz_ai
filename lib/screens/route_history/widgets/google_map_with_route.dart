@@ -121,7 +121,7 @@ class _GoogleMapWithRouteState extends State<GoogleMapWithRoute> {
     await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(widget.points.last["lat"], widget.points.last["lng"]),
-        (widget.points.length * 0.035).toDouble(),
+        15,
       ),
     );
     _addMarker(LatLng(widget.points.first["lat"], widget.points.first["lng"]),

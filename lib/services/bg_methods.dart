@@ -64,32 +64,33 @@ void watchSensors() {
       double diffX = currentAvgX - targetX;
       double diffY = currentAvgY - targetY;
       double diffZ = currentAvgZ - targetZ;
-      {
-        if (diffX.abs() <= 0.01) {
-          if (diffY.abs() <= 0.01) {
-            if (diffZ.abs() <= 0.01) {
-              AwesomeNotifications().createNotification(
-                content: NotificationContent(
-                  id: 1,
-                  channelKey: 'activity_change',
-                  title: "Are you driving?",
-                  body:
-                      "Please open the application if you're driving so that we can ensure your safety",
+
+      print("[${event.x}, ${event.y}, ${event.z}] <<<>>> [$currentAvgX, $currentAvgY, $currentAvgZ]  ==  Xdiff: $diffX, Ydiff: $diffY, Zdiff: $diffZ");
+
+      if (diffX.abs() <= 2) {
+        if (diffY.abs() <= 0.8) {
+          if (diffZ.abs() <= 1) {
+            AwesomeNotifications().createNotification(
+              content: NotificationContent(
+                id: 1,
+                channelKey: 'activity_change',
+                title: "Are you driving?",
+                body:
+                    "Please open the application if you're driving so that we can ensure your safety",
+              ),
+              actionButtons: [
+                NotificationActionButton(
+                  key: "open",
+                  label: "Open",
                 ),
-                actionButtons: [
-                  NotificationActionButton(
-                    key: "open",
-                    label: "Open",
-                  ),
-                  NotificationActionButton(
-                    key: "dismiss",
-                    label: "Dismiss",
-                    isDangerousOption: true,
-                    buttonType: ActionButtonType.DisabledAction,
-                  ),
-                ],
-              );
-            }
+                NotificationActionButton(
+                  key: "dismiss",
+                  label: "Dismiss",
+                  isDangerousOption: true,
+                  buttonType: ActionButtonType.DisabledAction,
+                ),
+              ],
+            );
           }
         }
       }
