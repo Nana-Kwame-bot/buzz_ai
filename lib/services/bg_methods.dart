@@ -34,18 +34,7 @@ void onStart() {
 
   // bring to foreground
   service.setForegroundMode(true);
-  Timer.periodic(const Duration(minutes: 15), (timer) async {
-    if (!(await service.isServiceRunning())) timer.cancel();
-    service.setNotificationInfo(
-      title: "Buzz.AI is running",
-      content: "Updated at ${DateTime.now()}",
-    );
-
-    service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
-    );
-  });
 
   activityRecognitionApp.init();
-  // startUploadWatcher();
+  startUploadWatcher();
 }

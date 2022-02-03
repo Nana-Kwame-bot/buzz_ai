@@ -19,6 +19,7 @@ Future<bool> uploadSensorData([File? file]) async {
       String uid = FirebaseAuth.instance.currentUser!.uid;
       String data = await readSensorData(file);
 
+      log("⬆️  Uploading sensor data...");
       TaskSnapshot sensorDataUploadTask = await FirebaseStorage.instance
           .ref(uid)
           .child("sensor_data")
@@ -36,6 +37,7 @@ Future<bool> uploadSensorData([File? file]) async {
         },
         SetOptions(merge: true),
       );
+      log("✅ Sensor data uploaded.");
 
       Directory dir = await getApplicationDocumentsDirectory();
       if (file == null) {
