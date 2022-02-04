@@ -88,7 +88,6 @@ void onStart() {
 }
 
 void startUploadWatcher() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -104,7 +103,6 @@ void startUploadWatcher() async {
       if (isOnline) {
         // Upload pending sensorData as soon as device is online
         Directory dir = await getApplicationDocumentsDirectory();
-        String path = dir.path;
         List<FileSystemEntity> pendingUploads = dir.listSync(recursive: true);
         pendingUploads.removeWhere((file) => !file.path.contains("sensor"));
 

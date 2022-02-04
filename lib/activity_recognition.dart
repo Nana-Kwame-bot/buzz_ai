@@ -128,9 +128,9 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   DateTime lastUpdate = DateTime.now();
   _throttle(Function callback, String sensor, List<double> event) async {
-    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
+    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount) {
       return;
-
+    }
     callback(sensor, event);
     // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
     lastUpdate = DateTime.now();

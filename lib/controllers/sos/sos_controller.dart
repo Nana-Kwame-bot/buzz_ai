@@ -65,8 +65,6 @@ class SOSController extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection("accidentDatabase")
         .add(accidentData.toMap());
-
-    log("accidentData + ${accidentData.toMap().toString()}");
   }
 
   Future<String> get _localPath async {
@@ -100,24 +98,47 @@ class SOSController extends ChangeNotifier {
       user.fifthEmergencyContact?.contactNumber,
     ];
 
-    log("recipients + $recipients");
-
     recipients.removeWhere((recipient) {
       return recipient == null || recipient.isEmpty;
     });
 
-    final Telephony telephony = Telephony.instance;
-    await telephony.requestPhoneAndSmsPermissions;
+    // Telephony telephony = Telephony.backgroundInstance;
+    Telephony telephony = Telephony.instance;
 
-    for (String? recipient in recipients) {
-      telephony.sendSms(
-        to: recipient!,
-        message: message,
-        statusListener: (SendStatus status) {
-          log('SmsSendStatus ${status.toString()}');
-        },
-      );
-      log("sms sent to $recipient + $message");
+    bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+
+    if (permissionsGranted != null && permissionsGranted) {
+      if (recipients.length == 1) {
+        try {
+          await telephony
+              .sendSms(
+            to: recipients.first!,
+            message: message,
+            statusListener: listener,
+          )
+              .whenComplete(() {
+            log("sms sent to ${recipients.first} + $message");
+          });
+        } on Exception catch (e) {
+          log("sms_error: " + e.toString());
+        }
+      } else {
+        String formattedRecipients = recipients.join(';');
+
+        try {
+          await telephony
+              .sendSms(
+            to: formattedRecipients,
+            message: message,
+            statusListener: listener,
+          )
+              .whenComplete(() {
+            log("sms sent to $formattedRecipients + $message");
+          });
+        } on Exception catch (e) {
+          log("sms_error: " + e.toString());
+        }
+      }
     }
   }
 
@@ -148,5 +169,9 @@ class SOSController extends ChangeNotifier {
       audioURL: '',
       gForce: 0,
     );
+  }
+
+  listener(SendStatus status) {
+    log('SmsSendStatus ${status.toString()}');
   }
 }

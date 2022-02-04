@@ -5,6 +5,7 @@ import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller
 import 'package:buzz_ai/controllers/sos/sos_controller.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
 import 'package:buzz_ai/screens/sos/widget/show_report.dart';
+import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_progress_indicator/gradient_progress_indicator.dart';
@@ -13,9 +14,7 @@ import 'package:slide_to_confirm/slide_to_confirm.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SOSScreen extends StatefulWidget {
-  const SOSScreen({Key? key, this.timeout = 30}) : super(key: key);
-
-  final int timeout;
+  const SOSScreen({Key? key}) : super(key: key);
 
   @override
   _SOSScreenState createState() => _SOSScreenState();
@@ -30,7 +29,7 @@ class _SOSScreenState extends State<SOSScreen> {
   @override
   void initState() {
     super.initState();
-    timerStream = timer(widget.timeout);
+    timerStream = timer();
   }
 
   @override
@@ -117,18 +116,15 @@ class _SOSScreenState extends State<SOSScreen> {
                         );
                       } else if (snapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const Text("...",
-                            style:
-                                TextStyle(fontSize: 50, color: Colors.white));
-                      } else if (snapshot.data == 0 &&
-                          snapshot.connectionState == ConnectionState.done) {
+                        return const Text(
+                          "...",
+                          style: TextStyle(fontSize: 50, color: Colors.white),
+                        );
+                      } else if (snapshot.connectionState ==
+                              ConnectionState.active &&
+                          snapshot.data == 0) {
+                        log("zero reached");
                         if (_uploadStarted) return Container();
-                        // WidgetsBinding.instance!
-                        //     .addPostFrameCallback((timeStamp) async {
-                        //   if (data.keys.length < 4) {
-                        //     data = await getData(context);
-                        //   }
-                        // });
                         sosController.uploadReport(
                           userProfile: userProfileController.userProfile,
                           userID:
@@ -155,15 +151,21 @@ class _SOSScreenState extends State<SOSScreen> {
                     children: [
                       ConfirmationSlider(
                         onConfirmation: () async {
-                          // if (data.keys.length < 4) {
-                          //   data = await getData(context);
-                          // }
-                          Future uploadStatus = sosController.uploadReport(
+                          sosController
+                              .uploadReport(
                             userProfile: userProfileController.userProfile,
                             userID:
                                 authenticationController.auth.currentUser!.uid,
                             recognitionApp: recognitionApp,
-                          );
+                          )
+                              .whenComplete(() {
+                            if (mounted) {
+                              setState(() {
+                                _positiveText = "Done.";
+                              });
+                              showReport(context);
+                            }
+                          });
 
                           _uploadStarted = true;
                           setState(() {
@@ -176,13 +178,12 @@ class _SOSScreenState extends State<SOSScreen> {
                             });
                             return;
                           }
-
-                          if (mounted) {
-                            uploadStatus.then((value) {
-                              setState(() => _positiveText = "Done.");
-                              showReport(context);
-                            });
-                          }
+                          // if (mounted) {
+                          //   uploadStatus.then((value) {
+                          //     setState(() => _positiveText = "Done.");
+                          //     showReport(context);
+                          //   });
+                          // }
                         },
                         text: _positiveText,
                         textStyle: GoogleFonts.barlow(
@@ -241,8 +242,8 @@ class _SOSScreenState extends State<SOSScreen> {
     );
   }
 
-  Stream<int> timer(int seconds) async* {
-    for (int i = seconds; i >= 0; i--) {
+  Stream<int> timer() async* {
+    for (int i = 30; i >= 0; i--) {
       yield i;
       await Future.delayed(const Duration(seconds: 1));
     }

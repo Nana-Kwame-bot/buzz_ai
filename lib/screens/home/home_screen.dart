@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
         // Navigator.of(context).pushNamed('/NotificationPage',
         //     arguments: {"id": receivedNotification.id});
-        log("App opened from notification: ${receivedNotification}");
+        log("App opened from notification: $receivedNotification");
         
         Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
       });
@@ -85,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     // activityRecognitionService.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -304,6 +305,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       },
     );
   }
+
+  
 
   String? validateDestination(Coordinates coords) {
     

@@ -79,6 +79,7 @@ dependencies:
   bringtoforeground:  # Only works in android
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
+  easysms: ^1.0.0
 
 dev_dependencies:
   firebase_crashlytics: ^2.5.0

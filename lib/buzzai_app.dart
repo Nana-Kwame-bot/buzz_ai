@@ -40,8 +40,8 @@ class BuzzaiApp extends StatelessWidget {
         .currentUser
         ?.uid;
 
-    if (uid == null) return; 
-    
+    if (uid == null) return;
+
     List<Map> history = [];
     DateTime _lastStillTime = DateTime.now();
 
@@ -70,18 +70,24 @@ class BuzzaiApp extends StatelessWidget {
           // log("Not moving");
 
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
-          if (_stillFor < 10)
-            return; // Dont upload the data untill the user is STILL for 10 minutes
-          if (history.toSet().isEmpty)
-            return; // If history is empty dont upload
+          if (_stillFor < 10) {
+            return;
+          } // Dont upload the data untill the user is STILL for 10 minutes
+          if (history.toSet().isEmpty) {
+            return;
+          } // If history is empty dont upload
 
           _lastStillTime = DateTime.now();
           data["routes"] = history.toSet().toList();
           try {
             data["from"] = (await placemarkFromCoordinates(
-                history.toSet().first["lat"], history.toSet().first["lng"])).first.locality;
+                    history.toSet().first["lat"], history.toSet().first["lng"]))
+                .first
+                .locality;
             data["to"] = (await placemarkFromCoordinates(
-                history.toSet().last["lat"], history.toSet().last["lng"])).first.locality;
+                    history.toSet().last["lat"], history.toSet().last["lng"]))
+                .first
+                .locality;
           } catch (e) {
             data["from"] = null;
             data["to"] = null;
