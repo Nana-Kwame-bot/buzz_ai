@@ -153,6 +153,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     currentAppState = state;
 
     if (state == AppLifecycleState.detached) {
+      
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,

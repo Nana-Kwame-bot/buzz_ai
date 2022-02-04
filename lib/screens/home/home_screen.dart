@@ -5,6 +5,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
+import 'package:buzz_ai/screens/route_history/route_history.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
@@ -26,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
@@ -39,8 +40,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   void initState() {
+    WidgetsBinding.instance!.addObserver(this);
     initializeBackgroundExecution();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -51,6 +59,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       notificationActionStream.listen((ReceivedNotification receivedNotification) {
         if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
           AwesomeNotifications().dismiss(receivedNotification.id!);
+          return;
+        }
+
+        if (receivedNotification.toMap()["buttonKeyPressed"] == "open_route_page") {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => RouteHistory()));
           return;
         }
 
@@ -86,9 +99,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   @override
-  void dispose() {
-    // activityRecognitionService.dispose();
-    super.dispose();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    FlutterBackgroundService().sendData({"message": state.toString().split(".").last});
   }
 
   @override

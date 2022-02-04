@@ -17,6 +17,8 @@ void onStart() {
   final service = FlutterBackgroundService();
 
   service.onDataReceived.listen((event) {
+    print(event);
+
     if (event!["action"] == "setAsForeground") {
       service.setForegroundMode(true);
       return;
@@ -29,13 +31,16 @@ void onStart() {
     if (event["action"] == "stopService") {
       service.stopBackgroundService();
     }
+
+    if (event["message"] == "detached") {
+      watchSensors();
+    }
   });
 
   // bring to foreground
   service.setForegroundMode(true);
 
   startUploadWatcher();
-  watchSensors();
 }
 
 void watchSensors() {
@@ -53,6 +58,7 @@ void watchSensors() {
     totalX += event.x;
     totalY += event.y;
     totalZ += event.z;
+    print(totalX);
 
     counter++;
 
