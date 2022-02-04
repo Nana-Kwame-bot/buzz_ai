@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
@@ -20,7 +21,7 @@ class BuzzaiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!locationTrackingStarted) _uploadPoints(context);
+    _uploadPoints(context);
 
     return MaterialApp(
       onGenerateRoute: AppRouter().onGenerateRoute,
@@ -70,7 +71,7 @@ class BuzzaiApp extends StatelessWidget {
           // log("Not moving");
 
           data["toTime"] = DateTime.now();
-          int _stillFor = DateTime.now().difference(_lastStillTime).inMinutes;
+          int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
           if (_stillFor < 10)
             return; // Dont upload the data untill the user is STILL for 10 minutes
           if (history.toSet().isEmpty)
@@ -102,6 +103,31 @@ class BuzzaiApp extends StatelessWidget {
             SetOptions(merge: true),
           );
           history = [];
+
+          AwesomeNotifications().createNotification(
+            content: NotificationContent(
+              id: 5,
+              channelKey: 'alert',
+              title: "Route uplaoded",
+              body: "Route uploaded to firestore sucessfully!",
+              autoDismissible: false,
+              backgroundColor: Colors.green,
+              criticalAlert: true,
+              displayOnBackground: true,
+            ),
+            actionButtons: [
+              NotificationActionButton(
+                key: "open_route_page",
+                label: "Open",
+              ),
+              NotificationActionButton(
+                key: "dismiss",
+                label: "Dismiss",
+                isDangerousOption: true,
+                buttonType: ActionButtonType.DisabledAction,
+              ),
+            ],
+          );
         }
       },
     );
