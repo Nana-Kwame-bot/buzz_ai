@@ -54,7 +54,7 @@ class BuzzaiApp extends StatelessWidget {
                 .currentActivityEvent;
 
         if (currentActivity != null &&
-            currentActivity.type == ActivityType.IN_VEHICLE) {
+            currentActivity.type == ActivityType.ON_FOOT) {
           // If user moves append the lat and lng to the history
           log("Moving now!");
 
@@ -69,7 +69,8 @@ class BuzzaiApp extends StatelessWidget {
           // If not moving
           // log("Not moving");
 
-          int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
+          data["toTime"] = DateTime.now();
+          int _stillFor = DateTime.now().difference(_lastStillTime).inMinutes;
           if (_stillFor < 10)
             return; // Dont upload the data untill the user is STILL for 10 minutes
           if (history.toSet().isEmpty)
@@ -90,7 +91,6 @@ class BuzzaiApp extends StatelessWidget {
             data["from"] = null;
             data["to"] = null;
           }
-          data["toTime"] = DateTime.now();
 
           await FirebaseFirestore.instance
               .collection("userDatabase")
