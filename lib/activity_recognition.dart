@@ -65,7 +65,7 @@ class ActivityRecognitionApp with ChangeNotifier {
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
 
-            if (lastGForce > 4) {
+            if (lastGForce > 8) {
               if (!gForceExceeded) {
                 recordAudio();
 
