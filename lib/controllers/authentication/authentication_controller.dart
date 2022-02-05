@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthenticationController extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,6 +29,9 @@ class AuthenticationController extends ChangeNotifier {
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
           'Message: ${authException.message}');
+
+      Fluttertoast.showToast(
+          msg: authException.message!, toastLength: Toast.LENGTH_LONG);
     }
 
     void codeSent(String verificationId, [int? forceResendingToken]) async {
@@ -56,6 +60,7 @@ class AuthenticationController extends ChangeNotifier {
       );
     } catch (e) {
       log(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -67,6 +72,9 @@ class AuthenticationController extends ChangeNotifier {
     void verificationFailed(FirebaseAuthException authException) {
       log('Phone number verification failed. Code: ${authException.code}. '
           'Message: ${authException.message}');
+
+      Fluttertoast.showToast(
+          msg: authException.message!, toastLength: Toast.LENGTH_LONG);
     }
 
     void codeSent(String verificationId, [int? forceResendingToken]) async {
@@ -94,6 +102,7 @@ class AuthenticationController extends ChangeNotifier {
       );
     } catch (e) {
       log(e.toString());
+      Fluttertoast.showToast(msg: e.toString(), toastLength: Toast.LENGTH_LONG);
     }
   }
 

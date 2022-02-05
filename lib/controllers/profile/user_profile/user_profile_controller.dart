@@ -230,7 +230,7 @@ class UserProfileController extends ChangeNotifier {
     }
 
     if (data != null) {
-      log(data.toString());
+      log(data.toString() + "userId: $userId");
       userProfile = UserProfile.fromMap(data);
       getBasicDetail(userProfile.basicDetail!, context);
       getContactDetail(userProfile.contactDetail!, context);

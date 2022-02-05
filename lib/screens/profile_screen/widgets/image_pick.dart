@@ -1,16 +1,23 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/image_pick/image_pick_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/services/config.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class ImagePick extends StatelessWidget {
-  const ImagePick({
+  ImagePick({
     Key? key,
+    this.isFromSignUp = false,
   }) : super(key: key);
+
+  final bool isFromSignUp;
+  bool _imageFailedToLoad = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class ImagePick extends StatelessWidget {
       builder: (BuildContext context, ImagePickController value,
           UserProfileController controller, Widget? child) {
         return GestureDetector(
-          onTap: controller.formEnabled
+          onTap: controller.formEnabled || isFromSignUp
               ? () async {
                   String? path = await showDialog<String?>(
                       context: context,
@@ -67,9 +74,29 @@ class ImagePick extends StatelessWidget {
                         );
                       });
                   if (path != null) {
-                    log(path);
-                    Provider.of<BasicDetailController>(context, listen: false)
-                        .setImagePath(path);
+                    String uid = Provider.of<AuthenticationController>(context,
+                            listen: false)
+                        .auth
+                        .currentUser!
+                        .uid;
+
+                    try {
+                      File profileImage = File(path);
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(const SnackBar(content: Text("Upload started!")));
+                          
+                      TaskSnapshot uploadTask = await FirebaseStorage.instance
+                          .ref(uid)
+                          .child("profile")
+                          .child(path.split("/").last)
+                          .putFile(profileImage);
+
+                      Provider.of<BasicDetailController>(context, listen: false)
+                          .setImagePath(await uploadTask.ref.getDownloadURL());
+                    } catch (e) {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text("Error: $e")));
+                    }
                   }
                 }
               : null,
@@ -79,25 +106,25 @@ class ImagePick extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Consumer<BasicDetailController>(
-                  builder: (BuildContext context, value, Widget? child) {
+                Consumer2<BasicDetailController, UserProfileController>(
+                  builder: (BuildContext context, basicDetailController,
+                      userProfileController, Widget? child) {
+                    var bgImage = AssetImage(
+                        "assets/img/${userProfileController.gender.toString().split(".").last}_profile.png");
+                    ImageProvider<Object>? fgImage;
+
+                    try {
+                      if (!_imageFailedToLoad) {
+                        fgImage = NetworkImage(
+                            basicDetailController.basicDetail.imageURL!);
+                      }
+                    } catch (e) {}
+
                     return CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.white,
-                      backgroundImage: (value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '')
-                          ? null
-                          : FileImage(
-                              File(value.basicDetail.imageURL!),
-                            ),
-                      child: !(value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '')
-                          ? null
-                          : const Icon(
-                              Icons.account_circle,
-                              color: defaultColor,
-                              size: 100,
-                            ),
+                      backgroundImage: bgImage,
+                      foregroundImage: fgImage,
                     );
                   },
                 ),

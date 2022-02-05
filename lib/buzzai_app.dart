@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
@@ -9,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:activity_recognition_flutter_mod/activity_recognition_flutter.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,7 @@ class BuzzaiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!locationTrackingStarted) _uploadPoints(context);
+    _uploadPoints(context);
 
     return MaterialApp(
       onGenerateRoute: AppRouter().onGenerateRoute,
@@ -40,8 +41,8 @@ class BuzzaiApp extends StatelessWidget {
         .currentUser
         ?.uid;
 
-    if (uid == null) return; 
-    
+    if (uid == null) return;
+
     List<Map> history = [];
     DateTime _lastStillTime = DateTime.now();
 
@@ -69,24 +70,30 @@ class BuzzaiApp extends StatelessWidget {
           // If not moving
           // log("Not moving");
 
+          data["toTime"] = DateTime.now();
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
-          if (_stillFor < 10)
-            return; // Dont upload the data untill the user is STILL for 10 minutes
-          if (history.toSet().isEmpty)
-            return; // If history is empty dont upload
+          if (_stillFor < 10) {
+            return;
+          } // Dont upload the data untill the user is STILL for 10 minutes
+          if (history.toSet().isEmpty) {
+            return;
+          } // If history is empty dont upload
 
           _lastStillTime = DateTime.now();
           data["routes"] = history.toSet().toList();
           try {
             data["from"] = (await placemarkFromCoordinates(
-                history.toSet().first["lat"], history.toSet().first["lng"])).first.locality;
+                    history.toSet().first["lat"], history.toSet().first["lng"]))
+                .first
+                .locality;
             data["to"] = (await placemarkFromCoordinates(
-                history.toSet().last["lat"], history.toSet().last["lng"])).first.locality;
+                    history.toSet().last["lat"], history.toSet().last["lng"]))
+                .first
+                .locality;
           } catch (e) {
             data["from"] = null;
             data["to"] = null;
           }
-          data["toTime"] = DateTime.now();
 
           await FirebaseFirestore.instance
               .collection("userDatabase")
@@ -98,6 +105,31 @@ class BuzzaiApp extends StatelessWidget {
             SetOptions(merge: true),
           );
           history = [];
+
+          AwesomeNotifications().createNotification(
+            content: NotificationContent(
+              id: 5,
+              channelKey: 'alert',
+              title: "Route uplaoded",
+              body: "Route uploaded to firestore sucessfully!",
+              autoDismissible: false,
+              backgroundColor: Colors.green,
+              criticalAlert: true,
+              displayOnBackground: true,
+            ),
+            actionButtons: [
+              NotificationActionButton(
+                key: "open_route_page",
+                label: "Open",
+              ),
+              NotificationActionButton(
+                key: "dismiss",
+                label: "Dismiss",
+                isDangerousOption: true,
+                buttonType: ActionButtonType.DisabledAction,
+              ),
+            ],
+          );
         }
       },
     );

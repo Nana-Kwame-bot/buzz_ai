@@ -8,17 +8,18 @@ import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_c
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/sos/sos_controller.dart';
 import 'package:buzz_ai/screens/misc/error_screen.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
-import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/profile/vehicle_info/vehicle_info_controller.dart';
 import 'package:buzz_ai/models/report_accident/submit_accident_report.dart';
+import 'package:buzz_ai/services/upload_sensor_data.dart';
 import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -29,8 +30,17 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'controllers/home_screen/home_screen_controller.dart';
+import 'package:workmanager/workmanager.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    log("Native called background task");
+    return uploadSensorData();
+  });
+}
 
 bool _deviceHasCapableAccelerometer = true;
 double maxAccelerometerValue = 0.0;
@@ -42,6 +52,13 @@ void main() async {
   // initState();
   await initialize();
   runApp(const MyApp());
+
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  Workmanager().registerPeriodicTask(
+    "Upload sensor data to storage",
+    "uploadSensorData",
+    frequency: const Duration(minutes: 15),
+  );
 }
 
 Future<void> initialize() async {
@@ -51,11 +68,11 @@ Future<void> initialize() async {
   double accelerometerMaxRange =
       await sensorListChannel.invokeMethod("accelerometer_max_range");
 
-  // if (accelerometerMaxRange < 40) {
-  //   log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
-  //   maxAccelerometerValue = accelerometerMaxRange;
-  //   _deviceHasCapableAccelerometer = false;
-  // }
+  if (accelerometerMaxRange < 40) {
+    log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
+    maxAccelerometerValue = accelerometerMaxRange;
+    _deviceHasCapableAccelerometer = false;
+  }
 
   log("Device compatible to run. Accelerometer capacity: $accelerometerMaxRange");
 
@@ -69,6 +86,8 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
+AppLifecycleState currentAppState = AppLifecycleState.resumed;
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
@@ -86,7 +105,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           defaultColor: Colors.orange,
           ledColor: Colors.orange,
           criticalAlerts: true,
-          importance: NotificationImportance.Max,
+          importance: NotificationImportance.High,
           playSound: true,
           defaultRingtoneType: DefaultRingtoneType.Notification,
         ),
@@ -98,7 +117,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           defaultColor: Colors.red,
           ledColor: Colors.red,
           criticalAlerts: true,
-          importance: NotificationImportance.Max,
+          importance: NotificationImportance.High,
           playSound: true,
           defaultRingtoneType: DefaultRingtoneType.Notification,
         )
@@ -132,6 +151,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    currentAppState = state;
+    FlutterBackgroundService()
+        .sendData({"message": state.toString().split(".").last});
+        
     if (state == AppLifecycleState.detached) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
@@ -252,7 +275,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ),
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
-                  return ActivityRecognitionApp()..init();
+                  return ActivityRecognitionApp();
+                },
+              ),
+              ChangeNotifierProvider<SOSController>(
+                create: (BuildContext context) {
+                  return SOSController()..onStart();
                 },
               ),
             ],

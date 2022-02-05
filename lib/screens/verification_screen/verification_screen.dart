@@ -1,4 +1,8 @@
+// ignore_for_file: unused_import
+
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/models/profile/user_profile/user_profile.dart';
 import 'package:buzz_ai/routes/screen_arguments/profile_screen_arguments.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/misc/request_permission.dart';
@@ -98,8 +102,17 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
                           bool _result =
                               await authController.signInWithPhoneNumber(value);
+
+                          UserProfile? profile =
+                              await Provider.of<UserProfileController>(context,
+                                      listen: false)
+                                  .readProfileData(
+                            userId: authController.auth.currentUser!.uid,
+                            context: context,
+                          );
+
                           if (_result) {
-                            if (!isProfileSet) {
+                            if (!isProfileSet || profile == null) {
                               Navigator.of(context).pushReplacementNamed(
                                 ProfileScreen.iD,
                                 arguments: ProfileScreenArguments(

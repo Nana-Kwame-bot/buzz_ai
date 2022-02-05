@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
+import 'package:buzz_ai/controllers/home_screen/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
+import 'package:buzz_ai/screens/route_history/route_history.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
-import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -45,24 +43,30 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
+    await Provider.of<ActivityRecognitionApp>(context, listen: false).init();
+
     try {
       notificationActionStream.listen((ReceivedNotification receivedNotification) {
         if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
           AwesomeNotifications().dismiss(receivedNotification.id!);
+          return;
+        }
+
+        if (receivedNotification.toMap()["buttonKeyPressed"] == "open_route_page") {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => RouteHistory()));
+          return;
         }
 
         // Navigator.of(context).pushNamed('/NotificationPage',
         //     arguments: {"id": receivedNotification.id});
-        log("App opened from notification: ${receivedNotification}");
+        log("App opened from notification: $receivedNotification");
         
         Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
       });
 
       AwesomeNotifications().dismissedStream.listen((event) { 
-        if (event.channelKey == 'activity_change') {
-          Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
-        }
+        
       });
     } catch (e) {}
 
@@ -83,12 +87,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         isForegroundMode: true,
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // activityRecognitionService.dispose();
-    super.dispose();
   }
 
   @override
@@ -179,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     setState(() {
                                       _mapOpacity = 1;
                                     });
+
                                     value.onMapCreated(controller);
                                   },
                                 );
@@ -309,6 +308,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       },
     );
   }
+
+  
 
   String? validateDestination(Coordinates coords) {
     

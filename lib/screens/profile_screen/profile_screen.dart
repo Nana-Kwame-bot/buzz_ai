@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:animations/animations.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
@@ -211,7 +213,7 @@ class ProfileInputFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const ImagePick(),
+        ImagePick(isFromSignUp: isFromSignUp),
         BasicDetails(isFromSignUp: isFromSignUp),
         const ContactDetails(),
         const Emergency(),

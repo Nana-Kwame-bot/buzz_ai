@@ -5,10 +5,12 @@ import 'dart:developer' as dev;
 import 'dart:io';
 import 'dart:math';
 
-import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:activity_recognition_flutter_mod/activity_recognition_flutter.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
+import 'package:buzz_ai/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +24,8 @@ class ActivityRecognitionApp with ChangeNotifier {
   ActivityEvent? currentActivityEvent;
   ActivityEvent? _lastActivityEvent;
   int initialRetryTimeout = 1;
+  DateTime lastUpdate = DateTime.now();
+  bool _activityRecognitionWorkingNotified = false;
 
   bool gForceExceeded = false;
   double? excedeedGForce;
@@ -42,11 +46,6 @@ class ActivityRecognitionApp with ChangeNotifier {
 
   int throttleAmount = 66; // In milliseconds.
 
-  void initState() {
-    init();
-    _events.add(ActivityEvent.unknown());
-  }
-
   @override
   void dispose() {
     recorder.dispose();
@@ -54,7 +53,9 @@ class ActivityRecognitionApp with ChangeNotifier {
     super.dispose();
   }
 
-  void init() async {
+  Future<void> init() async {
+    _events.add(ActivityEvent.unknown());
+
     recorder.init();
     prefs = await SharedPreferences.getInstance();
     Timer.periodic(const Duration(seconds: 1), (timer) => last30GForce = []);
@@ -65,7 +66,7 @@ class ActivityRecognitionApp with ChangeNotifier {
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
 
-            if (lastGForce > 4) {
+            if (event.x <= -6 && event.y <= -6 && event.z <= -6) {
               if (!gForceExceeded) {
                 recordAudio();
 
@@ -86,10 +87,8 @@ class ActivityRecognitionApp with ChangeNotifier {
           },
         ),
         gyroscopeEvents.listen(
-          (GyroscopeEvent event) {
-            _throttle(updateSensorValues, "gyro",
-                <double>[event.x, event.y, event.z]);
-          },
+          (GyroscopeEvent event) => _throttle(
+              updateSensorValues, "gyro", <double>[event.x, event.y, event.z]),
         ),
       ],
     );
@@ -111,29 +110,6 @@ class ActivityRecognitionApp with ChangeNotifier {
     }
   }
 
-  Future<void> recordAudio() async {
-    isAudioRecording = await recorder.isRecording;
-    if (isAudioRecording) return;
-
-    fileName = "${DateTime.now()}.aac";
-    await recorder.record(fileName);
-
-    Future.delayed(const Duration(seconds: 3)).then((value) async {
-      await recorder.stop();
-      isAudioRecording = await recorder.isRecording;
-    });
-  }
-
-  DateTime lastUpdate = DateTime.now();
-  _throttle(Function callback, String sensor, List<double> event) async {
-    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
-      return;
-
-    callback(sensor, event);
-    // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
-    lastUpdate = DateTime.now();
-  }
-
   void startTracking() {
     activityStreamSubscription = activityRecognition
         .activityStream(runForegroundService: true)
@@ -141,8 +117,7 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onData(ActivityEvent activityEvent) {
-    _lastActivityEvent =
-        currentActivityEvent ?? ActivityEvent(ActivityType.UNKNOWN, 100);
+    _lastActivityEvent = currentActivityEvent;
     currentActivityEvent = activityEvent;
 
     _events.add(activityEvent);
@@ -150,17 +125,13 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onError(Object error) {
-    print('ERROR - $error');
+    if (kDebugMode) {
+      print('ERROR - $error');
+    }
   }
 
-  double checkGForce(UserAccelerometerEvent event) {
-    // sqrt(x^2 + y^2 + z^2)
-
-    double gForce =
-        sqrt(pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2)) / 9.81;
-
-    return gForce;
-  }
+  double checkGForce(UserAccelerometerEvent event) =>
+      ((event.x + event.y + event.z) / 3) / 9.8;
 
   void updateSensorValues(String event, List<double> data) async {
     last30GForce.add(lastGForce);
@@ -168,10 +139,10 @@ class ActivityRecognitionApp with ChangeNotifier {
     if (currentActivityEvent == null) return;
     if (_lastActivityEvent == null) return;
 
+    if (!_activityRecognitionWorkingNotified) showActivityRecognitionActive();
+
     if (currentActivityEvent!.type == ActivityType.IN_VEHICLE) {
-      if (_lastActivityEvent!.type != ActivityType.IN_VEHICLE) {
-        _updateActivityNotification(currentActivityEvent!);
-      }
+      _updateActivityNotification(currentActivityEvent!);
 
       if (event == "acc") {
         _accelerometerValues.add(data);
@@ -180,7 +151,7 @@ class ActivityRecognitionApp with ChangeNotifier {
         _gyroscopeValues.add(data);
       }
 
-      dev.log(data.toString());
+      // dev.log(data.toString());
     } else if (currentActivityEvent!.type == ActivityType.STILL) {
       if (_lastActivityEvent!.type != ActivityType.STILL) {
         // This inequality makes sure that we write only once
@@ -222,7 +193,36 @@ class ActivityRecognitionApp with ChangeNotifier {
     _lastWritten = DateTime.now();
   }
 
+  void showActivityRecognitionActive() {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 2,
+        channelKey: 'activity_change',
+        title: "Activity Recognition initialized successfully!",
+        autoDismissible: true,
+      ),
+      actionButtons: [
+        NotificationActionButton(
+          key: "dismiss",
+          label: "Dismiss",
+          isDangerousOption: true,
+          buttonType: ActionButtonType.DisabledAction,
+        ),
+      ],
+    );
+
+    _activityRecognitionWorkingNotified = true;
+  }
+
   _updateActivityNotification(ActivityEvent currentActivityEvent) {
+    if (currentAppState != AppLifecycleState.paused) return;
+
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         AwesomeNotifications().requestPermissionToSendNotifications();
@@ -231,13 +231,13 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     String title = "";
     String body = "";
-    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
+    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
       title = "Are you driving?";
       body =
           "Please open the application if you're driving so that we can ensure your safety";
     }
 
-    if (!notificationShown) {
+    if (!notificationShown && currentAppState == AppLifecycleState.paused) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
@@ -259,7 +259,33 @@ class ActivityRecognitionApp with ChangeNotifier {
         ],
       );
       notificationShown = true;
+      Timer.periodic(
+          const Duration(minutes: 1),
+          (timer) => notificationShown =
+              false); // Reset the notificatinShown anyway after a minute
       notifyListeners();
     }
+  }
+
+  Future<void> recordAudio() async {
+    isAudioRecording = await recorder.isRecording;
+    if (isAudioRecording) return;
+
+    fileName = "${DateTime.now()}.aac";
+    await recorder.record(fileName);
+
+    Future.delayed(const Duration(seconds: 3)).then((value) async {
+      await recorder.stop();
+      isAudioRecording = await recorder.isRecording;
+    });
+  }
+
+  _throttle(Function callback, String sensor, List<double> event) async {
+    if (DateTime.now().difference(lastUpdate).inMilliseconds < throttleAmount)
+      return;
+
+    callback(sensor, event);
+    // dev.log("Callback called after being throttled for [${DateTime.now().difference(lastUpdate).inMilliseconds}'ms]");
+    lastUpdate = DateTime.now();
   }
 }
