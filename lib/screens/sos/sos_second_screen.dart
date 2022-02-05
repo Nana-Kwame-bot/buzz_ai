@@ -50,8 +50,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
 
   @override
   Widget build(BuildContext context) {
-    User? userName =
-        Provider.of<AuthenticationController>(context).auth.currentUser;
+    String? userName = _userProfileController.userProfile.basicDetail!.fullName;
 
     return Scaffold(
       body: SafeArea(
@@ -79,7 +78,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "${userName == null ? "hey" : userName.displayName} are you OK? What happened?",
+                        "${userName ?? "hey"} are you OK? What happened?",
                         style: GoogleFonts.barlow(
                           color: Colors.white,
                           fontSize: 30,

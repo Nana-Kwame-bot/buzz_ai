@@ -65,7 +65,6 @@ class ActivityRecognitionApp with ChangeNotifier {
         userAccelerometerEvents.listen(
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
-            print(event);
 
             if (event.x <= -6 && event.y <= -6 && event.z <= -6) {
               if (!gForceExceeded) {
