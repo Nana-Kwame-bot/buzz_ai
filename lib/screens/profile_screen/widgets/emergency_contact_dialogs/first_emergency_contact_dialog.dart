@@ -1,5 +1,6 @@
 import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/global/all_relationships.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,29 +16,7 @@ class _FirstEmergencyContactDialogState
     extends State<FirstEmergencyContactDialog> {
   var firstEmergencyContactFormKey = GlobalKey<FormState>();
   String _relationValue = "Mother";
-  List<String> relationships = [
-    "Father",
-    "Mother",
-    "Brother",
-    "Sister",
-    "Son",
-    "Daughter",
-    "Grand Father",
-    "Grand Mother",
-    "Wife",
-    "Husband",
-    "Fiancé",
-    "Aunt",
-    "Uncle",
-    "Niece",
-    "Nephew",
-    "Boyfriend",
-    "Girlfriend",
-    "Lover",
-    "Client",
-    "Patient",
-    "Friend",
-  ];
+  List<String> relationships = allRelationShips;
 
   @override
   void didChangeDependencies() {

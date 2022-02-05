@@ -1,4 +1,5 @@
 import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
+import 'package:buzz_ai/global/all_relationships.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,22 @@ class SecondEmergencyContactDialog extends StatefulWidget {
 class _SecondEmergencyContactDialogState
     extends State<SecondEmergencyContactDialog> {
   var secondEmergencyContactFormKey = GlobalKey<FormState>();
+  List<String> relationships = allRelationShips;
+  String _relationValue = "Mother";
+
+  @override
+  void didChangeDependencies() {
+    String storedRelationship =
+        Provider.of<SecondEmergencyContactController>(context, listen: false)
+                .secondEmergencyContact
+                .relation ??
+            "";
+
+    if (storedRelationship != "") {
+      _relationValue = storedRelationship;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -81,29 +98,36 @@ class _SecondEmergencyContactDialogState
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: const Text(
-                        'Phone number',
+                        'Relation',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 12.0,
                         ),
                       ),
                     ),
-                    TextFormField(
+                    DropdownButtonFormField(
+                      value: _relationValue,
+                      items: relationships
+                          .map<DropdownMenuItem<String>>(
+                              (relation) => DropdownMenuItem(
+                                    value: relation,
+                                    child: Text(relation),
+                                  ))
+                          .toList(),
+                      onChanged: (String? value) {
+                        if (value == null) return;
+
+                        secondEmergencyContactController.setRelation(value);
+                        setState(() {
+                          _relationValue = value;
+                        });
+                      },
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Relation',
-                        hintText: 'Enter your relation',
+                        labelText: 'Relationship',
+                        hintText:
+                            'Enter your relation with the emergency contact',
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your relation';
-                        }
-                        return null;
-                      },
-                      initialValue: secondEmergencyContactController
-                          .secondEmergencyContact.relation,
-                      onSaved: secondEmergencyContactController.setRelation,
-                      keyboardType: TextInputType.text,
                     ),
                     Container(
                       alignment: Alignment.centerLeft,

@@ -78,10 +78,12 @@ dependencies:
   provider: ^6.0.1
   connectivity_plus: ^2.2.0
   record: ^3.0.2
+  telephony: ^0.1.4
   workmanager: ^0.4.1
   bringtoforeground:  # Only works in android
     git:
       url: https://github.com/Tatunchamon/bring_to_foreground.git
+  easysms: ^1.0.0
 
 dev_dependencies:
   firebase_crashlytics: ^2.5.0

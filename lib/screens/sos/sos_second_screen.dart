@@ -1,127 +1,57 @@
-import 'dart:io';
-
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
-import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
-import 'package:buzz_ai/services/get_location.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/controllers/sos/sos_controller.dart';
+import 'package:buzz_ai/models/accident_data/accident_data.dart';
+import 'package:buzz_ai/screens/sos/widget/show_report.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 
 class SOSSecondPage extends StatefulWidget {
-  SOSSecondPage({Key? key, this.data}) : super(key: key);
+  const SOSSecondPage({Key? key}) : super(key: key);
 
   @override
   _SOSSecondPageState createState() => _SOSSecondPageState();
-
-  Map<String, dynamic>? data = {};
 }
 
 class _SOSSecondPageState extends State<SOSSecondPage> {
   bool _uploading = false;
+  AccidentData accidentData = AccidentData(
+    longitude: 0,
+    latitude: 0,
+    timeCreated: DateTime.now(),
+    placemark: Placemark(),
+    crashStatus: "",
+    last30sG: [],
+    audioURL: "",
+    gForce: 0,
+  );
+  late SOSController _sosController;
+  late AuthenticationController _authenticationController;
+  late ActivityRecognitionApp _activityRecognitionApp;
+  late UserProfileController _userProfileController;
+
+  @override
+  void initState() {
+    super.initState();
+    _sosController = Provider.of<SOSController>(context, listen: false);
+    _authenticationController =
+        Provider.of<AuthenticationController>(context, listen: false);
+    _activityRecognitionApp =
+        Provider.of<ActivityRecognitionApp>(context, listen: false);
+    _userProfileController =
+        Provider.of<UserProfileController>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    widget.data ??= {};
     User? userName =
         Provider.of<AuthenticationController>(context).auth.currentUser;
-
-    Future<void> getData() async {
-      Map? locationData;
-
-      try {
-        locationData = await getLocation();
-      } catch (e) {
-        locationData = null;
-        // rethrow;
-      }
-
-      String uid = Provider.of<AuthenticationController>(context, listen: false)
-          .auth
-          .currentUser!
-          .uid;
-      List<double> last30sG =
-          Provider.of<ActivityRecognitionApp>(context, listen: false)
-              .last30GForce;
-
-      widget.data = {
-        "coordinates": locationData == null
-            ? null
-            : [
-                locationData["position"].latitude,
-                locationData["position"].longitude
-              ],
-        "createdAt": DateTime.now(),
-        "location": locationData?["placemark"].toJson(),
-        "uid": uid,
-        "crashStatus": "Crash",
-        "last30sG": last30sG,
-      };
-    }
-
-    Future<void> uploadReport() async {
-      ActivityRecognitionApp ara =
-          Provider.of<ActivityRecognitionApp>(context, listen: false);
-      String path = (await getApplicationDocumentsDirectory()).path;
-
-      setState(() {
-        _uploading = true;
-      });
-
-      if (widget.data == null) {
-        await getData();
-      } else if (widget.data!.keys.length < 4) {
-        await getData();
-      }
-
-      final ref = FirebaseStorage.instance
-          .ref(widget.data!["uid"])
-          .child("audio/${ara.fileName}");
-
-      File audioFile = File("$path/${ara.fileName}");
-      await ref.putFile(audioFile);
-      var url = await ref.getDownloadURL();
-      audioFile.delete();
-
-      widget.data!["audio"] = url;
-
-      await FirebaseFirestore.instance
-          .collection("accidentDatabase")
-          .add(widget.data!);
-
-      setState(() {
-        _uploading = false;
-      });
-
-      Provider.of<ActivityRecognitionApp>(context, listen: false)
-          .accidentReported = true;
-    }
-
-    void showReport() {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Report uploaded!"),
-          content: const Text(
-              "We have detected a abnormal increase in G-force and we suspect this is a accident. We have upload your current location with a 3 second audio clip."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).popAndPushNamed(BottomNavigation.iD);
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
-    }
 
     return Scaffold(
       body: SafeArea(
@@ -159,10 +89,8 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                       Column(
                         children: [
                           ConfirmationSlider(
-                            onConfirmation: () {
-                              widget.data!["crashStatus"] = "No Crash";
-                              uploadReport().then((value) => showReport());
-                            },
+                            onConfirmation: () async =>
+                                await upload("No Crash"),
                             text: "No crash",
                             textStyle: GoogleFonts.barlow(
                               color: Colors.white,
@@ -180,10 +108,8 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                           ),
                           const SizedBox(height: 20),
                           ConfirmationSlider(
-                            onConfirmation: () {
-                              widget.data!["crashStatus"] = "Minor Crash";
-                              uploadReport().then((value) => showReport());
-                            },
+                            onConfirmation: () async =>
+                                await upload("Minor Crash"),
                             text: "Minor crash",
                             textStyle: GoogleFonts.barlow(
                               color: Colors.white,
@@ -201,10 +127,7 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
                           ),
                           const SizedBox(height: 20),
                           ConfirmationSlider(
-                            onConfirmation: () {
-                              // widget.data!["crashStatus"] = "Crash";
-                              uploadReport().then((value) => showReport());
-                            },
+                            onConfirmation: () async => await upload("Crash"),
                             text: "SOS",
                             textStyle: GoogleFonts.barlow(
                               color: Colors.white,
@@ -234,5 +157,17 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
         ),
       ),
     );
+  }
+
+  upload(String crashStatus) async {
+    _sosController.upDateCrashStatus(crashStatus);
+    Future upload = _sosController.uploadReport(
+      recognitionApp: _activityRecognitionApp,
+      userID: _authenticationController.auth.currentUser!.uid,
+      userProfile: _userProfileController.userProfile,
+    );
+    setState(() => _uploading = true);
+
+    upload.then((value) => showReport(context));
   }
 }

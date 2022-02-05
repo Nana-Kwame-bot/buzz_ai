@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:buzz_ai/models/profile/emergency_contact/first_emergency_contact.dart';
 import 'package:buzz_ai/models/profile/emergency_contact/third_emergency_contact.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,17 @@ class ThirdEmergencyContactController extends ChangeNotifier {
 
   void setName(String? newValue) {
     thirdEmergencyContact = thirdEmergencyContact.copyWith(name: newValue);
+    notifyListeners();
+  }
+
+  void clear() {
+    thirdEmergencyContact = thirdEmergencyContact.copyWith(
+      name: "",
+      relation: "",
+      contactNumber: "",
+      contactAdded: false,
+    );
+
     notifyListeners();
   }
 }

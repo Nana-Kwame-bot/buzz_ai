@@ -1,4 +1,3 @@
-import 'package:buzz_ai/models/profile/emergency_contact/first_emergency_contact.dart';
 import 'package:buzz_ai/models/profile/emergency_contact/fourth_emergency_contact.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +44,17 @@ class FourthEmergencyContactController extends ChangeNotifier {
 
   void setName(String? newValue) {
     fourthEmergencyContact = fourthEmergencyContact.copyWith(name: newValue);
+    notifyListeners();
+  }
+
+  void clear() {
+    fourthEmergencyContact = fourthEmergencyContact.copyWith(
+      name: "",
+      relation: "",
+      contactNumber: "",
+      contactAdded: false,
+    );
+
     notifyListeners();
   }
 }

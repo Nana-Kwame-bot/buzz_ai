@@ -1,49 +1,14 @@
 import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:buzz_ai/global/all_permissions.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
-import 'package:buzz_ai/widgets/issue_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestPermission extends StatelessWidget {
-  final List<Map<String, dynamic>> _allPermissions = [
-    {
-      "permission": Permission.location,
-      "name": "Location",
-      "description": "To access features like maps and navigation.",
-    },
-    {
-      "permission": Permission.locationAlways,
-      "name": "Location Always",
-      "description":
-          "To monitor device activity for triggering SOS and other emergency features.",
-    },
-    {
-      "permission": Permission.activityRecognition,
-      "name": "Activity Recognition",
-      "description":
-          "To recognize if you are on foot or in vehicle to start recording your travel.",
-    },
-    {
-      "permission": Permission.camera,
-      "name": "Camera",
-      "description": "To capture accidents.",
-    },
-    {
-      "permission": Permission.microphone,
-      "name": "Microphone",
-      "description": "To record audio when an accident happens.",
-    },
-    {
-      "permission": Permission.notification,
-      "name": "Notification",
-      "description": "To notify you with activity updates.",
-    },
-  ];
+  final List<Map<String, dynamic>> _allPermissions = allPermissions;
 
   RequestPermission({Key? key}) : super(key: key);
 

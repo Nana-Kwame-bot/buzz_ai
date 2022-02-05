@@ -70,9 +70,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                                 Widget? child) {
                           if (activity.gForceExceeded &&
                               !activity.accidentReported) {
-                            return const SOSScreen(
-                              timeout: 30,
-                            );
+                            return const SOSScreen();
                           }
 
                           return Scaffold(

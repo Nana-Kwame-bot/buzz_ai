@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
-import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
+import 'package:buzz_ai/controllers/home_screen/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
 import 'package:buzz_ai/screens/route_history/route_history.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
@@ -62,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
         // Navigator.of(context).pushNamed('/NotificationPage',
         //     arguments: {"id": receivedNotification.id});
-        log("App opened from notification: ${receivedNotification}");
+        log("App opened from notification: $receivedNotification");
         
         Provider.of<ActivityRecognitionApp>(context, listen: false).notificationShown = false;
       });
@@ -310,6 +308,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       },
     );
   }
+
+  
 
   String? validateDestination(Coordinates coords) {
     

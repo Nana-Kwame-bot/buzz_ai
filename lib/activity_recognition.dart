@@ -10,6 +10,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bringtoforeground/bringtoforeground.dart';
 import 'package:buzz_ai/api/sound_recorder.dart';
 import 'package:buzz_ai/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -125,7 +126,9 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   void onError(Object error) {
-    print('ERROR - $error');
+    if (kDebugMode) {
+      print('ERROR - $error');
+    }
   }
 
   double checkGForce(UserAccelerometerEvent event) =>
@@ -219,6 +222,8 @@ class ActivityRecognitionApp with ChangeNotifier {
   }
 
   _updateActivityNotification(ActivityEvent currentActivityEvent) {
+    if (currentAppState != AppLifecycleState.paused) return;
+
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         AwesomeNotifications().requestPermissionToSendNotifications();
@@ -227,7 +232,7 @@ class ActivityRecognitionApp with ChangeNotifier {
 
     String title = "";
     String body = "";
-    if (currentActivityEvent.type == ActivityType.IN_VEHICLE) {
+    if (currentActivityEvent.type == ActivityType.ON_FOOT) {
       title = "Are you driving?";
       body =
           "Please open the application if you're driving so that we can ensure your safety";
@@ -255,6 +260,10 @@ class ActivityRecognitionApp with ChangeNotifier {
         ],
       );
       notificationShown = true;
+      Timer.periodic(
+          const Duration(minutes: 1),
+          (timer) => notificationShown =
+              false); // Reset the notificatinShown anyway after a minute
       notifyListeners();
     }
   }

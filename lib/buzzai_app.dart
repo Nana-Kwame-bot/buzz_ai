@@ -72,10 +72,12 @@ class BuzzaiApp extends StatelessWidget {
 
           data["toTime"] = DateTime.now();
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
-          if (_stillFor < 10)
-            return; // Dont upload the data untill the user is STILL for 10 minutes
-          if (history.toSet().isEmpty)
-            return; // If history is empty dont upload
+          if (_stillFor < 10) {
+            return;
+          } // Dont upload the data untill the user is STILL for 10 minutes
+          if (history.toSet().isEmpty) {
+            return;
+          } // If history is empty dont upload
 
           _lastStillTime = DateTime.now();
           data["routes"] = history.toSet().toList();

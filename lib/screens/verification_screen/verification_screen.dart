@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/routes/screen_arguments/profile_screen_arguments.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';

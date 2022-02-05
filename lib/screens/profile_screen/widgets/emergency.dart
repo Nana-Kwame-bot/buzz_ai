@@ -120,8 +120,8 @@ class _EmergencyState extends State<Emergency> {
       leading:
           secondEmergencyContactController.secondEmergencyContact.contactAdded!
               ? IconButton(
-                  color: Colors.transparent,
-                  onPressed: () {},
+                  color: Colors.red,
+                  onPressed: userProfileController.formEnabled ? () {} : null,
                   icon: const Icon(
                     Icons.remove_circle_outline,
                   ),
@@ -157,8 +157,8 @@ class _EmergencyState extends State<Emergency> {
       leading:
           thirdEmergencyContactController.thirdEmergencyContact.contactAdded!
               ? IconButton(
-                  color: Colors.transparent,
-                  onPressed: () {},
+                  color: Colors.red,
+                  onPressed: userProfileController.formEnabled ? () {} : null,
                   icon: const Icon(
                     Icons.remove_circle_outline,
                   ),
@@ -194,8 +194,8 @@ class _EmergencyState extends State<Emergency> {
       leading:
           fourthEmergencyContactController.fourthEmergencyContact.contactAdded!
               ? IconButton(
-                  color: Colors.transparent,
-                  onPressed: () {},
+                  color: Colors.red,
+                  onPressed: userProfileController.formEnabled ? () {} : null,
                   icon: const Icon(
                     Icons.remove_circle_outline,
                   ),
@@ -231,8 +231,8 @@ class _EmergencyState extends State<Emergency> {
       leading:
           fifthEmergencyContactController.fifthEmergencyContact.contactAdded!
               ? IconButton(
-                  color: Colors.transparent,
-                  onPressed: () {},
+                  color: Colors.red,
+                  onPressed: userProfileController.formEnabled ? () {} : null,
                   icon: const Icon(
                     Icons.remove_circle_outline,
                   ),

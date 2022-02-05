@@ -8,11 +8,11 @@ import 'package:buzz_ai/controllers/profile/emergency_contacts/first_emergency_c
 import 'package:buzz_ai/controllers/profile/emergency_contacts/fourth_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/second_emergency_contact_controller.dart';
 import 'package:buzz_ai/controllers/profile/emergency_contacts/third_emergency_contact_controller.dart';
+import 'package:buzz_ai/controllers/sos/sos_controller.dart';
 import 'package:buzz_ai/screens/misc/error_screen.dart';
 import 'package:buzz_ai/buzzai_app.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/bottom_navigation/bottom_navigation_controller.dart';
-import 'package:buzz_ai/controllers/home_screen_controller/home_screen_controller.dart';
 import 'package:buzz_ai/controllers/profile/basic_detail/basic_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/contact_detail/contact_detail_controller.dart';
 import 'package:buzz_ai/controllers/profile/multiple_car/multiple_car_controller.dart';
@@ -30,6 +30,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'controllers/home_screen/home_screen_controller.dart';
 import 'package:workmanager/workmanager.dart';
 import 'controllers/profile/image_pick/image_pick_controller.dart';
 import 'firebase_options.dart';
@@ -67,11 +68,11 @@ Future<void> initialize() async {
   double accelerometerMaxRange =
       await sensorListChannel.invokeMethod("accelerometer_max_range");
 
-  // if (accelerometerMaxRange < 40) {
-  //   log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
-  //   maxAccelerometerValue = accelerometerMaxRange;
-  //   _deviceHasCapableAccelerometer = false;
-  // }
+  if (accelerometerMaxRange < 40) {
+    log("In-compatible device. Accelerometer capacity: $accelerometerMaxRange");
+    maxAccelerometerValue = accelerometerMaxRange;
+    _deviceHasCapableAccelerometer = false;
+  }
 
   log("Device compatible to run. Accelerometer capacity: $accelerometerMaxRange");
 
@@ -275,6 +276,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ChangeNotifierProvider<ActivityRecognitionApp>(
                 create: (BuildContext context) {
                   return ActivityRecognitionApp();
+                },
+              ),
+              ChangeNotifierProvider<SOSController>(
+                create: (BuildContext context) {
+                  return SOSController()..onStart();
                 },
               ),
             ],

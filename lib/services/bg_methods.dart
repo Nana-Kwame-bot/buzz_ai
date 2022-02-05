@@ -1,3 +1,25 @@
+/// The function [log] from `dart:developer` library is overridden to prefix the [log] with "BG: " to differentiate logs from foreground and from this isolate.
+/// If you want to use the plain [log] function from `dart:developer` use [dev.log].
+
+// ignore_for_file: unused_import
+
+import 'dart:async';
+import 'dart:developer' as dev;
+import 'dart:io';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:buzz_ai/activity_recognition.dart';
+import 'package:buzz_ai/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -6,6 +28,28 @@ import 'package:buzz_ai/services/upload_watcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+
+void log(
+  String message, {
+  DateTime? time,
+  int? sequenceNumber,
+  int level = 0,
+  String name = '',
+  Zone? zone,
+  Object? error,
+  StackTrace? stackTrace,
+}) {
+  dev.log(
+    "BG: " + message,
+    time: time,
+    sequenceNumber: sequenceNumber,
+    level: level,
+    name: name,
+    zone: zone,
+    error: error,
+    stackTrace: stackTrace,
+  );
+}
 
 void onIosBackground() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +85,7 @@ void onStart() {
   service.setForegroundMode(true);
 
   startUploadWatcher();
+  sensors();
 }
 
 void watchSensors() {
@@ -104,4 +149,10 @@ void watchSensors() {
       counter = 0;
     }
   });
+}
+
+void sensors() {
+  // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+  //   log("${event.x + event.y + event.z}");
+  // });
 }

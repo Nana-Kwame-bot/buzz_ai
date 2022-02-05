@@ -1,4 +1,8 @@
+// ignore_for_file: unused_import
+import 'dart:developer';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
+import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
+import 'package:buzz_ai/global/all_permissions.dart';
 import 'package:buzz_ai/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:buzz_ai/screens/home/home_screen.dart';
 import 'package:buzz_ai/screens/login/loginscreen.dart';
@@ -6,6 +10,7 @@ import 'package:buzz_ai/screens/misc/request_permission.dart';
 import 'package:buzz_ai/screens/profile_screen/profile_screen.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,29 +40,40 @@ class _SplashScreenState extends State<SplashScreen>
     )
       ..forward()
       ..addStatusListener((status) async {
-        if (Provider.of<AuthenticationController>(context, listen: false)
-                .auth
-                .currentUser ==
-            null) {
+        AuthenticationController authControl =
+            Provider.of<AuthenticationController>(context, listen: false);
+
+        if (authControl.auth.currentUser == null) {
           if (status == AnimationStatus.completed) {
             Navigator.of(context).pushNamed(LoginScreen.iD);
             return;
           }
         }
+
+        // Initialize the profile before the app starts so that we can use it in emergency.
+        await Provider.of<UserProfileController>(context, listen: false)
+            .readProfileData(
+                userId: authControl.auth.currentUser!.uid, context: context);
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         bool isProfileComplete = prefs.getBool("profileComplete") ?? false;
 
         if (isProfileComplete) {
           if (prefs.getBool("allPermissionsGranted") ?? false) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const BottomNavigation()));
-            return;
+            bool isAllGranted = await checkForAllPermissions();
+
+            if (isAllGranted) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const BottomNavigation()));
+              return;
+            }
           }
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => RequestPermission()));
 
           return;
         }
+
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ProfileScreen(isFromSignUp: true)));
       });
@@ -72,6 +88,22 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<bool> checkForAllPermissions() async {
+    bool isAllGranted = true;
+    List<Permission> _allPermissions = List<Permission>.from(
+        allPermissions.map((e) => e["permission"]).toList());
+
+    for (var permission in _allPermissions) {
+      bool isGranted = await permission.isGranted;
+      if (isGranted) continue;
+
+      log("⚠️⚠️⚠️⚠️ $permission is not granted!");
+      isAllGranted = false;
+    }
+
+    return isAllGranted;
   }
 
   @override
