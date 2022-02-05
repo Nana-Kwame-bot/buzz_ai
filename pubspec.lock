@@ -8,12 +8,14 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "34.0.0"
-  activity_recognition_flutter:
+  activity_recognition_flutter_mod:
     dependency: "direct main"
     description:
-      name: activity_recognition_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: fix-null-pointer
+      resolved-ref: "02c9f823b7253a3700bbaf8981c9750204e105e5"
+      url: "https://github.com/hiruthicShaSS/activity_recog_modified"
+    source: git
     version: "4.2.0"
   analyzer:
     dependency: transitive

@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:activity_recognition_flutter_mod/activity_recognition_flutter.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +55,7 @@ class BuzzaiApp extends StatelessWidget {
                 .currentActivityEvent;
 
         if (currentActivity != null &&
-            currentActivity.type == ActivityType.ON_FOOT) {
+            currentActivity.type == ActivityType.IN_VEHICLE) {
           // If user moves append the lat and lng to the history
           log("Moving now!");
 
