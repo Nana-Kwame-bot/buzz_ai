@@ -64,8 +64,9 @@ class ActivityRecognitionApp with ChangeNotifier {
         userAccelerometerEvents.listen(
           (UserAccelerometerEvent event) {
             lastGForce = checkGForce(event);
+            print(event);
 
-            if (lastGForce > 8) {
+            if (event.x <= -6 && event.y <= -6 && event.z <= -6) {
               if (!gForceExceeded) {
                 recordAudio();
 
@@ -127,14 +128,8 @@ class ActivityRecognitionApp with ChangeNotifier {
     print('ERROR - $error');
   }
 
-  double checkGForce(UserAccelerometerEvent event) {
-    // sqrt(x^2 + y^2 + z^2)
-
-    double gForce =
-        sqrt(pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2)) / 9.81;
-
-    return gForce;
-  }
+  double checkGForce(UserAccelerometerEvent event) =>
+      ((event.x + event.y + event.z) / 3) / 9.8;
 
   void updateSensorValues(String event, List<double> data) async {
     last30GForce.add(lastGForce);
@@ -209,7 +204,6 @@ class ActivityRecognitionApp with ChangeNotifier {
         channelKey: 'activity_change',
         title: "Activity Recognition initialized successfully!",
         autoDismissible: true,
-
       ),
       actionButtons: [
         NotificationActionButton(
