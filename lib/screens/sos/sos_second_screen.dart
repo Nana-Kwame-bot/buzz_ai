@@ -33,21 +33,35 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
         Provider.of<AuthenticationController>(context).auth.currentUser;
 
     Future<void> getData() async {
-      Map locationData = await getLocation();
+      Map? locationData;
+
+      try {
+        locationData = await getLocation();
+      } catch (e) {
+        locationData = null;
+        // rethrow;
+      }
+
       String uid = Provider.of<AuthenticationController>(context, listen: false)
           .auth
           .currentUser!
           .uid;
+      List<double> last30sG =
+          Provider.of<ActivityRecognitionApp>(context, listen: false)
+              .last30GForce;
 
       widget.data = {
-        "coordinates": [
-          locationData["position"].latitude,
-          locationData["position"].longitude
-        ],
+        "coordinates": locationData == null
+            ? null
+            : [
+                locationData["position"].latitude,
+                locationData["position"].longitude
+              ],
         "createdAt": DateTime.now(),
-        "location": locationData["placemark"].toJson(),
+        "location": locationData?["placemark"].toJson(),
         "uid": uid,
         "crashStatus": "Crash",
+        "last30sG": last30sG,
       };
     }
 
@@ -61,6 +75,8 @@ class _SOSSecondPageState extends State<SOSSecondPage> {
       });
 
       if (widget.data == null) {
+        await getData();
+      } else if (widget.data!.keys.length < 4) {
         await getData();
       }
 

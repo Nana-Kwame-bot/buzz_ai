@@ -34,6 +34,8 @@ class _SOSScreenState extends State<SOSScreen> {
   bool _uploadStarted = false;
   bool _userConfirmsNoCrash = false;
   late ActivityRecognitionApp _activityProvider;
+  late String uid;
+  late List<double> last30sG;
 
   @override
   void initState() {
@@ -42,6 +44,17 @@ class _SOSScreenState extends State<SOSScreen> {
     timerStream = timer(widget.timeout);
     getData();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    uid = Provider.of<AuthenticationController>(context, listen: false)
+        .auth
+        .currentUser!
+        .uid;
+    last30sG = Provider.of<ActivityRecognitionApp>(context, listen: false)
+        .last30GForce;
+    super.didChangeDependencies();
   }
 
   Future<void> getData() async {
@@ -53,14 +66,6 @@ class _SOSScreenState extends State<SOSScreen> {
       locationData = null;
       // rethrow;
     }
-
-    String uid = Provider.of<AuthenticationController>(context, listen: false)
-        .auth
-        .currentUser!
-        .uid;
-    List<double> last30sG =
-        Provider.of<ActivityRecognitionApp>(context, listen: false)
-            .last30GForce;
 
     data = {
       "coordinates": locationData == null
