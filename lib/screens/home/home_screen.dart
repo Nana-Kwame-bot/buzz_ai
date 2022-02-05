@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   double _mapOpacity = 0;
   Size _mapSize = const Size(0, 1);
   // ActivityRecognitionService activityRecognitionService = ActibasvityRecognitionService();
@@ -40,15 +40,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
     initializeBackgroundExecution();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
-    super.dispose();
   }
 
   @override
@@ -99,15 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    FlutterBackgroundService().sendData({"message": state.toString().split(".").last});
-  }
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
-    
     return Consumer<HomeScreenController>(
       builder: (BuildContext context, value, Widget? child) {
         return Scaffold(

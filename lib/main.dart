@@ -151,9 +151,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     currentAppState = state;
-
+    FlutterBackgroundService()
+        .sendData({"message": state.toString().split(".").last});
+        
     if (state == AppLifecycleState.detached) {
-      
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
