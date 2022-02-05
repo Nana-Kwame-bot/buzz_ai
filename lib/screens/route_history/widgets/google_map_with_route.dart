@@ -80,12 +80,11 @@ class _GoogleMapWithRouteState extends State<GoogleMapWithRoute> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 8,
-      patterns: [PatternItem.dash(40), PatternItem.gap(20)]
-    );
+        polylineId: id,
+        color: Colors.red,
+        points: polylineCoordinates,
+        width: 8,
+        patterns: [PatternItem.dash(40), PatternItem.gap(20)]);
     polylines[id] = polyline;
   }
 
@@ -122,7 +121,7 @@ class _GoogleMapWithRouteState extends State<GoogleMapWithRoute> {
     await mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(widget.points.last["lat"], widget.points.last["lng"]),
-        (widget.points.length * 0.035).toDouble(),
+        15,
       ),
     );
     _addMarker(LatLng(widget.points.first["lat"], widget.points.first["lng"]),

@@ -5,6 +5,7 @@ import 'package:buzz_ai/controllers/profile/image_pick/image_pick_controller.dar
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class ImagePick extends StatelessWidget {
@@ -79,25 +80,23 @@ class ImagePick extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Consumer<BasicDetailController>(
-                  builder: (BuildContext context, value, Widget? child) {
+                Consumer2<BasicDetailController, UserProfileController>(
+                  builder: (BuildContext context, basicDetailController,
+                      userProfileController, Widget? child) {
+                    var bgImage = AssetImage(
+                        "assets/img/${userProfileController.gender.toString().split(".").last}_profile.png");
+                    ImageProvider<Object>? fgImage;
+
+                    try {
+                      fgImage = FileImage(File(
+                          basicDetailController.basicDetail.imageURL!));
+                    } catch (e) {}
+
                     return CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.white,
-                      backgroundImage: (value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '')
-                          ? null
-                          : FileImage(
-                              File(value.basicDetail.imageURL!),
-                            ),
-                      child: !(value.basicDetail.imageURL == null ||
-                              value.basicDetail.imageURL == '')
-                          ? null
-                          : const Icon(
-                              Icons.account_circle,
-                              color: defaultColor,
-                              size: 100,
-                            ),
+                      backgroundImage: bgImage,
+                      foregroundImage: fgImage,
                     );
                   },
                 ),

@@ -20,10 +20,12 @@
             <data android:scheme="smsto"/>
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
    <application
         android:label="buzz_ai"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:requestLegacyExternalStorage="true">
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyAQEAKU4g6prYDWSpLkxNS3ECvTmUXWnu0"/>

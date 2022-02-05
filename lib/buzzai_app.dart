@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/routes/routes.dart';
 import 'package:buzz_ai/screens/splashscreen/splashscreen.dart';
@@ -9,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
+import 'package:activity_recognition_flutter_mod/activity_recognition_flutter.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,7 @@ class BuzzaiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!locationTrackingStarted) _uploadPoints(context);
+    _uploadPoints(context);
 
     return MaterialApp(
       onGenerateRoute: AppRouter().onGenerateRoute,
@@ -69,6 +70,7 @@ class BuzzaiApp extends StatelessWidget {
           // If not moving
           // log("Not moving");
 
+          data["toTime"] = DateTime.now();
           int _stillFor = DateTime.now().difference(_lastStillTime).inSeconds;
           if (_stillFor < 10) {
             return;
@@ -92,7 +94,6 @@ class BuzzaiApp extends StatelessWidget {
             data["from"] = null;
             data["to"] = null;
           }
-          data["toTime"] = DateTime.now();
 
           await FirebaseFirestore.instance
               .collection("userDatabase")
@@ -104,6 +105,31 @@ class BuzzaiApp extends StatelessWidget {
             SetOptions(merge: true),
           );
           history = [];
+
+          AwesomeNotifications().createNotification(
+            content: NotificationContent(
+              id: 5,
+              channelKey: 'alert',
+              title: "Route uplaoded",
+              body: "Route uploaded to firestore sucessfully!",
+              autoDismissible: false,
+              backgroundColor: Colors.green,
+              criticalAlert: true,
+              displayOnBackground: true,
+            ),
+            actionButtons: [
+              NotificationActionButton(
+                key: "open_route_page",
+                label: "Open",
+              ),
+              NotificationActionButton(
+                key: "dismiss",
+                label: "Dismiss",
+                isDangerousOption: true,
+                buttonType: ActionButtonType.DisabledAction,
+              ),
+            ],
+          );
         }
       },
     );

@@ -20,6 +20,14 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:buzz_ai/services/upload_watcher.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 void log(
   String message, {
@@ -48,12 +56,13 @@ void onIosBackground() {
   log('FLUTTER BACKGROUND FETCH');
 }
 
-final ActivityRecognitionApp activityRecognitionApp = ActivityRecognitionApp();
 void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
 
   service.onDataReceived.listen((event) {
+    print(event);
+
     if (event!["action"] == "setAsForeground") {
       service.setForegroundMode(true);
       return;
@@ -66,107 +75,80 @@ void onStart() {
     if (event["action"] == "stopService") {
       service.stopBackgroundService();
     }
+
+    if (event["message"] == "detached") {
+      watchSensors();
+    }
   });
 
   // bring to foreground
   service.setForegroundMode(true);
-  Timer.periodic(const Duration(minutes: 15), (timer) async {
-    if (!(await service.isServiceRunning())) timer.cancel();
-    service.setNotificationInfo(
-      title: "Buzz.AI is running",
-      content: "Updated at ${DateTime.now()}",
-    );
 
-    service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
-    );
-  });
-
-  activityRecognitionApp.init();
   startUploadWatcher();
   sensors();
 }
 
-void startUploadWatcher() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+void watchSensors() {
+  const targetX = 0.018938301;
+  const targetY = -0.040060136;
+  const targetZ = 0.042773451;
 
-  Stream<ConnectivityResult> connectivityStream =
-      Connectivity().onConnectivityChanged;
+  double totalX = 0;
+  double totalY = 0;
+  double totalZ = 0;
 
-  Timer.periodic(const Duration(seconds: 3), (timer) async {
-    connectivityStream.listen((ConnectivityResult result) async {
-      bool isOnline =
-          [ConnectivityResult.mobile, ConnectivityResult.wifi].contains(result);
+  int counter = 0;
 
-      if (isOnline) {
-        // Upload pending sensorData as soon as device is online
-        Directory dir = await getApplicationDocumentsDirectory();
-        List<FileSystemEntity> pendingUploads = dir.listSync(recursive: true);
-        pendingUploads.removeWhere((file) => !file.path.contains("sensor"));
+  userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+    totalX += event.x;
+    totalY += event.y;
+    totalZ += event.z;
+    print(totalX);
 
-        if (pendingUploads.isNotEmpty) {
-          for (var pendingFile in pendingUploads) {
-            File file = File(pendingFile.path);
-            await uploadSensorData(file);
+    counter++;
+
+    if (counter >= 50) {
+      double currentAvgX = totalX / counter;
+      double currentAvgY = totalY / counter;
+      double currentAvgZ = totalZ / counter;
+
+      double diffX = currentAvgX - targetX;
+      double diffY = currentAvgY - targetY;
+      double diffZ = currentAvgZ - targetZ;
+
+      print("[${event.x}, ${event.y}, ${event.z}] <<<>>> [$currentAvgX, $currentAvgY, $currentAvgZ]  ==  Xdiff: $diffX, Ydiff: $diffY, Zdiff: $diffZ");
+
+      if (diffX.abs() >= 1) {
+        if (diffY.abs() >= 1) {
+          if (diffZ.abs() >= 1) {
+            AwesomeNotifications().createNotification(
+              content: NotificationContent(
+                id: 1,
+                channelKey: 'activity_change',
+                title: "Are you driving?",
+                body:
+                    "Please open the application if you're driving so that we can ensure your safety",
+              ),
+              actionButtons: [
+                NotificationActionButton(
+                  key: "open",
+                  label: "Open",
+                ),
+                NotificationActionButton(
+                  key: "dismiss",
+                  label: "Dismiss",
+                  isDangerousOption: true,
+                  buttonType: ActionButtonType.DisabledAction,
+                ),
+              ],
+            );
           }
         }
-
-        DateTime now = DateTime.now();
-        if (now.hour == 2 && now.minute >= 30) {
-          // Upload current data if its 2:30
-          await uploadSensorData();
-        }
       }
-    });
+
+      counter = 0;
+    }
   });
-}
-
-Future<String> readSensorData([File? infile]) async {
-  Directory dir = await getApplicationDocumentsDirectory();
-  DateTime today = DateTime.now();
-  File file = infile ??
-      File(
-          "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv");
-
-  return await file.readAsString();
-}
-
-bool _sensorDataUploaded = false;
-Future<void> uploadSensorData([File? file]) async {
-  if (_sensorDataUploaded) return;
-
-  String uid = FirebaseAuth.instance.currentUser!.uid;
-
-  String data = await readSensorData(file);
-  DateTime today = DateTime.now();
-
-  TaskSnapshot sensorDataUploadTask = await FirebaseStorage.instance
-      .ref(uid)
-      .child("sensor_data")
-      .child("${today.day}-${today.month}-${today.year}.csv")
-      .putString(data, format: PutStringFormat.raw);
-
-  await FirebaseFirestore.instance.collection("userDatabase").doc(uid).set(
-    {
-      "sensorData": FieldValue.arrayUnion([
-        {
-          "timestamp": DateTime.now(),
-          "filePath": await sensorDataUploadTask.ref.getDownloadURL()
-        }
-      ])
-    },
-    SetOptions(merge: true),
-  );
-  Directory dir = await getApplicationDocumentsDirectory();
-  if (file == null) {
-    await File(
-            "${dir.path}/sensordata-${today.day}-${today.month}-${today.year}.csv")
-        .delete();
-    return;
-  }
-  await file.delete();
 }
 
 void sensors() {

@@ -95,12 +95,16 @@ class HomeScreenController extends ChangeNotifier {
     } on Exception catch (e) {
       log(e.toString());
     }
-    await mapController.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        LatLng(currentPosition.latitude, currentPosition.longitude),
-        14,
-      ),
-    );
+    try {
+      await mapController.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(currentPosition.latitude, currentPosition.longitude),
+          14,
+        ),
+      );
+    } on Exception catch (e) {
+      log(e.toString());
+    }
     try {
       address = await _getAddressFromLatLong(currentPosition);
     } on Exception catch (e) {

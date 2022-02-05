@@ -3,6 +3,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/home_screen/home_screen_controller.dart';
 import 'package:buzz_ai/models/home/coordinates/coordinates.dart';
+import 'package:buzz_ai/screens/route_history/route_history.dart';
 import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:buzz_ai/services/config.dart';
 import 'package:buzz_ai/widgets/widget_size.dart';
@@ -42,11 +43,19 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
+    await Provider.of<ActivityRecognitionApp>(context, listen: false).init();
+
     try {
       notificationActionStream.listen((ReceivedNotification receivedNotification) {
         if (receivedNotification.toMap()["buttonPressed"] == "dismiss") {
           AwesomeNotifications().dismiss(receivedNotification.id!);
+          return;
+        }
+
+        if (receivedNotification.toMap()["buttonKeyPressed"] == "open_route_page") {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => RouteHistory()));
+          return;
         }
 
         // Navigator.of(context).pushNamed('/NotificationPage',
@@ -79,13 +88,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
-
-  @override
-  void dispose() {
-    // activityRecognitionService.dispose();
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     setState(() {
                                       _mapOpacity = 1;
                                     });
+
                                     value.onMapCreated(controller);
                                   },
                                 );

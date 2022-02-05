@@ -49,8 +49,8 @@ class RouteHistory extends StatelessWidget {
 
                   String formattedArraivalTime;
                   try {
-                    formattedArraivalTime  =
-                      DateFormat("hh:mm a").format(data[key]["toTime"].toDate());
+                    formattedArraivalTime = DateFormat("hh:mm a")
+                        .format(data[key]["toTime"].toDate());
                   } catch (e) {
                     return Container();
                   }

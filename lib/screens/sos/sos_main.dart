@@ -25,6 +25,9 @@ class _SOSScreenState extends State<SOSScreen> {
   late Stream<int> timerStream;
   bool _uploadStarted = false;
   bool _userConfirmsNoCrash = false;
+  late ActivityRecognitionApp _activityProvider;
+  late String uid;
+  late List<double> last30sG;
 
   @override
   void initState() {
