@@ -213,7 +213,7 @@ class ProfileInputFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const ImagePick(),
+        ImagePick(isFromSignUp: isFromSignUp),
         BasicDetails(isFromSignUp: isFromSignUp),
         const ContactDetails(),
         const Emergency(),
