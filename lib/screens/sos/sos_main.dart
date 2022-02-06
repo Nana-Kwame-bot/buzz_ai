@@ -154,6 +154,8 @@ class _SOSScreenState extends State<SOSScreen> {
                     children: [
                       ConfirmationSlider(
                         onConfirmation: () async {
+                          sosController.upDateCrashStatus("Crash");
+                          
                           sosController
                               .uploadReport(
                             userProfile: userProfileController.userProfile,

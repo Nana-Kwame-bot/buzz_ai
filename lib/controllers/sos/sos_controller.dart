@@ -19,7 +19,7 @@ class SOSController extends ChangeNotifier {
     latitude: 0,
     timeCreated: DateTime.now(),
     placemark: Placemark(),
-    crashStatus: "",
+    crashStatus: "Crash",
     last30sG: [],
     audioURL: "",
     gForce: 0,
