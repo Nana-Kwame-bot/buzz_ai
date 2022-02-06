@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:buzz_ai/services/config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -119,8 +120,18 @@ class AuthenticationController extends ChangeNotifier {
       });
       log('Successfully signed in UID: ${user.uid}');
       return true;
-    } catch (e) {
-      log(e.toString() + 'Failed to sign in');
+    } on FirebaseAuthException catch (e) {
+      log("Failed to sign in \nError message : ${e.message}"
+          "\nError code : ${e.code}");
+      if (e.code == "invalid-verification-code") {
+        Fluttertoast.showToast(
+          msg: "Invalid Verification Code",
+          toastLength: Toast.LENGTH_LONG,
+          fontSize: 16.0,
+          backgroundColor: Colors.black54,
+          gravity: ToastGravity.SNACKBAR,
+        );
+      }
       return false;
     }
   }
