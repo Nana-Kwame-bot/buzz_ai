@@ -1,6 +1,6 @@
-@Copyright 2021 - Nova Technologies
+@Copyright 2021 - INFA Technologies
 
-https://www.novatechnologies.in
+https://www.infatechnologies.com
 
 Buzz AI 2021-22
 
