@@ -19,7 +19,7 @@ class SOSController extends ChangeNotifier {
     latitude: 0,
     timeCreated: DateTime.now(),
     placemark: Placemark(),
-    crashStatus: "",
+    crashStatus: "Crash",
     last30sG: [],
     audioURL: "",
     gForce: 0,
@@ -115,12 +115,13 @@ class SOSController extends ChangeNotifier {
             to: recipients.first!,
             message: message,
             statusListener: listener,
+            isMultipart: true,
           )
               .whenComplete(() {
-            log("sms sent to ${recipients.first} + $message");
+            log("SMS sent to ${recipients.first} + $message");
           });
         } on Exception catch (e) {
-          log("sms_error: " + e.toString());
+          log("SMS error: " + e.toString());
         }
       } else {
         String formattedRecipients = recipients.join(';');
@@ -131,12 +132,13 @@ class SOSController extends ChangeNotifier {
             to: formattedRecipients,
             message: message,
             statusListener: listener,
+            isMultipart: true,
           )
               .whenComplete(() {
-            log("sms sent to $formattedRecipients + $message");
+            log("SMS sent to $formattedRecipients + $message");
           });
         } on Exception catch (e) {
-          log("sms_error: " + e.toString());
+          log("SMS error: " + e.toString());
         }
       }
     }
@@ -172,6 +174,7 @@ class SOSController extends ChangeNotifier {
   }
 
   listener(SendStatus status) {
+    if (status == SendStatus.DELIVERED) {}
     log('SmsSendStatus ${status.toString()}');
   }
 }

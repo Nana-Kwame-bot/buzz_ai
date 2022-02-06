@@ -154,7 +154,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     currentAppState = state;
     FlutterBackgroundService()
         .sendData({"message": state.toString().split(".").last});
-        
+
     if (state == AppLifecycleState.detached) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
@@ -296,9 +296,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               description:
                   "Your device's accelerometer value $maxAccelerometerValue that is not capable of recording more than 4 G-force!",
               action: ElevatedButton(
-                onPressed: () {
-                  FlutterBackgroundService()
-                      .sendData({"action": "stopService"});
+                onPressed: () async {
+                  if (await FlutterBackgroundService().isServiceRunning()) {
+                    FlutterBackgroundService()
+                        .sendData({"action": "stopService"});
+                  }
                   exit(-1);
                 },
                 child: const Text("Undestood & Exit"),

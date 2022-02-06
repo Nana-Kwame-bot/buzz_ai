@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:buzz_ai/activity_recognition.dart';
 import 'package:buzz_ai/controllers/authentication/authentication_controller.dart';
 import 'package:buzz_ai/controllers/profile/user_profile/user_profile_controller.dart';
 import 'package:buzz_ai/controllers/sos/sos_controller.dart';
 import 'package:buzz_ai/screens/sos/sos_second_screen.dart';
 import 'package:buzz_ai/screens/sos/widget/show_report.dart';
-import 'package:buzz_ai/services/bg_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_progress_indicator/gradient_progress_indicator.dart';
@@ -154,6 +154,8 @@ class _SOSScreenState extends State<SOSScreen> {
                     children: [
                       ConfirmationSlider(
                         onConfirmation: () async {
+                          sosController.upDateCrashStatus("Crash");
+                          
                           sosController
                               .uploadReport(
                             userProfile: userProfileController.userProfile,
