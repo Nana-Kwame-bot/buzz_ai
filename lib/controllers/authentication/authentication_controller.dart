@@ -126,7 +126,9 @@ class AuthenticationController extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    FlutterBackgroundService().sendData({"action": "stopService"});
+    if (await FlutterBackgroundService().isServiceRunning()) {
+      FlutterBackgroundService().sendData({"action": "stopService"});
+    }
     await auth.signOut();
   }
 
