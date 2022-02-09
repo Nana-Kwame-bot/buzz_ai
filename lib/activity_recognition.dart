@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
-import 'dart:math';
 
 import 'package:activity_recognition_flutter_mod/activity_recognition_flutter.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
