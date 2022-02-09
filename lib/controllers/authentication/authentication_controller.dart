@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:buzz_ai/services/config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
